@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from wallet import Wallet
-from miner import Miner
-from logger import Logger
-from database import BlockChainDB
+from core_code.wallet import Wallet
+from core_code.miner import Miner
+from core_code.logger import Logger
+from core_code.database import BlockChainDB
 
 
 def test1():

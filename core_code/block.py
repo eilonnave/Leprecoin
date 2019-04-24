@@ -4,7 +4,7 @@ import time
 
 
 STARTER_NONCE = 0
-DIFFICULTY = 1
+DIFFICULTY = 4
 BLOCK_STRUCTURE = '(number integer, ' \
                   'nonce integer, ' \
                   'prev text, ' \

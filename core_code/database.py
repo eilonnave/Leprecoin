@@ -1,77 +1,17 @@
 # -*- coding: utf-8 -*-
 import sqlite3
-from references import References
+import os
 from abc import abstractmethod, ABCMeta
 from block import BLOCK_STRUCTURE, \
     BLOCKS_TABLE_NAME, \
     Block
 from transaction import *
-from encryption import *
 from blockchain import BlockChain
 
 
+DB_DIR = 'database'
+BLOCK_CHAIN_DB_FILE = DB_DIR+'/block_chain.db'
 EXTRACT_ALL_QUERY = 'select * from '
-
-
-class DB(object):
-    __metaclass__ = ABCMeta
-
-    def __init__(self, reference, logger, **kwargs):
-        """
-        constructor
-        """
-        self.logger = logger
-        self.connection = None
-        self.cursor = None
-        self.reference = reference
-        self.create_connection()
-
-    def create_connection(self):
-        """
-        creates new connection to the data
-        base
-        """
-        self.connection = sqlite3.connect(self.reference)
-        self.cursor = self.connection.cursor()
-        self.logger.info('connected to db- '+self.reference)
-
-    def close_connection(self):
-        """
-        closes the connection and the cursor
-        """
-        self.cursor.close()
-        self.connection.close()
-        self.logger.info('connection is closed with db- '+self.reference)
-
-    @abstractmethod
-    def insert(self, obj):
-        """
-        the function inserts object to the database
-        :param obj: the object to insert
-        """
-        pass
-
-    @abstractmethod
-    def extract(self, line_index):
-        """
-        the function extracts from the
-        data base the object from the given line
-        index
-        :param line_index: the line index of the
-        object to extract
-        :returns: the extracted object
-        """
-        pass
-
-    @abstractmethod
-    def extract_all(self):
-        """
-        the function extracts from the
-        data base list of the all objects
-        inside
-        :returns: list of the extracted objects
-        """
-        pass
 
 
 class Table:
@@ -120,7 +60,12 @@ class BlockChainDB(BlockChain):
         self.logger = logger
         self.connection = None
         self.cursor = None
-        self.reference = References().get_block_chain_reference()
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path+'/'+DB_DIR):
+            os.mkdir(parent_path+'/'+DB_DIR)
+        os.chdir(parent_path+'/'+DB_DIR)
+        self.db_name = parent_path+'/'+BLOCK_CHAIN_DB_FILE
         self.create_connection()
         self.blocks_table = Table(self.connection,
                                   self.cursor,
@@ -141,16 +86,17 @@ class BlockChainDB(BlockChain):
                                    OUTPUT_STRUCTURE)
         chain = self.extract_chain()
         super(BlockChainDB, self).__init__(chain, logger)
+        os.chdir(default_cwd)
 
     def create_connection(self):
         """
         creates new connection to the data
         base
         """
-        self.connection = sqlite3.connect(self.reference)
+        self.connection = sqlite3.connect(self.db_name)
         self.connection.text_factory = bytes
         self.cursor = self.connection.cursor()
-        self.logger.info('connected to db- '+self.reference)
+        self.logger.info('Connected to the db')
 
     def close_connection(self):
         """
@@ -158,7 +104,7 @@ class BlockChainDB(BlockChain):
         """
         self.cursor.close()
         self.connection.close()
-        self.logger.info('connection is closed with db- '+self.reference)
+        self.logger.info('Connection is closed with the db')
 
     def insert_block(self, block):
         """

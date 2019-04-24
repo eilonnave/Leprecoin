@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+
+
 LOG_FORMAT = '%(levelname)s | %(asctime)s | %(processName)s | %(message)s'
 LOG_LEVEL = logging.DEBUG
-LOG_DIR = 'log'
+LOG_DIR = 'logs'
 
 
 class Logger():
@@ -11,10 +13,11 @@ class Logger():
         """
         constructor
         """
-        if not os.path.isdir(LOG_DIR):
-            os.makedirs(LOG_DIR)
+        path = os.path.dirname(os.getcwd())+'/'+LOG_DIR
+        if not os.path.isdir(path):
+            os.makedirs(path)
         logging.basicConfig(format=LOG_FORMAT,
-                            filename=LOG_DIR+'/'+file_name,
+                            filename=path+'/'+file_name,
                             level=LOG_LEVEL)
 
     @staticmethod
