@@ -1,0 +1,45 @@
+INFO | 2019-04-26 15:32:20,344 | MainProcess | Connected to the db
+INFO | 2019-04-26 15:32:20,346 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-04-26 15:32:20,387 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-04-26 15:32:20,388 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-04-26 15:32:20,388 | MainProcess | Block number 3 extracted for the db
+INFO | 2019-04-26 15:32:20,390 | MainProcess | Block number 4 extracted for the db
+INFO | 2019-04-26 15:32:20,391 | MainProcess | Block number 5 extracted for the db
+INFO | 2019-04-26 15:32:20,391 | MainProcess | Block number 6 extracted for the db
+INFO | 2019-04-26 15:32:20,391 | MainProcess | Block number 7 extracted for the db
+INFO | 2019-04-26 15:32:20,394 | MainProcess | Block number 8 extracted for the db
+INFO | 2019-04-26 15:32:20,394 | MainProcess | Block number 9 extracted for the db
+INFO | 2019-04-26 15:32:20,395 | MainProcess | Block number 10 extracted for the db
+INFO | 2019-04-26 15:32:20,395 | MainProcess | Block number 11 extracted for the db
+INFO | 2019-04-26 15:32:20,397 | MainProcess | Block number 12 extracted for the db
+INFO | 2019-04-26 15:32:20,398 | MainProcess | Block number 13 extracted for the db
+INFO | 2019-04-26 15:32:20,398 | MainProcess | Block number 14 extracted for the db
+INFO | 2019-04-26 15:32:20,400 | MainProcess | Block number 15 extracted for the db
+INFO | 2019-04-26 15:32:20,401 | MainProcess | Block number 16 extracted for the db
+INFO | 2019-04-26 15:32:20,401 | MainProcess | Block number 17 extracted for the db
+INFO | 2019-04-26 15:32:20,401 | MainProcess | Test 1 starts
+INFO | 2019-04-26 15:32:20,401 | MainProcess | Creating new wallet
+INFO | 2019-04-26 15:32:23,140 | MainProcess | Address- 8d3e011180c81c89facd6ebacba4b136d1645778 is in the system
+INFO | 2019-04-26 15:32:23,140 | MainProcess | Creating new wallet
+INFO | 2019-04-26 15:32:28,124 | MainProcess | Address- 546e482d839332e49766e09de4aaa62668e48c60 is in the system
+INFO | 2019-04-26 15:32:28,124 | MainProcess | Creating new wallet
+INFO | 2019-04-26 15:32:31,980 | MainProcess | Address- 703bbf0a92169b8c07f0b5eeffe20c05e5458f7c is in the system
+INFO | 2019-04-26 15:32:31,980 | MainProcess | Mining new block
+INFO | 2019-04-26 15:32:31,982 | MainProcess | The new block was added to the block chain
+INFO | 2019-04-26 15:32:32,426 | MainProcess | The new block was inserted to the data base
+INFO | 2019-04-26 15:32:32,480 | MainProcess | 703bbf0a92169b8c07f0b5eeffe20c05e5458f7c is sending 50LPC to 8d3e011180c81c89facd6ebacba4b136d1645778
+INFO | 2019-04-26 15:32:32,480 | MainProcess | Mining new block
+INFO | 2019-04-26 15:32:32,490 | MainProcess | The new block was added to the block chain
+INFO | 2019-04-26 15:32:33,236 | MainProcess | The new block was inserted to the data base
+INFO | 2019-04-26 15:32:33,289 | MainProcess | 8d3e011180c81c89facd6ebacba4b136d1645778 is sending 50LPC to 546e482d839332e49766e09de4aaa62668e48c60
+INFO | 2019-04-26 15:32:33,342 | MainProcess | 703bbf0a92169b8c07f0b5eeffe20c05e5458f7c is sending 50LPC to 546e482d839332e49766e09de4aaa62668e48c60
+INFO | 2019-04-26 15:32:33,345 | MainProcess | Mining new block
+INFO | 2019-04-26 15:32:33,384 | MainProcess | The new block was added to the block chain
+INFO | 2019-04-26 15:32:34,496 | MainProcess | The new block was inserted to the data base
+INFO | 2019-04-26 15:32:34,605 | MainProcess | 546e482d839332e49766e09de4aaa62668e48c60 is sending 51LPC to 8d3e011180c81c89facd6ebacba4b136d1645778
+INFO | 2019-04-26 15:32:34,605 | MainProcess | Mining new block
+INFO | 2019-04-26 15:32:34,621 | MainProcess | The new block was added to the block chain
+INFO | 2019-04-26 15:32:35,588 | MainProcess | The new block was inserted to the data base
+INFO | 2019-04-26 15:32:35,588 | MainProcess | 546e482d839332e49766e09de4aaa62668e48c60- not enough money to send
+INFO | 2019-04-26 15:32:35,588 | MainProcess | Finish successfully test 1
+INFO | 2019-04-26 15:32:35,594 | MainProcess | Connection is closed with the db

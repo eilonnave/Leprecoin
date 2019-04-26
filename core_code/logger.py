@@ -8,7 +8,7 @@ LOG_LEVEL = logging.DEBUG
 LOG_DIR = 'logs'
 
 
-class Logger():
+class Logging():
     def __init__(self, file_name):
         """
         constructor
@@ -16,15 +16,18 @@ class Logger():
         path = os.path.dirname(os.getcwd())+'/'+LOG_DIR
         if not os.path.isdir(path):
             os.makedirs(path)
-        logging.basicConfig(format=LOG_FORMAT,
-                            filename=path+'/'+file_name,
-                            level=LOG_LEVEL)
 
-    @staticmethod
-    def info(message):
-        """
-        the function adds info message to the
-        logging
-        :param message: the message to logging
-        """
-        logging.info(message)
+        # Create a custom logger
+        self.logger = logging.getLogger(file_name)
+        self.logger.setLevel(LOG_LEVEL)
+
+        # Create handler
+        f_handler = logging.FileHandler(path+'/'+file_name+'.log')
+        f_handler.setLevel(LOG_LEVEL)
+
+        # Create the formatter and add it to handler
+        formatter = logging.Formatter(LOG_FORMAT)
+        f_handler.setFormatter(formatter)
+
+        # Add the handler to the logger
+        self.logger.addHandler(f_handler)
