@@ -1,0 +1,5 @@
+To do List:
+1. for checking that the block is legit,in the coinbase transaction, I must add checking that in the input the implementation of the chain's length is right
+2. handle errors in the database
+3. handle a possible problem of comment database between different wallets in the same computer
+4. add unspent outpust database
