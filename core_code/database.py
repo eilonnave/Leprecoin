@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 import os
-from abc import abstractmethod, ABCMeta
 from block import BLOCK_STRUCTURE, \
     BLOCKS_TABLE_NAME, \
     Block
@@ -10,7 +9,7 @@ from blockchain import BlockChain
 
 
 DB_DIR = 'database'
-BLOCK_CHAIN_DB_FILE = DB_DIR+'/block_chain.db'
+BLOCK_CHAIN_DB_FILE = 'block_chain.db'
 EXTRACT_ALL_QUERY = 'select * from '
 
 
@@ -53,7 +52,7 @@ class Table:
 
 
 class BlockChainDB(BlockChain):
-    def __init__(self, logger):
+    def __init__(self, logger, db_name=BLOCK_CHAIN_DB_FILE):
         """
         constructor
         """
@@ -65,7 +64,7 @@ class BlockChainDB(BlockChain):
         if not os.path.isdir(parent_path+'/'+DB_DIR):
             os.mkdir(parent_path+'/'+DB_DIR)
         os.chdir(parent_path+'/'+DB_DIR)
-        self.db_name = parent_path+'/'+BLOCK_CHAIN_DB_FILE
+        self.path = parent_path+'/'+DB_DIR+'/'+db_name
         self.create_connection()
         self.blocks_table = Table(self.connection,
                                   self.cursor,
@@ -93,7 +92,7 @@ class BlockChainDB(BlockChain):
         creates new connection to the data
         base
         """
-        self.connection = sqlite3.connect(self.db_name)
+        self.connection = sqlite3.connect(self.path)
         self.connection.text_factory = bytes
         self.cursor = self.connection.cursor()
         self.logger.info('Connected to the db')
