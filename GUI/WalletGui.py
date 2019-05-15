@@ -1,40 +1,13 @@
 # - * - coding: utf - 8 -
-try:
-    import Tkinter as tk
-except ImportError:
-    import tkinter as tk
-
-try:
-    import ttk
-    py3 = False
-except ImportError:
-    import tkinter.ttk as ttk
-    py3 = True
+import tkinter as tk
 
 
 def vp_start_gui():
     """Starting point when module is the main routine."""
-    global val, w, root
+    global root
     root = tk.Tk()
-    top = WalletMainWindow(root)
+    WalletMainWindow(root)
     root.mainloop()
-
-w = None
-
-
-def create_top_level1(root, *args, **kwargs):
-    """Starting point when module is imported by another program."""
-    global w, w_win, rt
-    rt = root
-    w = tk.Toplevel (root)
-    top = Toplevel1 (w)
-    WalletGui_support.init(w, top, *args, **kwargs)
-    return (w, top)
-
-def destroy_Toplevel1():
-    global w
-    w.destroy()
-    w = None
 
 
 class WalletMainWindow:
@@ -69,114 +42,20 @@ class WalletMainWindow:
         self.transactions_button = None
         self.create_buttons_frame()
 
-        self.Frame2 = tk.Frame(top)
-        self.Frame2.place(relx=0.0, rely=0.067, relheight=0.933, relwidth=0.625)
-        self.Frame2.configure(relief='flat')
-        self.Frame2.configure(borderwidth="-1")
-        self.Frame2.configure(background="#2f4f4f")
-        self.Frame2.configure(highlightbackground="#d9d9d9")
-        self.Frame2.configure(highlightcolor="black")
-        self.Frame2.configure(width=395)
+        self.last_frame = None
+        self.last_label = None
+        self.last_text = None
+        self.create_last_transactions_frame()
 
-        self.Label2 = tk.Label(self.Frame2)
-        self.Label2.place(relx=0.0, rely=0.0, height=40, width=200)
-        self.Label2.configure(activebackground="#f9f9f9")
-        self.Label2.configure(activeforeground="black")
-        self.Label2.configure(background="dark slate grey")
-        self.Label2.configure(disabledforeground="#a3a3a3")
-        self.Label2.configure(font="-family {Lucida Calligraphy} -size 14")
-        self.Label2.configure(foreground="Gold")
-        self.Label2.configure(highlightbackground="#d9d9d9")
-        self.Label2.configure(highlightcolor="black")
-        self.Label2.configure(text='''Last Tranactions''')
+        self.balance_frame = None
+        self.balance_label = None
+        self.balance_text = None
+        self.create_balance_frame()
 
-        self.Text1 = tk.Text(self.Frame2)
-        self.Text1.place(relx=0.03, rely=0.095, relheight=0.833, relwidth=0.9)
-        self.Text1.configure(background="dark slate grey")
-        self.Text1.configure(borderwidth="2")
-        self.Text1.configure(font="-family {Lucida Calligraphy} -size 10")
-        self.Text1.configure(foreground="old lace")
-        self.Text1.configure(highlightbackground="#d9d9d9")
-        self.Text1.configure(highlightcolor="black")
-        self.Text1.configure(insertbackground="black")
-        self.Text1.configure(selectbackground="#c4c4c4")
-        self.Text1.configure(selectforeground="black")
-        self.Text1.configure(width=10)
-        self.Text1.configure(wrap="word")
-
-        self.Frame3 = tk.Frame(top)
-        self.Frame3.place(relx=0.625, rely=0.067, relheight=0.467
-                , relwidth=0.375)
-        self.Frame3.configure(relief='flat')
-        self.Frame3.configure(borderwidth="-1")
-        self.Frame3.configure(background="dark slate gray")
-        self.Frame3.configure(highlightbackground="#d9d9d9")
-        self.Frame3.configure(highlightcolor="black")
-        self.Frame3.configure(width=125)
-
-        self.Label3 = tk.Label(self.Frame3)
-        self.Label3.place(relx=0.0, rely=0.0, height=40, width=200)
-        self.Label3.configure(activebackground="#f9f9f9")
-        self.Label3.configure(activeforeground="black")
-        self.Label3.configure(anchor='w')
-        self.Label3.configure(background="dark slate grey")
-        self.Label3.configure(disabledforeground="#a3a3a3")
-        self.Label3.configure(font="-family {Lucida Calligraphy} -size 14")
-        self.Label3.configure(foreground="Gold")
-        self.Label3.configure(highlightbackground="#d9d9d9")
-        self.Label3.configure(highlightcolor="black")
-        self.Label3.configure(text='''Current Balance''')
-
-        self.Text2 = tk.Text(self.Frame3)
-        self.Text2.place(relx=0.0, rely=0.19, relheight=0.238, relwidth=0.9)
-        self.Text2.configure(background="dark slate grey")
-        self.Text2.configure(borderwidth="0")
-        self.Text2.configure(font="-family {Lucida Calligraphy} -size 20")
-        self.Text2.configure(foreground="old lace")
-        self.Text2.configure(highlightbackground="#d9d9d9")
-        self.Text2.configure(highlightcolor="black")
-        self.Text2.configure(insertbackground="black")
-        self.Text2.configure(selectbackground="#c4c4c4")
-        self.Text2.configure(selectforeground="black")
-        self.Text2.configure(width=10)
-        self.Text2.configure(wrap="word")
-
-        self.Frame4 = tk.Frame(top)
-        self.Frame4.place(relx=0.625, rely=0.533, relheight=0.467
-                , relwidth=0.375)
-        self.Frame4.configure(relief='flat')
-        self.Frame4.configure(borderwidth="-1")
-        self.Frame4.configure(background="dark slate grey")
-        self.Frame4.configure(highlightbackground="#d9d9d9")
-        self.Frame4.configure(highlightcolor="black")
-        self.Frame4.configure(width=125)
-
-        self.Label4 = tk.Label(self.Frame4)
-        self.Label4.place(relx=0.0, rely=0.0, height=40, width=200)
-        self.Label4.configure(activebackground="#f9f9f9")
-        self.Label4.configure(activeforeground="black")
-        self.Label4.configure(anchor='w')
-        self.Label4.configure(background="dark slate grey")
-        self.Label4.configure(disabledforeground="#a3a3a3")
-        self.Label4.configure(font="-family {Lucida Calligraphy} -size 14")
-        self.Label4.configure(foreground="Gold")
-        self.Label4.configure(highlightbackground="#d9d9d9")
-        self.Label4.configure(highlightcolor="black")
-        self.Label4.configure(text='''Your Address''')
-
-        self.Text3 = tk.Text(self.Frame4)
-        self.Text3.place(relx=0.0, rely=0.19, relheight=0.238, relwidth=0.9)
-        self.Text3.configure(background="dark slate gray")
-        self.Text3.configure(borderwidth="0")
-        self.Text3.configure(font="-family {Lucida Calligraphy} -size 16")
-        self.Text3.configure(foreground="old lace")
-        self.Text3.configure(highlightbackground="#d9d9d9")
-        self.Text3.configure(highlightcolor="black")
-        self.Text3.configure(insertbackground="black")
-        self.Text3.configure(selectbackground="#c4c4c4")
-        self.Text3.configure(selectforeground="black")
-        self.Text3.configure(width=10)
-        self.Text3.configure(wrap="word")
+        self.address_frame = None
+        self.address_label = None
+        self.address_text = None
+        self.create_address_frame()
 
     def create_buttons_frame(self):
         """
@@ -267,6 +146,7 @@ class WalletMainWindow:
         the function creates the last transactions
         frame for the gui
         """
+        # creates the last transactions frame
         self.last_frame = tk.Frame(self.top)
         self.last_frame.place(relx=0.0, rely=0.067, relheight=0.933, relwidth=0.625)
         self.last_frame.configure(relief='flat')
@@ -276,31 +156,118 @@ class WalletMainWindow:
         self.last_frame.configure(highlightcolor="black")
         self.last_frame.configure(width=395)
 
-        self.Label2 = tk.Label(self.Frame2)
-        self.Label2.place(relx=0.0, rely=0.0, height=40, width=200)
-        self.Label2.configure(activebackground="#f9f9f9")
-        self.Label2.configure(activeforeground="black")
-        self.Label2.configure(background="dark slate grey")
-        self.Label2.configure(disabledforeground="#a3a3a3")
-        self.Label2.configure(font="-family {Lucida Calligraphy} -size 14")
-        self.Label2.configure(foreground="Gold")
-        self.Label2.configure(highlightbackground="#d9d9d9")
-        self.Label2.configure(highlightcolor="black")
-        self.Label2.configure(text='''Last Tranactions''')
+        # creates the lats transactions label
+        self.last_label = tk.Label(self.last_frame)
+        self.last_label.place(relx=0.0, rely=0.0, height=40, width=200)
+        self.last_label.configure(activebackground="#f9f9f9")
+        self.last_label.configure(activeforeground="black")
+        self.last_label.configure(background="dark slate grey")
+        self.last_label.configure(disabledforeground="#a3a3a3")
+        self.last_label.configure(font="-family {Lucida Calligraphy} -size 14")
+        self.last_label.configure(foreground="Gold")
+        self.last_label.configure(highlightbackground="#d9d9d9")
+        self.last_label.configure(highlightcolor="black")
+        self.last_label.configure(text='''Last Tranactions''')
 
-        self.Text1 = tk.Text(self.Frame2)
-        self.Text1.place(relx=0.03, rely=0.095, relheight=0.833, relwidth=0.9)
-        self.Text1.configure(background="dark slate grey")
-        self.Text1.configure(borderwidth="2")
-        self.Text1.configure(font="-family {Lucida Calligraphy} -size 10")
-        self.Text1.configure(foreground="old lace")
-        self.Text1.configure(highlightbackground="#d9d9d9")
-        self.Text1.configure(highlightcolor="black")
-        self.Text1.configure(insertbackground="black")
-        self.Text1.configure(selectbackground="#c4c4c4")
-        self.Text1.configure(selectforeground="black")
-        self.Text1.configure(width=10)
-        self.Text1.configure(wrap="word")
+        # creates the last transactions text
+        self.last_text = tk.Text(self.last_frame)
+        self.last_text.place(relx=0.03, rely=0.095, relheight=0.833, relwidth=0.9)
+        self.last_text.configure(background="dark slate grey")
+        self.last_text.configure(borderwidth="2")
+        self.last_text.configure(font="-family {Lucida Calligraphy} -size 10")
+        self.last_text.configure(foreground="old lace")
+        self.last_text.configure(highlightbackground="#d9d9d9")
+        self.last_text.configure(highlightcolor="black")
+        self.last_text.configure(insertbackground="black")
+        self.last_text.configure(selectbackground="#c4c4c4")
+        self.last_text.configure(selectforeground="black")
+        self.last_text.configure(width=10)
+        self.last_text.configure(wrap="word")
+
+    def create_balance_frame(self):
+        """
+        the function creates the balance
+        frame for the gui
+        """
+        self.balance_frame = tk.Frame(self.top)
+        self.balance_frame.place(relx=0.625, rely=0.067, relheight=0.467,
+                                 relwidth=0.375)
+        self.balance_frame.configure(relief='flat')
+        self.balance_frame.configure(borderwidth="-1")
+        self.balance_frame.configure(background="dark slate gray")
+        self.balance_frame.configure(highlightbackground="#d9d9d9")
+        self.balance_frame.configure(highlightcolor="black")
+        self.balance_frame.configure(width=125)
+
+        self.balance_label = tk.Label(self.balance_frame)
+        self.balance_label.place(relx=0.0, rely=0.0, height=40, width=200)
+        self.balance_label.configure(activebackground="#f9f9f9")
+        self.balance_label.configure(activeforeground="black")
+        self.balance_label.configure(anchor='w')
+        self.balance_label.configure(background="dark slate grey")
+        self.balance_label.configure(disabledforeground="#a3a3a3")
+        self.balance_label.configure(font="-family {Lucida Calligraphy} -size 14")
+        self.balance_label.configure(foreground="Gold")
+        self.balance_label.configure(highlightbackground="#d9d9d9")
+        self.balance_label.configure(highlightcolor="black")
+        self.balance_label.configure(text='''Current Balance''')
+
+        self.balance_text = tk.Text(self.balance_frame)
+        self.balance_text.place(relx=0.0, rely=0.19, relheight=0.238, relwidth=0.9)
+        self.balance_text.configure(background="dark slate grey")
+        self.balance_text.configure(borderwidth="0")
+        self.balance_text.configure(font="-family {Lucida Calligraphy} -size 20")
+        self.balance_text.configure(foreground="old lace")
+        self.balance_text.configure(highlightbackground="#d9d9d9")
+        self.balance_text.configure(highlightcolor="black")
+        self.balance_text.configure(insertbackground="black")
+        self.balance_text.configure(selectbackground="#c4c4c4")
+        self.balance_text.configure(selectforeground="black")
+        self.balance_text.configure(width=10)
+        self.balance_text.configure(wrap="word")
+
+    def create_address_frame(self):
+        """
+        the function creates the address
+        frame for the gui
+        """
+        self.address_frame = tk.Frame(self.top)
+        self.address_frame.place(relx=0.625, rely=0.533, relheight=0.467,
+                                 relwidth=0.375)
+        self.address_frame.configure(relief='flat')
+        self.address_frame.configure(borderwidth="-1")
+        self.address_frame.configure(background="dark slate grey")
+        self.address_frame.configure(highlightbackground="#d9d9d9")
+        self.address_frame.configure(highlightcolor="black")
+        self.address_frame.configure(width=125)
+
+        self.address_label = tk.Label(self.address_frame)
+        self.address_label.place(relx=0.0, rely=0.0, height=40, width=200)
+        self.address_label.configure(activebackground="#f9f9f9")
+        self.address_label.configure(activeforeground="black")
+        self.address_label.configure(anchor='w')
+        self.address_label.configure(background="dark slate grey")
+        self.address_label.configure(disabledforeground="#a3a3a3")
+        self.address_label.configure(font="-family {Lucida Calligraphy} -size 14")
+        self.address_label.configure(foreground="Gold")
+        self.address_label.configure(highlightbackground="#d9d9d9")
+        self.address_label.configure(highlightcolor="black")
+        self.address_label.configure(text='''Your Address''')
+
+        self.address_text = tk.Text(self.address_frame)
+        self.address_text.place(relx=0.0, rely=0.19, relheight=0.238, relwidth=0.9)
+        self.address_text.configure(background="dark slate gray")
+        self.address_text.configure(borderwidth="0")
+        self.address_text.configure(font="-family {Lucida Calligraphy} -size 16")
+        self.address_text.configure(foreground="old lace")
+        self.address_text.configure(highlightbackground="#d9d9d9")
+        self.address_text.configure(highlightcolor="black")
+        self.address_text.configure(insertbackground="black")
+        self.address_text.configure(selectbackground="#c4c4c4")
+        self.address_text.configure(selectforeground="black")
+        self.address_text.configure(width=10)
+        self.address_text.configure(wrap="word")
+
 
 if __name__ == '__main__':
     vp_start_gui()
