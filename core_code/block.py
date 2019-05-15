@@ -132,9 +132,3 @@ class Block:
                    difficulty,
                    transactions,
                    time_stamp)
-
-
-if __name__ == "__main__":
-    block_1 = Block.new_block(0, '0', [])
-    block_2 = Block.new_block(1, block_1.hash_code, [])
-    print block_1.serialize()
