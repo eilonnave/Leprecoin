@@ -6,7 +6,6 @@ WIN_HEIGHT = 450
 
 def vp_start_gui():
     """Starting point when module is the main routine."""
-    global root
     root = tk.Tk()
     WalletMainWindow(root)
     root.mainloop()
@@ -17,17 +16,6 @@ class WalletMainWindow:
         """
         constructor
         """
-        # X11 color: 'gray85'
-        _bg_color = '#d9d9d9'
-        # X11 color: 'black'
-        _fg_color = '#000000'
-        # X11 color: 'gray85'
-        _comp_color = '#d9d9d9'
-        # X11 color: 'gray85'
-        _ana1_color = '#d9d9d9'
-        # Closest X11 color: 'gray92'
-        _ana2_color = '#ececec'
-
         # configure the top level screen
         x = str(int(top.winfo_screenwidth()/2)-int(WIN_WIDTH/2))
         y = str(int(top.winfo_screenheight()/2)-int(WIN_HEIGHT/2))
