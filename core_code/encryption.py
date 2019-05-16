@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from Crypto.PublicKey import *
-from Crypto.Hash import *
+from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
 from Crypto.Signature import *
 ENCRYPTION_PARAMETER = 32
+ENCODE = "utf8"
 
 
 class EncryptionSet(object):
@@ -71,7 +72,7 @@ class EncryptionSet(object):
         :param message: the message to hash
         :returns: the hash code
         """
-        return SHA256.new(message)
+        return SHA256.new(message.encode(ENCODE))
 
 
 if __name__ == '__main__':

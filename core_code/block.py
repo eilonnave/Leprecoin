@@ -11,6 +11,7 @@ BLOCK_STRUCTURE = '(number integer, ' \
                   'difficulty integer, ' \
                   'time_stamp integer)'
 BLOCKS_TABLE_NAME = 'blocks'
+ENCODE = "utf8"
 
 
 class Block:
@@ -75,7 +76,8 @@ class Block:
         for transaction in self.transactions[1:]:
             transaction_hash = transaction.hash_transaction()
             transactions_hash = hashlib.sha256(
-                transactions_hash+transaction_hash).hexdigest()
+                (transactions_hash+transaction_hash
+                 ).encode(ENCODE)).hexdigest()
         return transactions_hash
 
     def add_transaction(self, transaction):

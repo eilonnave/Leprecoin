@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from Crypto.Hash import *
+from Crypto.Hash import SHA256
 
 
 UN_SPENT_OUTPUTS_TABLE_NAME = 'utxo'
@@ -17,6 +17,7 @@ INPUT_STRUCTURE = '(transaction_id text, ' \
                   'output_index integer, ' \
                   'proof text, ' \
                   'transaction_number text)'
+ENCODE = "utf8"
 
 
 class Transaction:
@@ -56,14 +57,16 @@ class Transaction:
             transaction_hash = self.inputs[0].hash_input()
             for transaction_input in self.inputs[1:]:
                 transaction_hash += transaction_input.hash_input()
-                transaction_hash = SHA256.new(transaction_hash).hexdigest()
+                transaction_hash = SHA256.new(
+                    transaction_hash.encode("utf8")).hexdigest()
 
         # hash the outputs
         if len(self.outputs) == 0:
             return transaction_hash
         for transaction_output in self.outputs:
             transaction_hash += transaction_output.hash_output()
-            transaction_hash = SHA256.new(transaction_hash).hexdigest()
+            transaction_hash = SHA256.new(
+                transaction_hash.encode("utf8")).hexdigest()
 
         return transaction_hash
 
@@ -107,7 +110,7 @@ class Output:
         :returns: the hash code of the
         input
         """
-        return SHA256.new(self.to_string()).hexdigest()
+        return SHA256.new(self.to_string().encode(ENCODE)).hexdigest()
 
     def to_string(self):
         """
@@ -158,7 +161,7 @@ class Input:
         :returns: the hash code of the
         input
         """
-        return SHA256.new(self.to_string()).hexdigest()
+        return SHA256.new(self.to_string().encode(ENCODE)).hexdigest()
 
     def to_string(self):
         """
@@ -173,7 +176,8 @@ class Input:
     def serialize(self, transaction_number):
         """
         the function serializes the input
-        :param transaction_number: the transaction number which the
+        :param transaction_number: the
+        transaction number which the
         input belongs to
         :returns: the serialized input
         """

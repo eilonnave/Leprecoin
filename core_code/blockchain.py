@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from block import Block
-from transaction import Transaction, Input, Output
+from core_code.block import Block
+from core_code.transaction import Transaction, Input, Output
 
 
 BLOCK_HASH_SIZE = 256

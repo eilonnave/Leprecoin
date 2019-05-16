@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from encryption import EncryptionSet
-from Crypto.PublicKey import *
-from Crypto.Hash import *
-from transaction import Transaction, Input, Output, UnspentOutput
+from core_code.encryption import EncryptionSet
+from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256, RIPEMD160
+from core_code.transaction import Transaction, \
+    Input, Output, UnspentOutput
+ENCODE = "utf8"
 
 
 class Wallet(EncryptionSet):
@@ -11,10 +13,11 @@ class Wallet(EncryptionSet):
         constructor
         """
         super(Wallet, self).__init__(private_key)
-        self.address = RIPEMD.new(
-            SHA256.new(
-                self.public_key.exportKey()).
-            hexdigest()).hexdigest()
+        self.address = RIPEMD160.new(SHA256.new(
+            self.public_key.exportKey()).
+                                     hexdigest().
+                                     encode(ENCODE)).\
+            hexdigest()
         self.block_chain_db = block_chain_db
         self.unspent_outputs = []
         self.update_unspent_outputs()

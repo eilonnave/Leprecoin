@@ -28,7 +28,7 @@ class Tests(unittest.TestCase):
 
         # check that their initial value is 0
         self.assertEqual(wallet1.balance, 0)
-        self.assertEquals(wallet2.balance, 0)
+        self.assertEqual(wallet2.balance, 0)
 
         # creates the miner in the system
         wallet3 = Wallet.new_wallet(self.block_chain_db, self.logger)
@@ -45,7 +45,7 @@ class Tests(unittest.TestCase):
         miner.mine()
 
         # check the new balances
-        self.assertEquals(wallet1.get_balance(), first_balance)
+        self.assertEqual(wallet1.get_balance(), first_balance)
         second_balance = miner.wallet.get_balance()
         self.assertGreater(second_balance, 0)
 
@@ -56,7 +56,7 @@ class Tests(unittest.TestCase):
         miner.mine()
 
         # check the new balances
-        self.assertEquals(wallet2.get_balance(), (first_balance+second_balance))
+        self.assertEqual(wallet2.get_balance(), (first_balance+second_balance))
         self.assertGreater(miner.wallet.get_balance(), 0)
 
         # create new transaction that demands change
@@ -65,11 +65,12 @@ class Tests(unittest.TestCase):
         miner.mine()
 
         # check the balances
-        self.assertEquals(wallet2.get_balance(), second_balance - 1)
+        self.assertEqual(wallet2.get_balance(), second_balance - 1)
         self.assertFalse(wallet2.create_transaction(second_balance, wallet1.address))
 
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 import os
-from block import BLOCK_STRUCTURE, \
+from core_code.block import BLOCK_STRUCTURE, \
     BLOCKS_TABLE_NAME, \
     Block
-from transaction import *
-from blockchain import BlockChain
+from core_code.transaction import *
+from core_code.blockchain import BlockChain
 
 
 DB_DIR = 'database'
@@ -228,7 +228,7 @@ class BlockChainDB(BlockChain):
         count = self.cursor.fetchone()[0]
 
         chain = []
-        for i in xrange(count):
+        for i in range(count):
             chain.append(self.extract_block(i))
         return chain
 
