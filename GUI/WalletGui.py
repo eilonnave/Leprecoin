@@ -1,21 +1,20 @@
 # - * - coding: utf - 8 -
 import tkinter as tk
+from GUI.SendGui import SendWindow
 WIN_WIDTH = 800
 WIN_HEIGHT = 450
 
 
-def vp_start_gui():
-    """Starting point when module is the main routine."""
-    root = tk.Tk()
-    WalletMainWindow(root)
-    root.mainloop()
-
-
 class WalletMainWindow:
-    def __init__(self, top):
+    def __init__(self, top, next_win, win_dict, wallet):
         """
         constructor
         """
+        self.next_win = next_win
+        self.next_win[0] = None
+        self.win_dict = win_dict
+        self.wallet = wallet
+
         # configure the top level screen
         x = str(int(top.winfo_screenwidth()/2)-int(WIN_WIDTH/2))
         y = str(int(top.winfo_screenheight()/2)-int(WIN_HEIGHT/2))
@@ -25,6 +24,8 @@ class WalletMainWindow:
         top.configure(highlightbackground="#d9d9d9")
         top.configure(highlightcolor="black")
         top.resizable(False, False)
+        top.after(500, self.show_current_balance)
+        top.after(500, self.show_last_transactions)
         self.top = top
 
         self.buttons_frame = None
@@ -260,6 +261,7 @@ class WalletMainWindow:
         self.balance_text.configure(selectforeground="black")
         self.balance_text.configure(width=10)
         self.balance_text.configure(wrap="word")
+        self.balance_text.configure(state=tk.DISABLED)
 
     def create_address_frame(self):
         """
@@ -318,6 +320,7 @@ class WalletMainWindow:
         the function handles the press on
         the send button
         """
+        self.next_win[0] = self.win_dict['send']
         self.top.destroy()
 
     def pressed_mining(self):
@@ -327,6 +330,48 @@ class WalletMainWindow:
         """
         self.top.destroy()
 
+    def show_current_balance(self):
+        """
+        the function shows the current balance
+        on the window
+        """
+        self.balance_text.configure(state=tk.NORMAL)
+        self.balance_text.delete(1.0, tk.END)
+        self.balance_text.insert(tk.END, str(self.wallet.balance)+' LPC')
+        self.balance_text.configure(state=tk.DISABLED)
+        self.top.after(500, self.show_current_balance)
 
-if __name__ == '__main__':
-    vp_start_gui()
+    def show_last_transactions(self):
+        """
+        the function shows the last transactions
+        on the window
+        """
+        self.last_text.configure(state=tk.NORMAL)
+        self.last_text.delete(1.0, tk.END)
+        s = ''
+        if len(self.wallet.transactions) != 0:
+            count = 0
+            for transaction in self.wallet.transactions[::-1]:
+                if count == 5:
+                    break
+                if transaction.inputs[0].proof[1] == self.wallet.public_key:
+                    # the wallet paid
+                    for output in transaction.outputs:
+                        if count == 5:
+                            break
+                        count += 1
+                        s += '-'+str(output.value)+' LPC\n' \
+                             'From you\n' \
+                             'To: '+output.address
+                else:
+                    # the wallet got paid
+                    for output in transaction.outputs:
+                        if count == 5:
+                            break
+                        count += 1
+                        s += '+'+str(output.value)+' LPC\n' \
+                                                   'From ' \
+                                                   ''+output.address
+        self.balance_text.insert(tk.END, s)
+        self.balance_text.configure(state=tk.DISABLED)
+        self.top.after(500, self.show_last_transactions)

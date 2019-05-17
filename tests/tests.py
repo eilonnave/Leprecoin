@@ -4,6 +4,7 @@ from core_code.miner import Miner
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
 import unittest
+from GUI.ui_runner import UiRunner
 
 
 class Tests(unittest.TestCase):
@@ -67,6 +68,7 @@ class Tests(unittest.TestCase):
         # check the balances
         self.assertEqual(wallet2.get_balance(), second_balance - 1)
         self.assertFalse(wallet2.create_transaction(second_balance, wallet1.address))
+        wallet1.update_transactions()
 
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')

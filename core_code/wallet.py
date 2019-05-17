@@ -23,6 +23,8 @@ class Wallet(EncryptionSet):
         self.update_unspent_outputs()
         self.balance = 0
         self.update_balance()
+        self.transactions = []
+        self.update_transactions()
         self.logger = logger
         self.logger.info(
             "Address- "
@@ -178,3 +180,20 @@ class Wallet(EncryptionSet):
         :param transaction: the transaction to distribute
         """
         self.block_chain_db.add_transaction(transaction)
+
+    def update_transactions(self):
+        """
+        the function updates the list of the wallet
+        transactions
+        """
+        for block in self.block_chain_db.chain:
+            for transaction in block.transactions:
+                if transaction in self.transactions:
+                    break
+                for output in transaction.outputs:
+                    if output.address == self.address:
+                        self.transactions.append(transaction)
+                        break
+                if transaction.inputs[0].proof[1] is self.public_key:
+                    self.transactions.append(transaction)
+                    break

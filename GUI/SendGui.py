@@ -4,18 +4,16 @@ WIN_WIDTH = 800
 WIN_HEIGHT = 450
 
 
-def vp_start_gui():
-    """Starting point when module is the main routine."""
-    root = tk.Tk()
-    SendWindow(root)
-    root.mainloop()
-
-
 class SendWindow:
-    def __init__(self, top):
+    def __init__(self, top, next_win, win_dict, wallet):
         """
         constructor
         """
+        self.next_win = next_win
+        self.next_win[0] = None
+        self.win_dict = win_dict
+        self.wallet = wallet
+
         # configure the top level screen
         x = str(int(top.winfo_screenwidth() / 2) - int(WIN_WIDTH / 2))
         y = str(int(top.winfo_screenheight() / 2) - int(WIN_HEIGHT / 2))
@@ -164,6 +162,15 @@ class SendWindow:
         self.back_button.configure(highlightcolor="black")
         self.back_button.configure(pady="0")
         self.back_button.configure(text='''Back''')
+        self.back_button.configure(command=self.pressed_back)
+
+    def pressed_back(self):
+        """
+        the function handles the press
+        on the back button
+        """
+        self.next_win[0] = self.win_dict['main']
+        self.top.destroy()
 
 
 if __name__ == '__main__':
