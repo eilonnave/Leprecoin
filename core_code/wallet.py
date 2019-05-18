@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-from core_code.encryption import EncryptionSet
+from core_code.crypto_set import CryptoSet
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256, RIPEMD160
 from core_code.transaction import Transaction, \
     Input, Output, UnspentOutput
-ENCODE = "utf8"
+
+COMPARE_KEYS_MESS = 'compare'
+GENERATE_NUMBER = 2048
 
 
-class Wallet(EncryptionSet):
+class Wallet(CryptoSet):
     def __init__(self, private_key, block_chain_db, logger):
         """
         constructor
         """
         super(Wallet, self).__init__(private_key)
-        self.address = RIPEMD160.new(SHA256.new(
-            self.public_key.exportKey()).
-                                     hexdigest().
-                                     encode(ENCODE)).\
-            hexdigest()
+        self.address = RIPEMD160.new(
+            SHA256.new(
+                self.public_key.exportKey()).hexdigest()
+        ).hexdigest()
         self.block_chain_db = block_chain_db
         self.unspent_outputs = []
         self.update_unspent_outputs()
@@ -36,7 +37,7 @@ class Wallet(EncryptionSet):
         factory method
         """
         logger.info("Creating new wallet")
-        private_key = RSA.generate(2048)
+        private_key = RSA.generate(GENERATE_NUMBER)
         return cls(private_key, block_chain, logger)
 
     def can_unlock_output(self, transaction_output):
@@ -142,6 +143,7 @@ class Wallet(EncryptionSet):
         # creates the new transaction
         new_transaction = Transaction([], [])
         sending_amount = 0
+        change = 0
         for unspent_output in self.unspent_outputs:
             # creating the proof
             data_to_sign = unspent_output.transaction_id
@@ -150,26 +152,26 @@ class Wallet(EncryptionSet):
             data_to_sign += str(amount)
             data_to_sign = self.hash(data_to_sign)
             signature = self.sign(data_to_sign)
-            proof = (signature, self.public_key)
+            proof = [signature, self.public_key]
             new_transaction.add_input(Input(
                 unspent_output.transaction_id,
                 unspent_output.output_index,
                 proof))
             sending_amount += unspent_output.output.value
             if sending_amount >= amount:
-                break
+                change = sending_amount - amount
+                sending_amount = amount
         new_transaction.add_output(
             Output(sending_amount,
                    recipient_address))
 
         # add change if it is needed
-        if sending_amount > amount:
-            change = sending_amount - amount
+        if change > 0:
             new_transaction.add_output(Output(change, self.address))
 
         # distributes the transaction
         self.logger.info(self.address+" is sending "+str(
-            amount)+"LPC to "+recipient_address)
+            amount)+" LPC to "+recipient_address)
         self.distribute_transaction(new_transaction)
         return True
 
@@ -190,10 +192,45 @@ class Wallet(EncryptionSet):
             for transaction in block.transactions:
                 if transaction in self.transactions:
                     break
-                for output in transaction.outputs:
-                    if output.address == self.address:
-                        self.transactions.append(transaction)
-                        break
-                if transaction.inputs[0].proof[1] is self.public_key:
+                output = transaction.outputs[0]
+                if output.address == self.address:
                     self.transactions.append(transaction)
                     break
+                # check if the transaction is not coin base
+                if transaction.inputs[0].proof[1] is not '':
+                    if self.equals_public_keys(
+                            transaction.inputs[0].proof[1]):
+                        self.transactions.append(transaction)
+                        break
+
+    @staticmethod
+    def find_address(public_key):
+        """
+        the function calculates the address
+        of the owner of the public key
+        :param public_key: public key object
+        :return: the wallet address of the owner
+        """
+        return RIPEMD160.new(
+            SHA256.new(
+                public_key.exportKey()).hexdigest()
+        ).hexdigest()
+
+    def equals_public_keys(self, public_key):
+        """
+        the function check if the given
+        publc key is equals to the wallet's
+        public key
+        :param public_key: the key to compare
+        with
+        :return: true if the keys are the same
+        and false otherwise
+        """
+        e1 = self.encrypt(
+            public_key,
+            COMPARE_KEYS_MESS)
+        e2 = self.encrypt(self.public_key, COMPARE_KEYS_MESS)
+        if self.decrypt(e1) == self.decrypt(e2):
+            return True
+        else:
+            return False

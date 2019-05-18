@@ -1,17 +1,20 @@
 #  -*- coding: utf-8 -*-
-import tkinter as tk
+import Tkinter as Tk
+ADDRESS_LENGTH = 40
 WIN_WIDTH = 800
 WIN_HEIGHT = 450
+HEX_DIGEST = '0123456789abcdef'
+NEXT_KEY = 'next'
+MAIN_KEY = 'main'
 
 
 class SendWindow:
-    def __init__(self, top, next_win, win_dict, wallet):
+    def __init__(self, top, win_dict, wallet):
         """
         constructor
         """
-        self.next_win = next_win
-        self.next_win[0] = None
         self.win_dict = win_dict
+        self.win_dict[NEXT_KEY] = None
         self.wallet = wallet
 
         # configure the top level screen
@@ -20,6 +23,7 @@ class SendWindow:
         top.geometry(str(WIN_WIDTH) + "x" + str(WIN_HEIGHT) + "+" + x + "+" + y)
         top.title("Send Window")
         top.configure(background="#d9d9d9")
+        top.resizable(False, False)
         self.top = top
 
         self.send_frame = None
@@ -40,7 +44,7 @@ class SendWindow:
         the function creates the send frame
         for the gui
         """
-        self.send_frame = tk.Frame(self.top)
+        self.send_frame = Tk.Frame(self.top)
         self.send_frame.place(relx=0.0,
                               rely=0.067,
                               relheight=1.0,
@@ -50,7 +54,7 @@ class SendWindow:
         self.send_frame.configure(background="dark slate grey")
         self.send_frame.configure(width=125)
 
-        self.send_label = tk.Label(self.send_frame)
+        self.send_label = Tk.Label(self.send_frame)
         self.send_label.place(relx=0.25,
                               rely=0.244,
                               height=30,
@@ -62,7 +66,7 @@ class SendWindow:
         self.send_label.configure(foreground="Gold")
         self.send_label.configure(text='''Send to''')
 
-        self.amount_label = tk.Label(self.send_frame)
+        self.amount_label = Tk.Label(self.send_frame)
         self.amount_label.place(relx=0.25,
                                 rely=0.444,
                                 height=30,
@@ -74,7 +78,7 @@ class SendWindow:
         self.amount_label.configure(foreground="gold")
         self.amount_label.configure(text='''Amount''')
 
-        self.send_entry = tk.Entry(self.send_frame)
+        self.send_entry = Tk.Entry(self.send_frame)
         self.send_entry.place(relx=0.5,
                               rely=0.244,
                               height=30,
@@ -86,7 +90,7 @@ class SendWindow:
         self.send_entry.configure(foreground="#000000")
         self.send_entry.configure(insertbackground="black")
 
-        self.amount_entry = tk.Entry(self.send_frame)
+        self.amount_entry = Tk.Entry(self.send_frame)
         self.amount_entry.place(relx=0.5,
                                 rely=0.444,
                                 height=30,
@@ -102,7 +106,7 @@ class SendWindow:
         self.amount_entry.configure(selectbackground="#c4c4c4")
         self.amount_entry.configure(selectforeground="black")
 
-        self.send_button = tk.Button(self.send_frame)
+        self.send_button = Tk.Button(self.send_frame)
         self.send_button.place(relx=0.813,
                                rely=0.756,
                                height=30,
@@ -118,13 +122,14 @@ class SendWindow:
         self.send_button.configure(highlightcolor="black")
         self.send_button.configure(pady="0")
         self.send_button.configure(text='''Send''')
+        self.send_button.configure(command=self.pressed_send)
 
     def create_buttons_frame(self):
         """
         the function creates the buttons frame
         for the gui
         """
-        self.buttons_frame = tk.Frame(self.top)
+        self.buttons_frame = Tk.Frame(self.top)
         self.buttons_frame.place(relx=0.0,
                                  rely=0.0,
                                  relheight=0.067,
@@ -134,7 +139,7 @@ class SendWindow:
         self.buttons_frame.configure(background="saddle brown")
         self.buttons_frame.configure(width=125)
 
-        self.leprecoin_label = tk.Label(self.buttons_frame)
+        self.leprecoin_label = Tk.Label(self.buttons_frame)
         self.leprecoin_label.place(relx=0.0,
                                    rely=0.0,
                                    height=30,
@@ -146,7 +151,7 @@ class SendWindow:
         self.leprecoin_label.configure(foreground="Gold")
         self.leprecoin_label.configure(text='''Leprecoin''')
 
-        self.back_button = tk.Button(self.buttons_frame)
+        self.back_button = Tk.Button(self.buttons_frame)
         self.back_button.place(relx=0.813,
                                rely=0.0,
                                height=30,
@@ -169,12 +174,30 @@ class SendWindow:
         the function handles the press
         on the back button
         """
-        self.next_win[0] = self.win_dict['main']
+        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
         self.top.destroy()
 
-
-if __name__ == '__main__':
-    vp_start_gui()
+    def pressed_send(self):
+        """
+        the function handles the press
+        on the send button
+        """
+        address = self.send_entry.get()
+        legal = True
+        for char in address:
+            if char not in HEX_DIGEST:
+                legal = False
+                break
+        if len(address) != ADDRESS_LENGTH:
+            legal = False
+        if address == self.wallet.address:
+            legal = False
+        amount = self.amount_entry.get()
+        if not amount.isdigit():
+            legal = False
+        else:
+            amount = int(amount)
+        self.wallet.create_transaction(amount, address)
 
 
 

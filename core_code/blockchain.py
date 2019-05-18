@@ -33,7 +33,7 @@ class BlockChain(object):
 
         # transaction that rewards the miner
         # the input proof is arbitrary
-        transaction_input = Input(str(len(self.chain)), -1, (miner_address, ''))
+        transaction_input = Input(str(len(self.chain)), -1, [miner_address, ''])
         transaction_output = Output(REWORD, miner_address)
         new_transaction = Transaction([transaction_input],
                                       [transaction_output])

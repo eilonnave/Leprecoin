@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
+import ast
+import json
 
 
 UN_SPENT_OUTPUTS_TABLE_NAME = 'utxo'
@@ -17,7 +20,6 @@ INPUT_STRUCTURE = '(transaction_id text, ' \
                   'output_index integer, ' \
                   'proof text, ' \
                   'transaction_number text)'
-ENCODE = "utf8"
 
 
 class Transaction:
@@ -58,7 +60,7 @@ class Transaction:
             for transaction_input in self.inputs[1:]:
                 transaction_hash += transaction_input.hash_input()
                 transaction_hash = SHA256.new(
-                    transaction_hash.encode("utf8")).hexdigest()
+                    transaction_hash).hexdigest()
 
         # hash the outputs
         if len(self.outputs) == 0:
@@ -66,7 +68,7 @@ class Transaction:
         for transaction_output in self.outputs:
             transaction_hash += transaction_output.hash_output()
             transaction_hash = SHA256.new(
-                transaction_hash.encode("utf8")).hexdigest()
+                transaction_hash).hexdigest()
 
         return transaction_hash
 
@@ -110,7 +112,7 @@ class Output:
         :returns: the hash code of the
         input
         """
-        return SHA256.new(self.to_string().encode(ENCODE)).hexdigest()
+        return SHA256.new(self.to_string()).hexdigest()
 
     def to_string(self):
         """
@@ -152,7 +154,8 @@ class Input:
         """
         self.transaction_id = transaction_id
         self.output_index = output_index
-        # the proof is the tuple that contains the signature and the public key
+        # the proof is a list that contains the
+        # signature and the public key
         self.proof = proof
 
     def hash_input(self):
@@ -161,7 +164,7 @@ class Input:
         :returns: the hash code of the
         input
         """
-        return SHA256.new(self.to_string().encode(ENCODE)).hexdigest()
+        return SHA256.new(self.to_string()).hexdigest()
 
     def to_string(self):
         """
@@ -181,9 +184,13 @@ class Input:
         input belongs to
         :returns: the serialized input
         """
+        proof = self.proof
+        if self.proof[1] is not '':
+            proof = [self.proof[0],
+                     self.proof[1].exportKey()]
         return self.transaction_id, \
             self.output_index, \
-            str(self.proof),\
+            str(proof),\
             transaction_number
 
     @classmethod
@@ -196,7 +203,9 @@ class Input:
         """
         transaction_id = str(serialized_input[0])
         output_index = serialized_input[1]
-        proof = serialized_input[2]
+        proof = ast.literal_eval(serialized_input[2])
+        if proof[1] is not '':
+            proof[1] = RSA.importKey(proof[1])
         return cls(transaction_id, output_index, proof)
 
 

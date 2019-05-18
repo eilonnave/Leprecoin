@@ -1,18 +1,22 @@
 # - * - coding: utf - 8 -
-import tkinter as tk
-from GUI.SendGui import SendWindow
+import Tkinter as Tk
+MAX_TRANSACTIONS = 4
 WIN_WIDTH = 800
 WIN_HEIGHT = 450
+LINE_DOWN = '\n'
+NEXT_KEY = 'next'
+MAIN_KEY = 'main'
+SEND_KEY = 'send'
+MINE_KEY = 'mine'
 
 
 class WalletMainWindow:
-    def __init__(self, top, next_win, win_dict, wallet):
+    def __init__(self, top, win_dict, wallet):
         """
         constructor
         """
-        self.next_win = next_win
-        self.next_win[0] = None
         self.win_dict = win_dict
+        self.win_dict[NEXT_KEY] = None
         self.wallet = wallet
 
         # configure the top level screen
@@ -24,8 +28,6 @@ class WalletMainWindow:
         top.configure(highlightbackground="#d9d9d9")
         top.configure(highlightcolor="black")
         top.resizable(False, False)
-        top.after(500, self.show_current_balance)
-        top.after(500, self.show_last_transactions)
         self.top = top
 
         self.buttons_frame = None
@@ -50,6 +52,8 @@ class WalletMainWindow:
         self.address_label = None
         self.address_text = None
         self.create_address_frame()
+        self.show_current_balance()
+        self.show_last_transactions()
 
     def create_buttons_frame(self):
         """
@@ -57,7 +61,7 @@ class WalletMainWindow:
         for the gui
         """
         # creates the frame
-        self.buttons_frame = tk.Frame(self.top)
+        self.buttons_frame = Tk.Frame(self.top)
         self.buttons_frame.place(relx=0.0,
                                  rely=0.0,
                                  relheight=0.067,
@@ -70,7 +74,7 @@ class WalletMainWindow:
         self.buttons_frame.configure(width=125)
 
         # create the send button
-        self.send_button = tk.Button(self.buttons_frame)
+        self.send_button = Tk.Button(self.buttons_frame)
         self.send_button.place(relx=0.731,
                                rely=0.0,
                                height=30,
@@ -89,7 +93,7 @@ class WalletMainWindow:
         self.send_button.configure(command=self.pressed_send)
 
         # creates the request button
-        self.request_button = tk.Button(self.buttons_frame)
+        self.request_button = Tk.Button(self.buttons_frame)
         self.request_button.place(relx=0.875,
                                   rely=0.0,
                                   height=30,
@@ -107,7 +111,7 @@ class WalletMainWindow:
         self.request_button.configure(text='''Request coins''')
 
         # creates the leprecoin label
-        self.leprecoin_label = tk.Label(self.buttons_frame)
+        self.leprecoin_label = Tk.Label(self.buttons_frame)
         self.leprecoin_label.place(relx=0.0,
                                    rely=0.0,
                                    height=30,
@@ -124,7 +128,7 @@ class WalletMainWindow:
         self.leprecoin_label.configure(text='''Leprecoin''')
 
         # creates the mining button
-        self.mining_button = tk.Button(self.buttons_frame)
+        self.mining_button = Tk.Button(self.buttons_frame)
         self.mining_button.place(relx=0.588,
                                  rely=0.0,
                                  height=30,
@@ -143,7 +147,7 @@ class WalletMainWindow:
         self.mining_button.configure(command=self.pressed_mining)
 
         # create the transactions button
-        self.transactions_button = tk.Button(self.buttons_frame)
+        self.transactions_button = Tk.Button(self.buttons_frame)
         self.transactions_button.place(relx=0.444,
                                        rely=0.0,
                                        height=30,
@@ -166,7 +170,7 @@ class WalletMainWindow:
         frame for the gui
         """
         # creates the last transactions frame
-        self.last_frame = tk.Frame(self.top)
+        self.last_frame = Tk.Frame(self.top)
         self.last_frame.place(relx=0.0,
                               rely=0.067,
                               relheight=0.933,
@@ -179,7 +183,7 @@ class WalletMainWindow:
         self.last_frame.configure(width=395)
 
         # creates the lats transactions label
-        self.last_label = tk.Label(self.last_frame)
+        self.last_label = Tk.Label(self.last_frame)
         self.last_label.place(relx=0.0, rely=0.0, height=40, width=200)
         self.last_label.configure(activebackground="#f9f9f9")
         self.last_label.configure(activeforeground="black")
@@ -192,7 +196,7 @@ class WalletMainWindow:
         self.last_label.configure(text='''Last Tranactions''')
 
         # creates the last transactions text
-        self.last_text = tk.Text(self.last_frame)
+        self.last_text = Tk.Text(self.last_frame)
         self.last_text.place(relx=0.03,
                              rely=0.095,
                              relheight=0.833,
@@ -200,7 +204,7 @@ class WalletMainWindow:
         self.last_text.configure(background="dark slate grey")
         self.last_text.configure(borderwidth="2")
         self.last_text.configure(
-            font="-family {Lucida Calligraphy} -size 10")
+            font="-family {Lucida Calligraphy} -size 13")
         self.last_text.configure(foreground="old lace")
         self.last_text.configure(highlightbackground="#d9d9d9")
         self.last_text.configure(highlightcolor="black")
@@ -215,7 +219,7 @@ class WalletMainWindow:
         the function creates the balance
         frame for the gui
         """
-        self.balance_frame = tk.Frame(self.top)
+        self.balance_frame = Tk.Frame(self.top)
         self.balance_frame.place(relx=0.625,
                                  rely=0.067,
                                  relheight=0.467,
@@ -227,7 +231,7 @@ class WalletMainWindow:
         self.balance_frame.configure(highlightcolor="black")
         self.balance_frame.configure(width=125)
 
-        self.balance_label = tk.Label(self.balance_frame)
+        self.balance_label = Tk.Label(self.balance_frame)
         self.balance_label.place(relx=0.0,
                                  rely=0.0,
                                  height=40,
@@ -244,7 +248,7 @@ class WalletMainWindow:
         self.balance_label.configure(highlightcolor="black")
         self.balance_label.configure(text='''Current Balance''')
 
-        self.balance_text = tk.Text(self.balance_frame)
+        self.balance_text = Tk.Text(self.balance_frame)
         self.balance_text.place(relx=0.0,
                                 rely=0.19,
                                 relheight=0.238,
@@ -261,14 +265,14 @@ class WalletMainWindow:
         self.balance_text.configure(selectforeground="black")
         self.balance_text.configure(width=10)
         self.balance_text.configure(wrap="word")
-        self.balance_text.configure(state=tk.DISABLED)
+        self.balance_text.configure(state=Tk.DISABLED)
 
     def create_address_frame(self):
         """
         the function creates the address
         frame for the gui
         """
-        self.address_frame = tk.Frame(self.top)
+        self.address_frame = Tk.Frame(self.top)
         self.address_frame.place(relx=0.625,
                                  rely=0.533,
                                  relheight=0.467,
@@ -280,7 +284,7 @@ class WalletMainWindow:
         self.address_frame.configure(highlightcolor="black")
         self.address_frame.configure(width=125)
 
-        self.address_label = tk.Label(self.address_frame)
+        self.address_label = Tk.Label(self.address_frame)
         self.address_label.place(relx=0.0,
                                  rely=0.0,
                                  height=40,
@@ -297,7 +301,7 @@ class WalletMainWindow:
         self.address_label.configure(highlightcolor="black")
         self.address_label.configure(text='''Your Address''')
 
-        self.address_text = tk.Text(self.address_frame)
+        self.address_text = Tk.Text(self.address_frame)
         self.address_text.place(relx=0.0,
                                 rely=0.19,
                                 relheight=0.238,
@@ -314,13 +318,14 @@ class WalletMainWindow:
         self.address_text.configure(selectforeground="black")
         self.address_text.configure(width=10)
         self.address_text.configure(wrap="word")
+        self.show_address()
 
     def pressed_send(self):
         """
         the function handles the press on
         the send button
         """
-        self.next_win[0] = self.win_dict['send']
+        self.win_dict[NEXT_KEY] = self.win_dict[SEND_KEY]
         self.top.destroy()
 
     def pressed_mining(self):
@@ -328,6 +333,7 @@ class WalletMainWindow:
         the function handles the press
         on the mining button
         """
+        self.win_dict[NEXT_KEY] = self.win_dict[MINE_KEY]
         self.top.destroy()
 
     def show_current_balance(self):
@@ -335,43 +341,65 @@ class WalletMainWindow:
         the function shows the current balance
         on the window
         """
-        self.balance_text.configure(state=tk.NORMAL)
-        self.balance_text.delete(1.0, tk.END)
-        self.balance_text.insert(tk.END, str(self.wallet.balance)+' LPC')
-        self.balance_text.configure(state=tk.DISABLED)
-        self.top.after(500, self.show_current_balance)
+        self.balance_text.configure(state=Tk.NORMAL)
+        self.balance_text.delete(1.0, Tk.END)
+        self.balance_text.insert(Tk.END, str(self.wallet.get_balance())+' LPC')
+        self.balance_text.configure(state=Tk.DISABLED)
 
     def show_last_transactions(self):
         """
         the function shows the last transactions
         on the window
         """
-        self.last_text.configure(state=tk.NORMAL)
-        self.last_text.delete(1.0, tk.END)
+        self.wallet.update_transactions()
         s = ''
         if len(self.wallet.transactions) != 0:
             count = 0
             for transaction in self.wallet.transactions[::-1]:
-                if count == 5:
+                if count == MAX_TRANSACTIONS:
                     break
-                if transaction.inputs[0].proof[1] == self.wallet.public_key:
-                    # the wallet paid
-                    for output in transaction.outputs:
-                        if count == 5:
-                            break
-                        count += 1
-                        s += '-'+str(output.value)+' LPC\n' \
-                             'From you\n' \
-                             'To: '+output.address
+                output = transaction.outputs[0]
+
+                # check if coin base transaction
+                if transaction.inputs[0].proof[1] == '':
+                    s += '+' \
+                         + str(output.value) \
+                         + ' LPC' \
+                         + LINE_DOWN \
+                         + 'By mining' \
+                         + LINE_DOWN * 2
+
+                # check if the wallet got paid
+                elif output.address == self.wallet.address:
+                    sender = self.wallet.find_address(
+                        transaction.inputs[0].proof[1])
+                    count += 1
+                    s += '+' \
+                         + str(output.value) \
+                         + ' LPC' \
+                         + LINE_DOWN \
+                         + 'From: ' \
+                         + sender + LINE_DOWN * 2
+
                 else:
-                    # the wallet got paid
-                    for output in transaction.outputs:
-                        if count == 5:
-                            break
-                        count += 1
-                        s += '+'+str(output.value)+' LPC\n' \
-                                                   'From ' \
-                                                   ''+output.address
-        self.balance_text.insert(tk.END, s)
-        self.balance_text.configure(state=tk.DISABLED)
-        self.top.after(500, self.show_last_transactions)
+                    # the wallet paid
+                    # the first output is the payment
+                    # if there is another then it is the change
+                    count += 1
+                    s += '-'\
+                         + str(output.value)\
+                         + ' LPC'\
+                         + LINE_DOWN\
+                         + 'To: '+output.address+LINE_DOWN*2
+        self.last_text.configure(state=Tk.NORMAL)
+        self.last_text.delete(1.0, Tk.END)
+        self.last_text.insert(Tk.END, s)
+        self.last_text.configure(state=Tk.DISABLED)
+
+    def show_address(self):
+        """
+        the function shows the last transactions
+        on the window
+        """
+        self.address_text.insert(Tk.END, self.wallet.address)
+        self.address_text.configure(state=Tk.DISABLED)
