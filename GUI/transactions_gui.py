@@ -2,20 +2,22 @@
 
 import Tkinter as Tk
 import ScrolledText
+from PIL import ImageTk
 from global_graphic import *
 
 
-class TransactionsWindow:
+PIC_PATH = 'leprechaun_transactions.png'
+
+
+class TransactionsWindow(GuiWindow):
     def __init__(self, top, win_dict, wallet):
         """
         constructor
         """
-        self.win_dict = win_dict
-        self.wallet
-        set_window_geometry(top)
+        super(TransactionsWindow, self).__init__(top,
+                                                 win_dict,
+                                                 wallet)
         top.title("Transactions Window")
-        top.configure(background="#d9d9d9")
-        self.top = top
 
         self.buttons_frame = None
         self.leprecoin_label = None
@@ -70,6 +72,7 @@ class TransactionsWindow:
         self.back_button.configure(highlightcolor="black")
         self.back_button.configure(pady="0")
         self.back_button.configure(text='''Back''')
+        self.back_button.configure(command=self.pressed_back)
 
     def create_transactions_frame(self):
         """
@@ -104,8 +107,12 @@ class TransactionsWindow:
         self.transactions_text.configure(selectforeground="black")
         self.transactions_text.configure(width=10)
         self.transactions_text.configure(wrap="none")
+        self.show_transactions()
 
-        self.pic_label = Tk.Label(self.transactions_frame)
+        pic = ImageTk.PhotoImage(file=PIC_PATH)
+        self.pic_label = Tk.Label(self.transactions_frame,
+                                  image=pic)
+        self.pic_label.image = pic
         self.pic_label.place(relx=0.713,
                              rely=0.119,
                              height=294,
@@ -114,6 +121,28 @@ class TransactionsWindow:
         self.pic_label.configure(disabledforeground="#a3a3a3")
         self.pic_label.configure(foreground="#000000")
 
+    def pressed_back(self):
+        """
+        the function handles the press
+        on the back button
+        """
+        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
+        self.top.destroy()
+
+    def show_transactions(self):
+        """
+        the function shows the transactions
+        on the window
+        """
+        self.wallet.update_transactions()
+        s = ''
+        if len(self.wallet.transactions) != 0:
+            for transaction in self.wallet.transactions[::-1]:
+                s += self.transaction_to_string(transaction)
+        self.transactions_text.configure(state=Tk.NORMAL)
+        self.transactions_text.delete(1.0, Tk.END)
+        self.transactions_text.insert(Tk.END, s)
+        self.transactions_text.configure(state=Tk.DISABLED)
 
 
 

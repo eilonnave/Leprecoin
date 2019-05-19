@@ -7,20 +7,15 @@ ADDRESS_LENGTH = 40
 HEX_DIGEST = '0123456789abcdef'
 
 
-class SendWindow:
+class SendWindow(GuiWindow):
     def __init__(self, top, win_dict, wallet):
         """
         constructor
         """
-        self.win_dict = win_dict
-        self.win_dict[NEXT_KEY] = None
-        self.wallet = wallet
-
-        # configure the top level screen
-        # set_window_geometry(top)
+        super(SendWindow, self).__init__(top,
+                                         win_dict,
+                                         wallet)
         top.title("Send Window")
-        top.configure(background="#d9d9d9")
-        top.resizable(False, False)
         self.top = top
 
         self.send_frame = None

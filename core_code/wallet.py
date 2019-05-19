@@ -188,20 +188,18 @@ class Wallet(CryptoSet):
         the function updates the list of the wallet
         transactions
         """
+        self.block_chain_db.update_chain()
+        self.transactions = []
         for block in self.block_chain_db.chain:
             for transaction in block.transactions:
-                if transaction in self.transactions:
-                    break
                 output = transaction.outputs[0]
                 if output.address == self.address:
                     self.transactions.append(transaction)
-                    break
                 # check if the transaction is not coin base
                 if transaction.inputs[0].proof[1] is not '':
                     if self.equals_public_keys(
                             transaction.inputs[0].proof[1]):
                         self.transactions.append(transaction)
-                        break
 
     @staticmethod
     def find_address(public_key):

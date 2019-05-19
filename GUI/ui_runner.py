@@ -4,6 +4,7 @@ from global_graphic import *
 from SendGui import SendWindow
 from WalletGui import WalletMainWindow
 from MiningGui import MiningWindow
+from transactions_gui import TransactionsWindow
 from core_code.wallet import Wallet
 from Crypto.PublicKey import RSA
 from core_code.logger import Logging
@@ -22,7 +23,8 @@ class UiRunner:
         self.win_dict = {NEXT_KEY: None,
                          MAIN_KEY: WalletMainWindow,
                          SEND_KEY: SendWindow,
-                         MINE_KEY: MiningWindow}
+                         MINE_KEY: MiningWindow,
+                         TRANSACTIONS_KEY: TransactionsWindow}
         self.wallet = Wallet(private_key, self.block_chain_db, self.logger)
         self.wallet.update_transactions()
         self.wallet.update_balance()

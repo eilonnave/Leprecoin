@@ -10,23 +10,16 @@ from global_graphic import *
 PIC_PATH = 'Leprechaun_with_Beer_PNG_Clipart.png'
 
 
-class MiningWindow:
+class MiningWindow(GuiWindow):
     def __init__(self, top, win_dict, wallet):
         """
         constructor
         """
-        # configure the top level screen
-        # set_window_geometry(top)
-        top.title("Mining Window")
-        top.configure(background="#d9d9d9")
-        top.configure(highlightbackground="#d9d9d9")
-        top.configure(highlightcolor="black")
-        top.resizable(False, False)
-        self.top = top
-        self.top.after(500, self.execute_mining)
-        self.win_dict = win_dict
-        self.win_dict[NEXT_KEY] = None
-        self.wallet = wallet
+        super(MiningWindow, self).__init__(top,
+                                           win_dict,
+                                           wallet)
+        self.top.title("Mining Window")
+        self.finished = False
 
         self.buttons_frame = None
         self.leprecoin_label = None
@@ -39,6 +32,7 @@ class MiningWindow:
         self.success_label = None
         self.fail_label = None
         self.create_mining_frame()
+        self.top.after(1000, self.execute_mining)
 
     def create_buttons_frame(self):
         """
@@ -153,7 +147,7 @@ class MiningWindow:
         the function handles the press
         on the send button
         """
-        self.win_dict[NEXT_KEY] = MAIN_KEY
+        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
         self.top.destroy()
 
     def execute_mining(self):
@@ -162,12 +156,10 @@ class MiningWindow:
         """
         miner = Miner(self.wallet)
         miner.mine()
+        self.finished = True
         self.mining_label.destroy()
         self.success_label.place(relx=0.156,
                                  rely=0.286,
                                  height=164,
                                  width=250)
         self.top.update()
-        time.sleep(4)
-        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
-        self.top.destroy()

@@ -48,7 +48,7 @@ class GuiWindow(object):
         output = transaction.outputs[0]
 
         # check if coin base transaction
-        if transaction.inputs[0].proof[1] == '':
+        if transaction.inputs[0].proof[1] is '':
             s += '+' \
                  + str(output.value) \
                  + ' LPC' \

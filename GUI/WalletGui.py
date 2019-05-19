@@ -9,7 +9,7 @@ class WalletMainWindow(GuiWindow):
         """
         constructor
         """
-        super(self, WalletMainWindow).__init__(top,
+        super(WalletMainWindow, self).__init__(top,
                                                win_dict,
                                                wallet)
         self.top.title("Wallet Main Window")
@@ -147,6 +147,7 @@ class WalletMainWindow(GuiWindow):
         self.transactions_button.configure(highlightcolor="black")
         self.transactions_button.configure(pady="0")
         self.transactions_button.configure(text='''Transactions''')
+        self.transactions_button.configure(command=self.pressed_transactions)
 
     def create_last_transactions_frame(self):
         """
