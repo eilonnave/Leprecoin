@@ -1,11 +1,10 @@
 #  -*- coding: utf-8 -*-
 import Tkinter as Tk
+from global_graphic import *
+
+
 ADDRESS_LENGTH = 40
-WIN_WIDTH = 800
-WIN_HEIGHT = 450
 HEX_DIGEST = '0123456789abcdef'
-NEXT_KEY = 'next'
-MAIN_KEY = 'main'
 
 
 class SendWindow:
@@ -18,9 +17,7 @@ class SendWindow:
         self.wallet = wallet
 
         # configure the top level screen
-        x = str(int(top.winfo_screenwidth() / 2) - int(WIN_WIDTH / 2))
-        y = str(int(top.winfo_screenheight() / 2) - int(WIN_HEIGHT / 2))
-        top.geometry(str(WIN_WIDTH) + "x" + str(WIN_HEIGHT) + "+" + x + "+" + y)
+        # set_window_geometry(top)
         top.title("Send Window")
         top.configure(background="#d9d9d9")
         top.resizable(False, False)
@@ -197,7 +194,8 @@ class SendWindow:
             legal = False
         else:
             amount = int(amount)
-        self.wallet.create_transaction(amount, address)
+        if legal:
+            self.wallet.create_transaction(amount, address)
 
 
 

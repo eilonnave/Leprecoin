@@ -1,34 +1,18 @@
 # - * - coding: utf - 8 -
+from global_graphic import *
 import Tkinter as Tk
 MAX_TRANSACTIONS = 4
-WIN_WIDTH = 800
-WIN_HEIGHT = 450
-LINE_DOWN = '\n'
-NEXT_KEY = 'next'
-MAIN_KEY = 'main'
-SEND_KEY = 'send'
-MINE_KEY = 'mine'
 
 
-class WalletMainWindow:
+class WalletMainWindow(GuiWindow):
     def __init__(self, top, win_dict, wallet):
         """
         constructor
         """
-        self.win_dict = win_dict
-        self.win_dict[NEXT_KEY] = None
-        self.wallet = wallet
-
-        # configure the top level screen
-        x = str(int(top.winfo_screenwidth()/2)-int(WIN_WIDTH/2))
-        y = str(int(top.winfo_screenheight()/2)-int(WIN_HEIGHT/2))
-        top.geometry(str(WIN_WIDTH)+"x"+str(WIN_HEIGHT)+"+"+x+"+"+y)
-        top.title("Wallet Main Window")
-        top.configure(background="#d9d9d9")
-        top.configure(highlightbackground="#d9d9d9")
-        top.configure(highlightcolor="black")
-        top.resizable(False, False)
-        self.top = top
+        super(self, WalletMainWindow).__init__(top,
+                                               win_dict,
+                                               wallet)
+        self.top.title("Wallet Main Window")
 
         self.buttons_frame = None
         self.send_button = None
@@ -336,6 +320,14 @@ class WalletMainWindow:
         self.win_dict[NEXT_KEY] = self.win_dict[MINE_KEY]
         self.top.destroy()
 
+    def pressed_transactions(self):
+        """
+        the function handles the press
+        on the mining button
+        """
+        self.win_dict[NEXT_KEY] = self.win_dict[TRANSACTIONS_KEY]
+        self.top.destroy()
+
     def show_current_balance(self):
         """
         the function shows the current balance
@@ -358,39 +350,8 @@ class WalletMainWindow:
             for transaction in self.wallet.transactions[::-1]:
                 if count == MAX_TRANSACTIONS:
                     break
-                output = transaction.outputs[0]
-
-                # check if coin base transaction
-                if transaction.inputs[0].proof[1] == '':
-                    s += '+' \
-                         + str(output.value) \
-                         + ' LPC' \
-                         + LINE_DOWN \
-                         + 'By mining' \
-                         + LINE_DOWN * 2
-
-                # check if the wallet got paid
-                elif output.address == self.wallet.address:
-                    sender = self.wallet.find_address(
-                        transaction.inputs[0].proof[1])
-                    count += 1
-                    s += '+' \
-                         + str(output.value) \
-                         + ' LPC' \
-                         + LINE_DOWN \
-                         + 'From: ' \
-                         + sender + LINE_DOWN * 2
-
-                else:
-                    # the wallet paid
-                    # the first output is the payment
-                    # if there is another then it is the change
-                    count += 1
-                    s += '-'\
-                         + str(output.value)\
-                         + ' LPC'\
-                         + LINE_DOWN\
-                         + 'To: '+output.address+LINE_DOWN*2
+                s += self.transaction_to_string(transaction)
+                count += 1
         self.last_text.configure(state=Tk.NORMAL)
         self.last_text.delete(1.0, Tk.END)
         self.last_text.insert(Tk.END, s)

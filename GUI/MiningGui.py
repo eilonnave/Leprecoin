@@ -4,13 +4,10 @@ from PIL import ImageTk
 from core_code.blockchain import REWORD
 from core_code.miner import Miner
 import time
+from global_graphic import *
 
 
 PIC_PATH = 'Leprechaun_with_Beer_PNG_Clipart.png'
-NEXT_KEY = 'next'
-MAIN_KEY = 'main'
-WIN_WIDTH = 800
-WIN_HEIGHT = 450
 
 
 class MiningWindow:
@@ -19,9 +16,7 @@ class MiningWindow:
         constructor
         """
         # configure the top level screen
-        x = str(int(top.winfo_screenwidth() / 2) - int(WIN_WIDTH / 2))
-        y = str(int(top.winfo_screenheight() / 2) - int(WIN_HEIGHT / 2))
-        top.geometry(str(WIN_WIDTH) + "x" + str(WIN_HEIGHT) + "+" + x + "+" + y)
+        # set_window_geometry(top)
         top.title("Mining Window")
         top.configure(background="#d9d9d9")
         top.configure(highlightbackground="#d9d9d9")
@@ -43,7 +38,6 @@ class MiningWindow:
         self.leprechaun_label = None
         self.success_label = None
         self.fail_label = None
-        self.text_var = None
         self.create_mining_frame()
 
     def create_buttons_frame(self):
@@ -113,16 +107,17 @@ class MiningWindow:
         self.mining_frame.configure(background="dark slate gray")
         self.mining_frame.configure(width=125)
 
-        self.text_var = Tk.StringVar()
-        self.text_var.set('''Mining is \nunder progress''')
         self.mining_label = Tk.Label(self.mining_frame)
-        self.mining_label.place(relx=0.156, rely=0.286, height=164, width=200)
+        self.mining_label.place(relx=0.156,
+                                rely=0.286,
+                                height=164,
+                                width=200)
         self.mining_label.configure(background="#2f4f4f")
         self.mining_label.configure(disabledforeground="#a3a3a3")
         self.mining_label.configure(
             font="-family {Lucida Calligraphy} -size 18")
         self.mining_label.configure(foreground="Gold")
-        self.mining_label.configure(textvariable=self.text_var)
+        self.mining_label.configure(text='''Mining is \nunder progress''')
 
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.leprechaun_label = Tk.Label(self.mining_frame, image=pic)
@@ -134,6 +129,24 @@ class MiningWindow:
                                     rely=0.286,
                                     height=164,
                                     width=200)
+
+        self.success_label = Tk.Label(self.mining_frame)
+        self.success_label.configure(background="#2f4f4f")
+        self.success_label.configure(disabledforeground="#a3a3a3")
+        self.success_label.configure(
+            font="-family {Lucida Calligraphy} -size 18")
+        self.success_label.configure(foreground="Gold")
+        self.success_label.configure(
+            text='success in mining\nreward: \n'+str(REWORD)+' LPC')
+
+        self.fail_label = Tk.Label(self.mining_frame)
+        self.fail_label.configure(background="#2f4f4f")
+        self.fail_label.configure(disabledforeground="#a3a3a3")
+        self.fail_label.configure(
+            font="-family {Lucida Calligraphy} -size 18")
+        self.fail_label.configure(foreground="Gold")
+        self.fail_label.configure(
+            text='failed mining')
 
     def pressed_cancel(self):
         """
@@ -149,7 +162,12 @@ class MiningWindow:
         """
         miner = Miner(self.wallet)
         miner.mine()
-        self.text_var.set('m123')
-        time.sleep(3)
+        self.mining_label.destroy()
+        self.success_label.place(relx=0.156,
+                                 rely=0.286,
+                                 height=164,
+                                 width=250)
+        self.top.update()
+        time.sleep(4)
         self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
         self.top.destroy()
