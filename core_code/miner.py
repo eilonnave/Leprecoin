@@ -11,4 +11,5 @@ class Miner:
         mines new block in the
         block chain
         """
-        self.wallet.block_chain_db.add_new_block_to_db(self.wallet.address)
+        self.wallet.block_chain_db.\
+            add_new_block_to_db(self.wallet.address)

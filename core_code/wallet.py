@@ -86,15 +86,6 @@ class Wallet(CryptoSet):
             balance += unspent_output.output.value
         self.balance = balance
 
-    def get_balance(self):
-        """
-        the function updates the balance
-        and returns it
-        :returns: the updated balance
-        """
-        self.update_balance()
-        return self.balance
-
     def update_unspent_outputs(self):
         """
         the function finds all the unspent
@@ -131,9 +122,6 @@ class Wallet(CryptoSet):
         :returns: true if there is enough money to the
         transaction and false otherwise
         """
-        # updates the balance
-        self.update_balance()
-
         # checks weather there is enough money
         # to the transaction
         if amount > self.balance:
@@ -188,7 +176,6 @@ class Wallet(CryptoSet):
         the function updates the list of the wallet
         transactions
         """
-        self.block_chain_db.update_chain()
         self.transactions = []
         for block in self.block_chain_db.chain:
             for transaction in block.transactions:

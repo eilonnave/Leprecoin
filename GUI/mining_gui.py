@@ -3,11 +3,10 @@ import Tkinter as Tk
 from PIL import ImageTk
 from core_code.blockchain import REWORD
 from core_code.miner import Miner
-import time
 from global_graphic import *
 
 
-PIC_PATH = 'Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_PATH = 'pics/Leprechaun_with_Beer_PNG_Clipart.png'
 
 
 class MiningWindow(GuiWindow):
@@ -162,4 +161,18 @@ class MiningWindow(GuiWindow):
                                  rely=0.286,
                                  height=164,
                                  width=250)
+        self.cancel_button.configure(text='Back')
+        self.top.update()
+
+    def failed_mining(self):
+        """
+        the function handles the fact
+        that a miner won the user
+        """
+        self.mining_label.destroy()
+        self.fail_label.place(relx=0.156,
+                              rely=0.286,
+                              height=164,
+                              width=250)
+        self.cancel_button.configure(text='Back')
         self.top.update()

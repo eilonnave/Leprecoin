@@ -235,7 +235,7 @@ class BlockChainDB(BlockChain):
     def add_new_block_to_db(self, miner_address):
         """
         the function mines the block and adds it to the block
-        chain database
+        chain database and to the chain
         :param miner_address: the miner address to reward
         """
         self.add_new_block(miner_address)

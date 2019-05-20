@@ -1,6 +1,9 @@
 # - * - coding: utf - 8 -
 from global_graphic import *
 import Tkinter as Tk
+from PIL import ImageTk
+
+PIC_PATH = 'pics/leprechaun-pot-of-gold.png'
 MAX_TRANSACTIONS = 4
 
 
@@ -16,7 +19,6 @@ class WalletMainWindow(GuiWindow):
 
         self.buttons_frame = None
         self.send_button = None
-        self.request_button = None
         self.leprecoin_label = None
         self.mining_button = None
         self.transactions_button = None
@@ -30,6 +32,7 @@ class WalletMainWindow(GuiWindow):
         self.balance_frame = None
         self.balance_label = None
         self.balance_text = None
+        self.pot_label = None
         self.create_balance_frame()
 
         self.address_frame = None
@@ -59,7 +62,7 @@ class WalletMainWindow(GuiWindow):
 
         # create the send button
         self.send_button = Tk.Button(self.buttons_frame)
-        self.send_button.place(relx=0.731,
+        self.send_button.place(relx=0.875,
                                rely=0.0,
                                height=30,
                                width=100)
@@ -75,24 +78,6 @@ class WalletMainWindow(GuiWindow):
         self.send_button.configure(pady="0")
         self.send_button.configure(text='''Send coins''')
         self.send_button.configure(command=self.pressed_send)
-
-        # creates the request button
-        self.request_button = Tk.Button(self.buttons_frame)
-        self.request_button.place(relx=0.875,
-                                  rely=0.0,
-                                  height=30,
-                                  width=100)
-        self.request_button.configure(activebackground="#ececec")
-        self.request_button.configure(activeforeground="#000000")
-        self.request_button.configure(background="Gold")
-        self.request_button.configure(disabledforeground="#a3a3a3")
-        self.request_button.configure(
-            font="-family {Calisto MT} -size 12 -slant italic")
-        self.request_button.configure(foreground="#000000")
-        self.request_button.configure(highlightbackground="#d9d9d9")
-        self.request_button.configure(highlightcolor="black")
-        self.request_button.configure(pady="0")
-        self.request_button.configure(text='''Request coins''')
 
         # creates the leprecoin label
         self.leprecoin_label = Tk.Label(self.buttons_frame)
@@ -113,7 +98,7 @@ class WalletMainWindow(GuiWindow):
 
         # creates the mining button
         self.mining_button = Tk.Button(self.buttons_frame)
-        self.mining_button.place(relx=0.588,
+        self.mining_button.place(relx=0.75,
                                  rely=0.0,
                                  height=30,
                                  width=100)
@@ -132,7 +117,7 @@ class WalletMainWindow(GuiWindow):
 
         # create the transactions button
         self.transactions_button = Tk.Button(self.buttons_frame)
-        self.transactions_button.place(relx=0.444,
+        self.transactions_button.place(relx=0.625,
                                        rely=0.0,
                                        height=30,
                                        width=100)
@@ -252,6 +237,14 @@ class WalletMainWindow(GuiWindow):
         self.balance_text.configure(wrap="word")
         self.balance_text.configure(state=Tk.DISABLED)
 
+        pic = ImageTk.PhotoImage(file=PIC_PATH)
+        self.pot_label = Tk.Label(self.balance_frame, image=pic)
+        self.pot_label.image = pic
+        self.pot_label.place(relx=0.3,
+                             rely=0.524,
+                             height=80,
+                             width=80)
+
     def create_address_frame(self):
         """
         the function creates the address
@@ -289,7 +282,7 @@ class WalletMainWindow(GuiWindow):
         self.address_text = Tk.Text(self.address_frame)
         self.address_text.place(relx=0.0,
                                 rely=0.19,
-                                relheight=0.238,
+                                relheight=0.286,
                                 relwidth=0.9)
         self.address_text.configure(background="dark slate gray")
         self.address_text.configure(borderwidth="0")
@@ -336,7 +329,7 @@ class WalletMainWindow(GuiWindow):
         """
         self.balance_text.configure(state=Tk.NORMAL)
         self.balance_text.delete(1.0, Tk.END)
-        self.balance_text.insert(Tk.END, str(self.wallet.get_balance())+' LPC')
+        self.balance_text.insert(Tk.END, str(self.wallet.balance)+' LPC')
         self.balance_text.configure(state=Tk.DISABLED)
 
     def show_last_transactions(self):
@@ -344,7 +337,6 @@ class WalletMainWindow(GuiWindow):
         the function shows the last transactions
         on the window
         """
-        self.wallet.update_transactions()
         s = ''
         if len(self.wallet.transactions) != 0:
             count = 0

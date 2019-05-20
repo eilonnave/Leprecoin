@@ -1,9 +1,9 @@
 #  -*- coding: utf-8 -*-
 import Tkinter as Tk
 from global_graphic import *
-from SendGui import SendWindow
-from WalletGui import WalletMainWindow
-from MiningGui import MiningWindow
+from send_gui import SendWindow
+from wallet_main_gui import WalletMainWindow
+from mining_gui import MiningWindow
 from transactions_gui import TransactionsWindow
 from core_code.wallet import Wallet
 from Crypto.PublicKey import RSA

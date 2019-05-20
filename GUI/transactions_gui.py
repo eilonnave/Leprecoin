@@ -6,7 +6,7 @@ from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'leprechaun_transactions.png'
+PIC_PATH = 'pics/leprechaun_transactions.png'
 
 
 class TransactionsWindow(GuiWindow):
@@ -113,10 +113,10 @@ class TransactionsWindow(GuiWindow):
         self.pic_label = Tk.Label(self.transactions_frame,
                                   image=pic)
         self.pic_label.image = pic
-        self.pic_label.place(relx=0.713,
+        self.pic_label.place(relx=0.65,
                              rely=0.119,
                              height=294,
-                             width=198)
+                             width=217)
         self.pic_label.configure(background="#d9d9d9")
         self.pic_label.configure(disabledforeground="#a3a3a3")
         self.pic_label.configure(foreground="#000000")
@@ -134,7 +134,6 @@ class TransactionsWindow(GuiWindow):
         the function shows the transactions
         on the window
         """
-        self.wallet.update_transactions()
         s = ''
         if len(self.wallet.transactions) != 0:
             for transaction in self.wallet.transactions[::-1]:

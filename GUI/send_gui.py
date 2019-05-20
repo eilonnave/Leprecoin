@@ -71,7 +71,7 @@ class SendWindow(GuiWindow):
         self.amount_label.configure(text='''Amount''')
 
         self.send_entry = Tk.Entry(self.send_frame)
-        self.send_entry.place(relx=0.5,
+        self.send_entry.place(relx=0.438,
                               rely=0.244,
                               height=30,
                               relwidth=0.313)
@@ -83,7 +83,7 @@ class SendWindow(GuiWindow):
         self.send_entry.configure(insertbackground="black")
 
         self.amount_entry = Tk.Entry(self.send_frame)
-        self.amount_entry.place(relx=0.5,
+        self.amount_entry.place(relx=0.438,
                                 rely=0.444,
                                 height=30,
                                 relwidth=0.313)
