@@ -13,7 +13,7 @@ BLOCK_CHAIN_DB_FILE = 'block_chain.db'
 EXTRACT_ALL_QUERY = 'select * from '
 
 
-class Table:
+class Table(object):
     def __init__(self, connection, cursor, table_name, structure):
         """
         constructor
@@ -117,16 +117,16 @@ class BlockChainDB(BlockChain):
         block_number = block.number
         for transaction in block.transactions:
             self.transactions_table.insert(
-                transaction.serialize(block_number))
+                (transaction.transaction_id, block_number))
             transaction_number = transaction.transaction_id
             # insert the inputs
             for transaction_input in transaction.inputs:
                 self.inputs_table.insert(
-                    transaction_input.serialize(transaction_number))
+                    transaction_input.serialize()+(transaction_number,))
             # insert the outputs
             for transaction_output in transaction.outputs:
                 self.outputs_table.insert(
-                    transaction_output.serialize(transaction_number))
+                    transaction_output.serialize()+(transaction_number,))
         self.logger.info('The new block was inserted to the data base')
 
     def extract_block(self, line_index):

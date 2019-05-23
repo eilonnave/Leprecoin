@@ -2,7 +2,6 @@
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 import ast
-import json
 
 
 UN_SPENT_OUTPUTS_TABLE_NAME = 'utxo'
@@ -20,9 +19,12 @@ INPUT_STRUCTURE = '(transaction_id text, ' \
                   'output_index integer, ' \
                   'proof text, ' \
                   'transaction_number text)'
+TRANSACTION_ID_KEY = 'transaction'
+INPUTS_KEY = 'inputs'
+OUTPUTS_KEY = 'outputs'
 
 
-class Transaction:
+class Transaction(object):
     def __init__(self, inputs, outputs):
         """
         constructor
@@ -72,15 +74,6 @@ class Transaction:
 
         return transaction_hash
 
-    def serialize(self, block_number):
-        """
-        the function serializes the transaction
-        :param block_number: the block number which the
-        transaction belongs to
-        :returns: the serialized transaction
-        """
-        return self.transaction_id, block_number
-
     @classmethod
     def deserialize(cls, inputs, outputs):
         """
@@ -96,8 +89,27 @@ class Transaction:
         outputs = outputs
         return cls(inputs, outputs)
 
+    def __str__(self):
+        """
+        the functions returns a string
+        of the transaction in formation of
+        dictionary for packing the
+        transaction
+        :returns: string of the object
+        """
+        str_inputs = []
+        for tx_input in self.inputs:
+            str_inputs.append(tx_input.__str__())
+        str_outputs = []
+        for tx_output in self.outputs:
+            str_outputs.append(tx_output.__str__())
+        str_dict = {TRANSACTION_ID_KEY: self.transaction_id,
+                    INPUTS_KEY: str_inputs,
+                    OUTPUTS_KEY: str_outputs}
+        return str(str_dict)
 
-class Output:
+
+class Output(object):
     def __init__(self, value, address):
         """
         constructor
@@ -112,27 +124,23 @@ class Output:
         :returns: the hash code of the
         input
         """
-        return SHA256.new(self.to_string()).hexdigest()
+        return SHA256.new(self.__str__()).hexdigest()
 
-    def to_string(self):
+    def __str__(self):
         """
-        the function converts the outputs to a string
+        the function returns the string of the
+        output
         :returns: the output's string
         """
-        output_string = str(self.value)
-        output_string += self.address
-        return output_string
+        return str(self.serialize())
 
-    def serialize(self, transaction_number):
+    def serialize(self):
         """
         the function serializes the output
-        :param transaction_number: the transaction number which the
-        output belongs to
         :returns: the serialized output
         """
         return self.value, \
-            self.address, \
-            transaction_number
+            self.address
 
     @classmethod
     def deserialize(cls, serialized_output):
@@ -147,7 +155,7 @@ class Output:
         return cls(value, address)
 
 
-class Input:
+class Input(object):
     def __init__(self, transaction_id, output_index, proof):
         """
         constructor
@@ -164,24 +172,19 @@ class Input:
         :returns: the hash code of the
         input
         """
-        return SHA256.new(self.to_string()).hexdigest()
+        return SHA256.new(self.__str__()).hexdigest()
 
-    def to_string(self):
+    def __str__(self):
         """
-        the function converts the input to a string
+        the function returns the string of the
+        input
         :returns: the input's string
         """
-        input_string = self.transaction_id
-        input_string += str(self.output_index)
-        input_string += str(self.proof)
-        return input_string
+        return str(self.serialize())
 
-    def serialize(self, transaction_number):
+    def serialize(self):
         """
         the function serializes the input
-        :param transaction_number: the
-        transaction number which the
-        input belongs to
         :returns: the serialized input
         """
         proof = self.proof
@@ -190,8 +193,7 @@ class Input:
                      self.proof[1].exportKey()]
         return self.transaction_id, \
             self.output_index, \
-            str(proof),\
-            transaction_number
+            str(proof)
 
     @classmethod
     def deserialize(cls, serialized_input):
@@ -208,8 +210,17 @@ class Input:
             proof[1] = RSA.importKey(proof[1])
         return cls(transaction_id, output_index, proof)
 
+    def pack(self):
+        """
+        overrides the __str__ method
+        and returns packed input
+        :returns: string of the packed
+        input
+        """
+        pass
 
-class UnspentOutput:
+
+class UnspentOutput(object):
     def __init__(self, output, transaction_id, output_index):
         """
         constructor

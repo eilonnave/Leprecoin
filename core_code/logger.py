@@ -8,7 +8,7 @@ LOG_LEVEL = logging.DEBUG
 LOG_DIR = 'logs'
 
 
-class Logging():
+class Logging(object):
     def __init__(self, file_name):
         """
         constructor

@@ -11,9 +11,11 @@ BLOCK_STRUCTURE = '(number integer, ' \
                   'difficulty integer, ' \
                   'time_stamp integer)'
 BLOCKS_TABLE_NAME = 'blocks'
+BLOCK_KEY = 'block'
+TRANSACTIONS_KEY = 'transactions'
 
 
-class Block:
+class Block(object):
     def __init__(self,
                  number,
                  nonce,
@@ -43,16 +45,15 @@ class Block:
         time_stamp = time.time()
         return cls(number, nonce, prev, difficulty, transactions, time_stamp)
 
-    def to_string(self):
+    def __str__(self):
         """
         the function converts the block to a string for
         the hash function
         :returns: the block's string
         """
-        block_string = str(
-            self.number)+str(
-                self.nonce)+self.prev+str(
-                    self.difficulty)+self.hash_transactions()
+        # the hash function is not including
+        # the time_stamp
+        block_string = str(self.serialize()[:-1])+self.hash_transactions()
         return block_string
 
     def hash_block(self):
@@ -60,7 +61,7 @@ class Block:
         the function hashes the block data
         """
         self.hash_code = hashlib.sha256(
-            self.to_string().encode(
+            self.__str__().encode(
                 'utf-8')).hexdigest()
 
     def hash_transactions(self):
