@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import msgpack
 import ast
 from core_code.transaction import Transaction, \
@@ -54,8 +55,7 @@ class MessagesHandler:
         """
         if self.is_packed:
             self.message = msgpack.unpackb(self.message,
-                                           ext_hook=self.ext_hook,
-                                           raw=False)
+                                           ext_hook=self.ext_hook)
             self.is_packed = False
 
     @staticmethod
