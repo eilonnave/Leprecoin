@@ -13,8 +13,9 @@ LENGTH_SEPARATION_CHAR = '$'
 class NodeServer:
     """
     the server part of a node.
-    the server is used for replying
-    and receiving messages
+    the server is used for
+    messages from all the nodes that
+    send one
     """
     def __init__(self, logger):
         """
@@ -24,9 +25,10 @@ class NodeServer:
         self.server_socket = socket.socket(socket.AF_INET,
                                            socket.SOCK_STREAM)
         self.logger = logger
-        # the requests from the server
+        # the received messages
         # the node will handle them in another class
-        self.requests = []
+        self.received = []
+        self.to_close = False
         try:
             # binding and listening
             self.is_closed = False
@@ -35,11 +37,8 @@ class NodeServer:
             self.server_socket.listen(LISTEN_SIZE)
             # initialize the lists for
             # the usage of the server
-            self.messages_to_send = []
             self.open_clients_sockets = []
-            self.send_sockets = []
             self.readable = []
-            self.writable = []
             self.exceptional = []
         except socket.error as err:
             self.logger.error('Could not open node- ' + str(err))
@@ -50,15 +49,14 @@ class NodeServer:
         """
         the function runs the server
         """
-        while True:
-            self.readable, self.writable, self.exceptional = select.select(
+        while not self.to_close:
+            self.readable, [], self.exceptional = select.select(
                 [self.server_socket] +
                 self.open_clients_sockets,
-                self.send_sockets,
+                [],
                 self.open_clients_sockets)
             self.handle_exception_sockets()
             self.handle_read_sockets()
-            self.handle_write_sockets()
 
     def handle_exception_sockets(self):
         """
@@ -70,8 +68,6 @@ class NodeServer:
             self.disconnect_connection(current_socket)
             if current_socket in self.readable:
                 self.readable.remove(current_socket)
-            if current_socket in self.writable:
-                self.writable.remove(current_socket)
 
     def handle_read_sockets(self):
         """
@@ -89,28 +85,14 @@ class NodeServer:
             else:
                 try:
                     length = self.extract_pack_length(current_socket)
-                    if length == 0:
-                        self.disconnect_connection(current_socket)
-                    else:
-                        self.requests.append(
-                            (self.receive_message(length, current_socket),
-                             current_socket))
+                    if length != 0:
+                        self.received.append(
+                            self.receive_message(length, current_socket))
+                    self.disconnect_connection(current_socket)
+
                 except socket.error as err:
                     self.logger.error('received socket error ' + str(err))
                     self.disconnect_connection(current_socket)
-
-    def handle_write_sockets(self):
-        """
-        the function handles the socket which are ready
-        to write to
-        """
-        for current_socket in self.writable:
-            for message in self.messages_to_send:
-                if current_socket is message[0]:
-                    current_socket.send(message[1])
-                    self.messages_to_send.pop(self.messages_to_send.index(message))
-                    self.send_sockets.pop(
-                        self.send_sockets.index(message[0]))
 
     @staticmethod
     def extract_pack_length(client_socket):
@@ -149,29 +131,3 @@ class NodeServer:
         """
         client_socket.close()
         self.open_clients_sockets.remove(client_socket)
-        for message in self.messages_to_send:
-            if message[0] is client_socket:
-                self.messages_to_send.remove(message)
-        for current_socket in self.send_sockets:
-            if current_socket is client_socket:
-                self.send_sockets.remove(client_socket)
-
-    def add_message_to_send(self, client_socket, message):
-        """
-        the function adds the message and the client_socket
-        to the matching lists
-        :param client_socket: the client socket
-        :param message: message to send
-        """
-        self.send_sockets.append(client_socket)
-        # add the length description
-        # according to the protocol
-        message = \
-            str(len(message)) \
-            + LENGTH_SEPARATION_CHAR \
-            + message
-        self.messages_to_send.append((client_socket, message))
-
-
-s = NodeServer(Logging('123').logger)
-s.run()

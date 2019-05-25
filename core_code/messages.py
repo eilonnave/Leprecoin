@@ -16,6 +16,7 @@ ADDRESS_FROM_KEY = 'address_from'
 GET_BLOCKS_CODE = 2
 INV_CODE = 3
 DATA_TYPE_KEY = 'data_type'
+HASH_CODES_KEY = 'hash_codes'
 HASH_CODE_KEY = 'hash_code'
 GET_DATA_CODE = 4
 BLOCK_MESSAGE_CODE = 5
@@ -25,6 +26,9 @@ NONCE_KEY = 'nonce'
 PREV_KEY = 'prev'
 DIFFICULTY_KEY = 'difficulty'
 TIME_STAMP_KEY = 'time_stamp'
+GET_ADDRESSES_CODE = 7
+ADDRESSES_CODE = 8
+ADDRESSES_KEY = 'addresses'
 
 
 class Error(object):
@@ -88,6 +92,12 @@ class MessagesHandler:
         if code == TRANSACTION_MESSAGE_CODE:
             transaction_message = TransactionMessage.unpack(data)
             return transaction_message
+        if code == GET_ADDRESSES_CODE:
+            get_addresses_message = GetAddresses.unpack(data)
+            return get_addresses_message
+        if code == ADDRESSES_CODE:
+            addresses_message = AddressesMessage.unpack(data)
+            return addresses_message
         return Error('Wrong code is inserted')
 
     def pack(self):
@@ -98,10 +108,22 @@ class MessagesHandler:
             self.message = self.message.pack()
             self.is_packed = True
 
+    def change_message(self, message, is_packed):
+        """
+        the function changes the message
+        that the message handler has
+        :param message: the new message
+        :param is_packed: whether the message is packed
+        or not
+        """
+        self.message = message
+        self.is_packed = is_packed
+
 
 class Message(object):
-    def __init__(self, code):
+    def __init__(self, code, address_from):
         self.code = code
+        self.address_from = address_from
 
     def pack(self):
         """
@@ -122,6 +144,71 @@ class Message(object):
         return str(self.__dict__)
 
 
+class GetAddresses(Message):
+    """
+    The meaning of get blocks message is
+    to ask "show me what addresses you have"
+    """
+    def __init__(self, address_from):
+        """
+        constructor
+        """
+        super(GetAddresses, self).__init__(GET_ADDRESSES_CODE, address_from)
+
+    @classmethod
+    def unpack(cls, data):
+        """
+        the function unpacks
+        the packed get addresses
+        :param data: the packed data
+        :returns: the unpacked get addresses
+        object
+        """
+        try:
+            data = ast.literal_eval(data)
+            try:
+                address_from = data[ADDRESS_FROM_KEY]
+                return cls(address_from)
+            except KeyError as error:
+                return Error(error)
+        except ValueError as error:
+            return Error(error)
+
+
+class AddressesMessage(Message):
+    """
+    Transfer the known addresses
+    """
+    def __init__(self, address_from, addresses):
+        """
+        constructor
+        """
+        self.addresses = addresses
+        super(AddressesMessage, self).__init__(ADDRESSES_CODE,
+                                               address_from)
+
+    @classmethod
+    def unpack(cls, data):
+        """
+        the function unpacks
+        the packed addresses message
+        :param data: the packed data
+        :returns: the unpacked get message
+        object
+        """
+        try:
+            data = ast.literal_eval(data)
+            try:
+                address_from = data[ADDRESS_FROM_KEY]
+                addresses = data[ADDRESSES_KEY]
+                return cls(address_from,
+                           addresses)
+            except KeyError as error:
+                return Error(error)
+        except ValueError as error:
+            return Error(error)
+
+
 class Version(Message):
     """
     The purpose of version message is
@@ -134,8 +221,7 @@ class Version(Message):
         constructor
         """
         self.best_height = best_height
-        self.address_from = address_from
-        super(Version, self).__init__(VERSION_CODE)
+        super(Version, self).__init__(VERSION_CODE, address_from)
 
     @classmethod
     def unpack(cls, data):
@@ -163,12 +249,13 @@ class GetBlocks(Message):
     The meaning of get blocks message is
     to ask "show me what blocks you have"
     """
-    def __init__(self, address_from):
+    def __init__(self, address_from, hash_code):
         """
         constructor
         """
-        self.address_from = address_from
-        super(GetBlocks, self).__init__(GET_BLOCKS_CODE)
+        super(GetBlocks, self).__init__(GET_BLOCKS_CODE, address_from)
+        # hash code of the node's latest block
+        self.hash_code = hash_code
 
     @classmethod
     def unpack(cls, data):
@@ -183,7 +270,8 @@ class GetBlocks(Message):
             data = ast.literal_eval(data)
             try:
                 address_from = data[ADDRESS_FROM_KEY]
-                return cls(address_from)
+                hash_code = data[HASH_CODE_KEY]
+                return cls(address_from, hash_code)
             except KeyError as error:
                 return Error(error)
         except ValueError as error:
@@ -196,14 +284,13 @@ class Inv(Message):
     show other nodes what blocks or
     transactions current node has
     """
-    def __init__(self, address_from, data_type, hash_code):
+    def __init__(self, address_from, data_type, hash_codes):
         """
         constructor
         """
-        self.address_from = address_from
         self.data_type = data_type
-        self.hash_code = hash_code
-        super(Inv, self).__init__(INV_CODE)
+        self.hash_codes = hash_codes
+        super(Inv, self).__init__(INV_CODE, address_from)
 
     @classmethod
     def unpack(cls, data):
@@ -219,10 +306,10 @@ class Inv(Message):
             try:
                 address_from = data[ADDRESS_FROM_KEY]
                 data_type = data[DATA_TYPE_KEY]
-                hash_code = data[HASH_CODE_KEY]
+                hash_codes = data[HASH_CODES_KEY]
                 return cls(address_from,
                            data_type,
-                           hash_code)
+                           hash_codes)
             except KeyError as error:
                 return Error(error)
         except ValueError as error:
@@ -238,10 +325,10 @@ class GetData(Message):
         """
         constructor
         """
-        self.address_from = address_from
         self.data_type = data_type
         self.hash_code = hash_code
-        super(GetData, self).__init__(GET_DATA_CODE)
+        super(GetData, self).__init__(GET_DATA_CODE,
+                                      address_from)
 
     @classmethod
     def unpack(cls, data):
@@ -275,9 +362,9 @@ class BlockMessage(Message):
         """
         constructor
         """
-        self.address_from = address_from
         self.block = block
-        super(BlockMessage, self).__init__(BLOCK_MESSAGE_CODE)
+        super(BlockMessage, self).__init__(BLOCK_MESSAGE_CODE,
+                                           address_from)
 
     @classmethod
     def unpack(cls, data):
@@ -285,7 +372,7 @@ class BlockMessage(Message):
         the function unpacks
         the packed block message
         :param data: the packed data
-        :returns: the unpacked get data
+        :returns: the unpacked block message
         object
         """
         try:
@@ -342,10 +429,10 @@ class TransactionMessage(Message):
         """
         constructor
         """
-        self.address_from = address_from
         self.transaction = transaction
         super(TransactionMessage, self).__init__(
-            TRANSACTION_MESSAGE_CODE)
+            TRANSACTION_MESSAGE_CODE,
+            address_from)
 
     @classmethod
     def unpack(cls, data):
@@ -353,8 +440,8 @@ class TransactionMessage(Message):
         the function unpacks
         the packed transaction message
         :param data: the packed data
-        :returns: the unpacked get data
-        object
+        :returns: the unpacked transaction
+        message object
         """
         try:
             data = ast.literal_eval(data)
@@ -403,7 +490,7 @@ if __name__ == '__main__':
     assert msg_handler.message.address_from \
         == v.address_from
 
-    g = GetBlocks('2')
+    g = GetBlocks('2', '123')
     msg_handler = MessagesHandler(g, False)
     msg_handler.pack()
     assert type(msg_handler.message) is str
@@ -411,8 +498,10 @@ if __name__ == '__main__':
     assert type(msg_handler.message) is GetBlocks
     assert msg_handler.message.address_from \
         == g.address_from
+    assert msg_handler.message.hash_code == \
+        g.hash_code
 
-    i = Inv('1', 'transaction', '1')
+    i = Inv('1', 'transaction', ['1', '12'])
     msg_handler = MessagesHandler(i, False)
     msg_handler.pack()
     assert type(msg_handler.message) is str
@@ -422,8 +511,8 @@ if __name__ == '__main__':
         == i.address_from
     assert msg_handler.message.data_type \
         == i.data_type
-    assert msg_handler.message.hash_code \
-        == i.hash_code
+    assert msg_handler.message.hash_codes \
+        == i.hash_codes
 
     g = GetData('1', 'transaction', '1')
     msg_handler = MessagesHandler(g, False)
@@ -457,6 +546,26 @@ if __name__ == '__main__':
     assert type(msg_handler.message) is BlockMessage
     assert msg_handler.message.address_from \
         == b.address_from
+
+    g = GetAddresses('123')
+    msg_handler = MessagesHandler(g, False)
+    msg_handler.pack()
+    assert type(msg_handler.message) is str
+    msg_handler.unpack_message()
+    assert type(msg_handler.message) is GetAddresses
+    assert msg_handler.message.address_from \
+        == g.address_from
+
+    a = AddressesMessage('123', ['123', '12', '1234'])
+    msg_handler = MessagesHandler(a, False)
+    msg_handler.pack()
+    assert type(msg_handler.message) is str
+    msg_handler.unpack_message()
+    assert type(msg_handler.message) is AddressesMessage
+    assert msg_handler.message.address_from \
+        == a.address_from
+    assert msg_handler.message.addresses \
+        == a.addresses
 
 
 
