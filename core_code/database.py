@@ -248,3 +248,15 @@ class BlockChainDB(BlockChain):
         base
         """
         self.chain = self.extract_chain()
+
+    def add_downloaded_blocks(self, blocks):
+        """
+        the function adds the given blocks
+        to the chain. the blocks are valid
+        and were downloaded from other
+        nodes.
+        :param blocks: the blocks to add
+        """
+        for block in blocks:
+            self.chain.append(block)
+            self.insert_block(block)

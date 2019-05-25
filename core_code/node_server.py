@@ -27,7 +27,7 @@ class NodeServer:
         self.logger = logger
         # the received messages
         # the node will handle them in another class
-        self.received = []
+        self.received_messages = []
         self.to_close = False
         try:
             # binding and listening
@@ -86,7 +86,7 @@ class NodeServer:
                 try:
                     length = self.extract_pack_length(current_socket)
                     if length != 0:
-                        self.received.append(
+                        self.received_messages.append(
                             self.receive_message(length, current_socket))
                     self.disconnect_connection(current_socket)
 
@@ -131,3 +131,23 @@ class NodeServer:
         """
         client_socket.close()
         self.open_clients_sockets.remove(client_socket)
+
+    def get_received_messages(self):
+        """
+        the function returns all the messages
+        that the server received in a new list
+        :return: all the messages the the server
+        received and that were not handled
+        """
+        received_messages = []
+        for message in self.received_messages:
+            received_messages.append(message)
+        return received_messages
+
+    def remove_message(self, message):
+        """
+        the function removes the given
+        message from the received list
+        :param message: the message to remove
+        """
+        self.received_messages.remove(message)
