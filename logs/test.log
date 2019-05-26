@@ -1,0 +1,118 @@
+INFO | 2019-05-26 11:15:33,084 | MainProcess | Connected to the db
+INFO | 2019-05-26 11:15:33,111 | MainProcess | Test 1 starts
+INFO | 2019-05-26 11:15:33,111 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:15:33,943 | MainProcess | Address- 05030156f79937ac44a7b7ae4b0af3b99dd5c5d8 is in the system
+INFO | 2019-05-26 11:15:33,944 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:15:35,026 | MainProcess | Address- 69d2769d4a7d364bd1d4d40bd5fb6e269b2fb5a2 is in the system
+INFO | 2019-05-26 11:15:35,026 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:15:35,811 | MainProcess | Address- b62d0822687044b6a2f916ee1f130ab2f152b4b1 is in the system
+INFO | 2019-05-26 11:15:35,812 | MainProcess | Mining new block
+INFO | 2019-05-26 11:15:35,819 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:15:35,858 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:15:35,901 | MainProcess | b62d0822687044b6a2f916ee1f130ab2f152b4b1 is sending 50 LPC to 05030156f79937ac44a7b7ae4b0af3b99dd5c5d8
+INFO | 2019-05-26 11:15:35,901 | MainProcess | Mining new block
+INFO | 2019-05-26 11:15:35,914 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:15:35,947 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:15:35,989 | MainProcess | 05030156f79937ac44a7b7ae4b0af3b99dd5c5d8 is sending 50 LPC to 69d2769d4a7d364bd1d4d40bd5fb6e269b2fb5a2
+INFO | 2019-05-26 11:15:36,013 | MainProcess | b62d0822687044b6a2f916ee1f130ab2f152b4b1 is sending 50 LPC to 69d2769d4a7d364bd1d4d40bd5fb6e269b2fb5a2
+INFO | 2019-05-26 11:15:36,013 | MainProcess | Mining new block
+INFO | 2019-05-26 11:15:36,017 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:15:36,092 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:15:36,167 | MainProcess | 69d2769d4a7d364bd1d4d40bd5fb6e269b2fb5a2 is sending 51 LPC to 05030156f79937ac44a7b7ae4b0af3b99dd5c5d8
+INFO | 2019-05-26 11:15:36,168 | MainProcess | Mining new block
+INFO | 2019-05-26 11:15:36,220 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:15:36,260 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:15:36,260 | MainProcess | 69d2769d4a7d364bd1d4d40bd5fb6e269b2fb5a2- not enough money to send
+INFO | 2019-05-26 11:15:36,260 | MainProcess | Connection is closed with the db
+INFO | 2019-05-26 11:15:36,260 | MainProcess | Finish successfully test 1
+INFO | 2019-05-26 11:15:36,262 | MainProcess | Connected to the db
+INFO | 2019-05-26 11:15:36,262 | MainProcess | Connected to the db
+INFO | 2019-05-26 11:15:36,263 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-05-26 11:15:36,263 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-05-26 11:15:36,266 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-05-26 11:15:36,266 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-05-26 11:15:36,269 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-05-26 11:15:36,269 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-05-26 11:15:36,273 | MainProcess | Block number 3 extracted for the db
+INFO | 2019-05-26 11:15:36,273 | MainProcess | Block number 3 extracted for the db
+INFO | 2019-05-26 11:15:36,273 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:15:36,273 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:15:37,424 | MainProcess | Address- 30932df1e4fbba25dc690ebb6fa559af1706f341 is in the system
+INFO | 2019-05-26 11:15:37,424 | MainProcess | Address- 30932df1e4fbba25dc690ebb6fa559af1706f341 is in the system
+INFO | 2019-05-26 11:15:37,867 | MainProcess | Listening on port 2500
+INFO | 2019-05-26 11:15:37,867 | MainProcess | Listening on port 2500
+INFO | 2019-05-26 11:15:37,868 | MainProcess | Searching for the updated chain
+INFO | 2019-05-26 11:15:37,868 | MainProcess | Searching for the updated chain
+INFO | 2019-05-26 11:15:37,868 | MainProcess | sending message to the known nodes- Ç?{'address_from': '46.116.174.126', 'code': 1, 'best_height': 4}
+INFO | 2019-05-26 11:15:37,868 | MainProcess | sending message to the known nodes- Ç?{'address_from': '46.116.174.126', 'code': 1, 'best_height': 4}
+INFO | 2019-05-26 11:15:37,868 | MainProcess | received new connection from 127.0.0.1:57727
+INFO | 2019-05-26 11:15:37,868 | MainProcess | received new connection from 127.0.0.1:57727
+INFO | 2019-05-26 11:15:39,869 | MainProcess | the best height in the network is 4
+INFO | 2019-05-26 11:15:39,869 | MainProcess | the best height in the network is 4
+INFO | 2019-05-26 11:15:39,869 | MainProcess | The chain is updated
+INFO | 2019-05-26 11:15:39,869 | MainProcess | The chain is updated
+INFO | 2019-05-26 11:22:15,451 | MainProcess | Connected to the db
+INFO | 2019-05-26 11:22:15,453 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-05-26 11:22:15,456 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-05-26 11:22:15,460 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-05-26 11:22:15,463 | MainProcess | Block number 3 extracted for the db
+INFO | 2019-05-26 11:22:15,466 | MainProcess | Test 1 starts
+INFO | 2019-05-26 11:22:15,466 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:22:16,282 | MainProcess | Address- 320b14078a1893852c80d236c2eb80b735a0a6ad is in the system
+INFO | 2019-05-26 11:22:16,282 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:22:18,871 | MainProcess | Address- 31d8a8ae7561f9fae442b923af1ffb2a01204005 is in the system
+INFO | 2019-05-26 11:22:18,871 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:22:20,644 | MainProcess | Address- 1cceb1abacd885c46192bf9e2fee47c59a48b011 is in the system
+INFO | 2019-05-26 11:22:20,644 | MainProcess | Mining new block
+INFO | 2019-05-26 11:22:20,645 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:22:20,673 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:22:20,697 | MainProcess | 1cceb1abacd885c46192bf9e2fee47c59a48b011 is sending 50 LPC to 320b14078a1893852c80d236c2eb80b735a0a6ad
+INFO | 2019-05-26 11:22:20,698 | MainProcess | Mining new block
+INFO | 2019-05-26 11:22:20,714 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:22:20,747 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:22:20,789 | MainProcess | 320b14078a1893852c80d236c2eb80b735a0a6ad is sending 50 LPC to 31d8a8ae7561f9fae442b923af1ffb2a01204005
+INFO | 2019-05-26 11:22:20,815 | MainProcess | 1cceb1abacd885c46192bf9e2fee47c59a48b011 is sending 50 LPC to 31d8a8ae7561f9fae442b923af1ffb2a01204005
+INFO | 2019-05-26 11:22:20,815 | MainProcess | Mining new block
+INFO | 2019-05-26 11:22:20,825 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:22:20,872 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:22:20,943 | MainProcess | 31d8a8ae7561f9fae442b923af1ffb2a01204005 is sending 51 LPC to 320b14078a1893852c80d236c2eb80b735a0a6ad
+INFO | 2019-05-26 11:22:20,944 | MainProcess | Mining new block
+INFO | 2019-05-26 11:22:20,977 | MainProcess | The new block was added to the block chain
+INFO | 2019-05-26 11:22:21,030 | MainProcess | The new block was inserted to the data base
+INFO | 2019-05-26 11:22:21,032 | MainProcess | 31d8a8ae7561f9fae442b923af1ffb2a01204005- not enough money to send
+INFO | 2019-05-26 11:22:21,032 | MainProcess | Connection is closed with the db
+INFO | 2019-05-26 11:22:21,032 | MainProcess | Finish successfully test 1
+INFO | 2019-05-26 11:22:21,033 | MainProcess | Connected to the db
+INFO | 2019-05-26 11:22:21,033 | MainProcess | Connected to the db
+INFO | 2019-05-26 11:22:21,036 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-05-26 11:22:21,036 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-05-26 11:22:21,039 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-05-26 11:22:21,039 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-05-26 11:22:21,048 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-05-26 11:22:21,048 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-05-26 11:22:21,055 | MainProcess | Block number 3 extracted for the db
+INFO | 2019-05-26 11:22:21,055 | MainProcess | Block number 3 extracted for the db
+INFO | 2019-05-26 11:22:21,059 | MainProcess | Block number 4 extracted for the db
+INFO | 2019-05-26 11:22:21,059 | MainProcess | Block number 4 extracted for the db
+INFO | 2019-05-26 11:22:21,061 | MainProcess | Block number 5 extracted for the db
+INFO | 2019-05-26 11:22:21,061 | MainProcess | Block number 5 extracted for the db
+INFO | 2019-05-26 11:22:21,065 | MainProcess | Block number 6 extracted for the db
+INFO | 2019-05-26 11:22:21,065 | MainProcess | Block number 6 extracted for the db
+INFO | 2019-05-26 11:22:21,069 | MainProcess | Block number 7 extracted for the db
+INFO | 2019-05-26 11:22:21,069 | MainProcess | Block number 7 extracted for the db
+INFO | 2019-05-26 11:22:21,069 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:22:21,069 | MainProcess | Creating new wallet
+INFO | 2019-05-26 11:22:23,434 | MainProcess | Address- aa7c69732bf7a25a5a008f170e33e0d4980ce608 is in the system
+INFO | 2019-05-26 11:22:23,434 | MainProcess | Address- aa7c69732bf7a25a5a008f170e33e0d4980ce608 is in the system
+INFO | 2019-05-26 11:22:23,936 | MainProcess | Listening on port 2500
+INFO | 2019-05-26 11:22:23,936 | MainProcess | Listening on port 2500
+INFO | 2019-05-26 11:22:23,937 | MainProcess | Searching for the updated chain
+INFO | 2019-05-26 11:22:23,937 | MainProcess | Searching for the updated chain
+INFO | 2019-05-26 11:22:23,937 | MainProcess | sending message to the known nodes- Ç?{'address_from': '46.116.174.126', 'code': 1, 'best_height': 8}
+INFO | 2019-05-26 11:22:23,937 | MainProcess | sending message to the known nodes- Ç?{'address_from': '46.116.174.126', 'code': 1, 'best_height': 8}
+INFO | 2019-05-26 11:22:23,937 | MainProcess | received new connection from 127.0.0.1:57786
+INFO | 2019-05-26 11:22:23,937 | MainProcess | received new connection from 127.0.0.1:57786
+INFO | 2019-05-26 11:22:25,940 | MainProcess | the best height in the network is 8
+INFO | 2019-05-26 11:22:25,940 | MainProcess | the best height in the network is 8
+INFO | 2019-05-26 11:22:25,940 | MainProcess | The chain is updated
+INFO | 2019-05-26 11:22:25,940 | MainProcess | The chain is updated

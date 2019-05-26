@@ -1,14 +1,15 @@
 #  -*- coding: utf-8 -*-
 import Tkinter as Tk
-from global_graphic import *
-from send_gui import SendWindow
-from wallet_main_gui import WalletMainWindow
-from mining_gui import MiningWindow
-from transactions_gui import TransactionsWindow
+from GUI.global_graphic import *
+from GUI.send_gui import SendWindow
+from GUI.wallet_main_gui import WalletMainWindow
+from GUI.mining_gui import MiningWindow
+from GUI.transactions_gui import TransactionsWindow
 from core_code.wallet import Wallet
 from Crypto.PublicKey import RSA
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
+from core_code.node import Node
 
 
 GENERATE_NUMBER = 2048

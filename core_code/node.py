@@ -70,18 +70,18 @@ class Node:
         for message in messages:
             self.msg_handler.change_message(message, True)
             self.msg_handler.unpack_message()
-            message = self.msg_handler.message
+            unpacked_message = self.msg_handler.message
             # the node does not handle any message
             # until it downloads the longest
             # block chain from the network
-            if type(message) is Version:
-                message_height = message.best_height
+            if type(unpacked_message) is Version:
+                message_height = unpacked_message.best_height
                 if message_height > best_height:
                     best_height = message_height
-                    holders = [message.address_from]
+                    holders = [unpacked_message.address_from]
                     self.server.remove_message(message)
                 if message_height == best_height:
-                    holders.append(message.address_from)
+                    holders.append(unpacked_message.address_from)
                     self.server.remove_message(message)
         self.logger.info('the best height in the network is '+
                          str(best_height))

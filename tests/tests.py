@@ -3,25 +3,20 @@ from core_code.wallet import Wallet
 from core_code.miner import Miner
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
+from core_code.node import Node
 import unittest
-from GUI.ui_runner import UiRunner
 
 
 class Tests(unittest.TestCase):
-    def setUp(self):
-        """
-        set up the logger and database
-        """
-        self.logger = Logging('test1').logger
-        self.block_chain_db = BlockChainDB(
-            self.logger, 'test1.db')
-
     def test1(self):
         """
         tests wallets without p2p network,
         the test is using common database
         for all wallets
         """
+        self.logger = Logging('test').logger
+        self.block_chain_db = BlockChainDB(
+            self.logger, 'test.db')
         self.logger.info('Test 1 starts')
 
         # creates two wallets in the system
@@ -85,6 +80,15 @@ class Tests(unittest.TestCase):
         self.assertEqual(wallet1.balance, first_balance+1)
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')
+
+    def test2(self):
+        """
+        test the communication protocol
+        """
+        wallet1 = Wallet.new_wallet(self.block_chain_db,
+                                    self.logger)
+        self.node = Node(self.logger, wallet1)
+        self.node.update_chain()
 
 
 if __name__ == '__main__':
