@@ -19,17 +19,17 @@ class Node:
     p2p node which acts both as a client
     and a server
     """
-    def __init__(self, logger, wallet):
+    def __init__(self, logger, block_chain_db):
         """
         constructor
         """
         self.logger = logger
+        self.block_chain_db = block_chain_db
         self.address = getip.get()
         self.server = NodeServer(logger)
         self.known_nodes = KNOWN_NODES
         self.client = NodeClient(logger, self.known_nodes)
         self.msg_handler = None
-        self.wallet = wallet
         self.server_thread = threading.Thread(target=self.server.run)
         self.server_thread.start()
 
@@ -42,7 +42,7 @@ class Node:
         self.logger.info('Searching for the updated chain')
 
         # updates the nodes of your current chain
-        best_height = len(self.wallet.block_chain_db.chain)
+        best_height = len(self.block_chain_db.chain)
         version = Version(best_height, self.address)
         self.msg_handler = MessagesHandler(version, False)
         self.msg_handler.pack()
@@ -65,7 +65,7 @@ class Node:
         :return: the holders of the
         longest chain and its length
         """
-        best_height = len(self.wallet.block_chain_db.chain)
+        best_height = len(self.block_chain_db.chain)
         holders = []
         for message in messages:
             self.msg_handler.change_message(message, True)
@@ -83,7 +83,7 @@ class Node:
                 if message_height == best_height:
                     holders.append(unpacked_message.address_from)
                     self.server.remove_message(message)
-        self.logger.info('the best height in the network is '+
+        self.logger.info('The best height in the network is ' +
                          str(best_height))
         return best_height, holders
 
@@ -95,7 +95,9 @@ class Node:
         :param holders: the addresses of the
         holders of the chain
         """
-        current_length = len(self.wallet.block_chain_db.chain)
+        self.logger.info('Receiving from the network the '
+                         'longest chain')
+        current_length = len(self.block_chain_db.chain)
         while current_length != best_height:
             get_blocks_message = GetBlocks(self.address, current_length)
             self.msg_handler.change_message(get_blocks_message, False)
@@ -114,9 +116,9 @@ class Node:
                     self.server.remove_message(respond)
             blocks_hashes = self.extract_blocks_hashes(inv_responds)
             downloaded_blocks = self.download_blocks(blocks_hashes)
-            self.wallet.block_chain_db.\
+            self.block_chain_db.\
                 add_downloaded_blocks(downloaded_blocks)
-            current_length = len(self.wallet.block_chain_db.chain)
+            current_length = len(self.block_chain_db.chain)
 
     @staticmethod
     def extract_blocks_hashes(inv_messages):
@@ -202,10 +204,10 @@ class Node:
         The respond should be matching.
         :param version_message: the version message
         """
-        self.logger.info('handle version message from ' +
+        self.logger.info('Handle version message from ' +
                          version_message.address_from)
         received_best_height = version_message.best_height
-        best_height = len(self.wallet.block_chain_db.chain)
+        best_height = len(self.block_chain_db.chain)
         if best_height > received_best_height:
             respond_version = Version(best_height, self.address)
             self.msg_handler.change_message(respond_version,
@@ -219,10 +221,10 @@ class Node:
         The function handles the get_blocks_message
         :param get_blocks_message: the get blocks message
         """
-        self.logger.info('handle get blocks message from ' +
+        self.logger.info('Handle get blocks message from ' +
                          get_blocks_message.address_from)
         hashes_to_send = []
-        chain = self.wallet.block_chain_db.chain
+        chain = self.block_chain_db.chain
         for block in chain[chain.index(get_blocks_message.hash_code)+1:]:
             if len(hashes_to_send) == 500:
                 break
@@ -248,9 +250,9 @@ class Node:
         :param get_data_message: the get data
         message
         """
-        self.logger.info('handle get data message from ' +
+        self.logger.info('Handle get data message from ' +
                          get_data_message.address_from)
-        chain = self.wallet.block_chain_db.chain
+        chain = self.block_chain_db.chain
         if get_data_message.type == 'block':
             block_to_send = None
             for block in chain:

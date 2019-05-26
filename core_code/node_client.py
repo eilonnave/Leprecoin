@@ -28,6 +28,8 @@ class NodeClient:
         to all known nodes
         :param message: the message to send
         """
+        self.logger.info(
+            'Sending message to the known nodes- ' + message)
         for node_address in self.known_nodes:
             self.send(message, node_address)
 
@@ -43,7 +45,7 @@ class NodeClient:
         try:
             self.client_socket.connect((node_address, COMMUNICATION_PORT))
             self.logger.info(
-                'sending message to the known nodes- ' + message)
+                'Sending message- ' + message + ' to- '+node_address)
             message = \
                 str(len(message)) \
                 + LENGTH_SEPARATION_CHAR \

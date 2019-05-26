@@ -22,12 +22,19 @@ class Logging(object):
         self.logger.setLevel(LOG_LEVEL)
 
         # Create handler
-        f_handler = logging.FileHandler(path+'/'+file_name+'.log')
-        f_handler.setLevel(LOG_LEVEL)
+        self.f_handler = logging.FileHandler(path+'/'+file_name+'.log')
+        self.f_handler.setLevel(LOG_LEVEL)
 
         # Create the formatter and add it to handler
         formatter = logging.Formatter(LOG_FORMAT)
-        f_handler.setFormatter(formatter)
+        self.f_handler.setFormatter(formatter)
 
         # Add the handler to the logger
-        self.logger.addHandler(f_handler)
+        self.logger.addHandler(self.f_handler)
+
+    def remove_handler(self):
+        """
+        the function removes the
+        current logger handler
+        """
+        self.logger.removeHandler(self.f_handler)
