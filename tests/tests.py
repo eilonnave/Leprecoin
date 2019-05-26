@@ -8,15 +8,27 @@ import unittest
 
 
 class Tests(unittest.TestCase):
+    def setUp(self):
+        """
+        set up the logger and the data base
+        """
+        self.logging = Logging('tests')
+        self.logger = self.logging.logger
+        self.block_chain_db = BlockChainDB(self.logger,
+                                           'tests.db')
+
+    def tearDown(self):
+        """
+        tear down the logger handler
+        """
+        self.logging.remove_handler()
+
     def test1(self):
         """
         tests wallets without p2p network,
         the test is using common database
         for all wallets
         """
-        self.logger = Logging('test').logger
-        self.block_chain_db = BlockChainDB(
-            self.logger, 'test.db')
         self.logger.info('Test 1 starts')
 
         # creates two wallets in the system
@@ -85,11 +97,13 @@ class Tests(unittest.TestCase):
         """
         test the communication protocol
         """
-        wallet1 = Wallet.new_wallet(self.block_chain_db,
-                                    self.logger)
-        self.node = Node(self.logger, wallet1)
+        self.logger.info('Test 2 starts')
+        self.node = Node(self.logger,
+                         self.block_chain_db)
         self.node.update_chain()
+        self.node.server.to_close = True
+        self.logger.info('Finish successfully test 2')
 
-
+    
 if __name__ == '__main__':
     unittest.main()
