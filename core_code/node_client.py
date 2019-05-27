@@ -56,7 +56,6 @@ class NodeClient:
                 'Node address- ' +
                 node_address +
                 ' disconnected')
-            self.known_nodes.remove(node_address)
         finally:
             self.client_socket.close()
             self.client_socket = \

@@ -101,9 +101,10 @@ class Tests(unittest.TestCase):
         self.node = Node(self.logger,
                          self.block_chain_db)
         self.node.update_chain()
-        self.node.server.to_close = True
         self.logger.info('Finish successfully test 2')
+        while True:
+            self.node.handle_messages()
 
-    
+
 if __name__ == '__main__':
     unittest.main()
