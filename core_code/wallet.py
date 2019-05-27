@@ -204,7 +204,7 @@ class Wallet(CryptoSet):
     def equals_public_keys(self, public_key):
         """
         the function check if the given
-        publc key is equals to the wallet's
+        public key is equals to the wallet's
         public key
         :param public_key: the key to compare
         with
