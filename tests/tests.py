@@ -52,7 +52,7 @@ class Tests(unittest.TestCase):
         # transfer from the miner to wallet1
         # and mine the new block
         self.assertTrue(miner.wallet.create_transaction(miner.wallet.balance,
-                                                        wallet1.address))
+                                                        wallet1.address)[0])
         miner.mine()
 
         # check the new balances
@@ -88,7 +88,7 @@ class Tests(unittest.TestCase):
         wallet1.update_balance()
         self.assertEqual(wallet2.balance, second_balance - 1)
         self.assertFalse(wallet2.create_transaction(
-            second_balance, wallet1.address))
+            second_balance, wallet1.address)[0])
         self.assertEqual(wallet1.balance, first_balance+1)
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')

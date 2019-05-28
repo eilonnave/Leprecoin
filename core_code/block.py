@@ -18,11 +18,11 @@ TRANSACTIONS_KEY = 'transactions'
 class Block(object):
     def __init__(self,
                  number,
-                 nonce,
                  prev,
-                 difficulty,
                  transactions,
-                 time_stamp):
+                 nonce=STARTER_NONCE,
+                 difficulty=DIFFICULTY,
+                 time_stamp=time.time()):
         """
         constructor
         """
@@ -34,16 +34,6 @@ class Block(object):
         self.time_stamp = time_stamp
         self.hash_code = ''
         self.hash_block()
-
-    @classmethod
-    def new_block(cls, number, prev, transactions):
-        """
-        factory method
-        """
-        nonce = STARTER_NONCE
-        difficulty = DIFFICULTY
-        time_stamp = time.time()
-        return cls(number, nonce, prev, difficulty, transactions, time_stamp)
 
     def __str__(self):
         """
@@ -129,8 +119,8 @@ class Block(object):
         time_stamp = serialized_block[4]
         transactions = transactions
         return cls(number,
-                   nonce,
                    prev,
-                   difficulty,
                    transactions,
+                   nonce,
+                   difficulty,
                    time_stamp)

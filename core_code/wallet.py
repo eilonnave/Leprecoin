@@ -15,10 +15,7 @@ class Wallet(CryptoSet):
         constructor
         """
         super(Wallet, self).__init__(private_key)
-        self.address = RIPEMD160.new(
-            SHA256.new(
-                self.public_key.exportKey()).hexdigest()
-        ).hexdigest()
+        self.address = self.find_address(self.public_key)
         self.block_chain_db = block_chain_db
         self.unspent_outputs = []
         self.update_unspent_outputs()
@@ -120,13 +117,14 @@ class Wallet(CryptoSet):
         :param recipient_address: the address to send the
         coins to
         :returns: true if there is enough money to the
-        transaction and false otherwise
+        transaction if so it returns the transaction itself also,
+         and false otherwise
         """
         # checks weather there is enough money
         # to the transaction
         if amount > self.balance:
             self.logger.info(self.address+'- not enough money to send')
-            return False
+            return False, None
 
         # creates the new transaction
         new_transaction = Transaction([], [])
@@ -160,16 +158,8 @@ class Wallet(CryptoSet):
         # distributes the transaction
         self.logger.info(self.address+" is sending "+str(
             amount)+" LPC to "+recipient_address)
-        self.distribute_transaction(new_transaction)
-        return True
-
-    def distribute_transaction(self, transaction):
-        """
-        the function distributes the transaction
-        to the nodes
-        :param transaction: the transaction to distribute
-        """
-        self.block_chain_db.add_transaction(transaction)
+        self.block_chain_db.add_transaction(new_transaction)
+        return True, new_transaction
 
     def update_transactions(self):
         """

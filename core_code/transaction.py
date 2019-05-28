@@ -210,15 +210,6 @@ class Input(object):
             proof[1] = RSA.importKey(proof[1])
         return cls(transaction_id, output_index, proof)
 
-    def pack(self):
-        """
-        overrides the __str__ method
-        and returns packed input
-        :returns: string of the packed
-        input
-        """
-        pass
-
 
 class UnspentOutput(object):
     def __init__(self, output, transaction_id, output_index):
