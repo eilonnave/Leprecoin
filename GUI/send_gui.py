@@ -30,6 +30,7 @@ class SendWindow(GuiWindow):
         self.leprecoin_label = None
         self.back_button = None
         self.create_buttons_frame()
+        self.transaction = None
 
     def create_send_frame(self):
         """

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import socket
 from core_code.logger import Logging
+import threading
 
 COMMUNICATION_PORT = 2500
 LENGTH_SEPARATION_CHAR = '$'
@@ -21,6 +22,7 @@ class NodeClient:
         self.logger = logger
         self.known_nodes = known_nodes
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.lock = threading.Lock()
 
     def send_to_all(self, message):
         """
@@ -28,10 +30,14 @@ class NodeClient:
         to all known nodes
         :param message: the message to send
         """
+        self.logger.info('Acquiring lock')
+        self.lock.acquire()
         self.logger.info(
             'Sending message to the known nodes- ' + message)
         for node_address in self.known_nodes:
             self.send(message, node_address)
+        self.logger.info('Releasing lock')
+        self.lock.release()
 
     def send(self, message, node_address):
         """
@@ -60,3 +66,13 @@ class NodeClient:
             self.client_socket.close()
             self.client_socket = \
                 socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def check_connections(self):
+        """
+        the function checks that the
+        known nodes are still connected.
+        if not it removes them from the
+        list
+        """
+        self.lock.acquire()
+        pass

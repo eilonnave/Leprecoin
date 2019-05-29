@@ -16,19 +16,20 @@ GENERATE_NUMBER = 2048
 
 
 class UiRunner:
-    def __init__(self, private_key, logger, block_chain_db):
-        self.logger = logger
-        self.block_chain_db = block_chain_db
+    def __init__(self, private_key):
+        self.loggers = [Logging('wallet').logger,
+                        Logging('network').logger,
+                        Logging('block_chain').logger]
+        self.block_chain_db = BlockChainDB(self.loggers[2])
         self.root = None
         self.current_window = None
+        self.node = Node
         self.win_dict = {NEXT_KEY: None,
                          MAIN_KEY: WalletMainWindow,
                          SEND_KEY: SendWindow,
                          MINE_KEY: MiningWindow,
                          TRANSACTIONS_KEY: TransactionsWindow}
-        self.wallet = Wallet(private_key, self.block_chain_db, self.logger)
-        self.wallet.update_transactions()
-        self.wallet.update_balance()
+        self.wallet = Wallet(private_key, self.block_chain_db, self.loggers[0])
 
     def run(self):
         self.win_dict[NEXT_KEY] = WalletMainWindow

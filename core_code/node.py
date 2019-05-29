@@ -27,6 +27,7 @@ class Node:
         self.block_chain_db = block_chain_db
         self.address = getip.get()
         self.server = NodeServer(logger)
+        self.known_nodes_db = Node
         self.known_nodes = KNOWN_NODES
         self.client = NodeClient(logger, self.known_nodes)
         self.msg_handler = None
@@ -266,3 +267,65 @@ class Node:
                 self.msg_handler.pack()
                 self.client.send(self.msg_handler.message,
                                  get_data_message.address_from)
+
+    def find_connections(self):
+        """
+        The functions find connected nodes
+        which the node can send messages to
+        """
+        pass
+
+    def verify_transaction(self, transaction):
+        """
+        the function verify that the transaction
+        is legal
+        :param transaction: the transaction to verify
+        :return: true if the transaction is legal and false
+        otherwise
+        """
+        pass
+
+    def is_unspent_output(self, transaction_to_check, output_index):
+        """
+        the function checks if the given output
+        was spent by going throw the block_chain
+        :param transaction_to_check: a transaction that contains the
+        output to check
+        :param output_index: the index of the output
+        inside the transaction
+        :returns: false if the output was spent
+        and true otherwise
+        """
+        # go throw all the inputs in the block chain
+        # and checks weather they use the output
+        for block in self.block_chain_db.chain:
+            for transaction in block.transactions:
+                for transaction_input in transaction.inputs:
+                    if transaction_input.transaction_id == \
+                            transaction_to_check.transaction_id:
+                        if transaction_input.output_index == output_index:
+                            return False
+        return True
+
+    def verify_proofs(self, transaction):
+        """
+        the function verifies the proofs in
+        the transaction
+        :param transaction: the transaction to validate
+        its proofs
+        :return: true if all the proofs are validated
+        and false otherwise
+        """
+        pass
+
+    def verify_amount(self, transaction):
+        """
+        the functions verifies that the value
+        in the transaction is legal according
+        to the inputs
+        :param transaction: the transaction to verify its
+        value
+        :return: true if the value are validated
+        and false otherwise
+        """
+        pass

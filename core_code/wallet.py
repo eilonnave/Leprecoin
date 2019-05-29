@@ -35,6 +35,9 @@ class Wallet(CryptoSet):
         """
         logger.info("Creating new wallet")
         private_key = RSA.generate(GENERATE_NUMBER)
+        """
+        load the private key to the file using pickle
+        """
         return cls(private_key, block_chain, logger)
 
     def can_unlock_output(self, transaction_output):

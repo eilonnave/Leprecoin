@@ -44,7 +44,7 @@ class Error(object):
         self.error = error
 
 
-class MessagesHandler:
+class MessagesHandler(object):
     def __init__(self, message, is_packed):
         """
         constructor
