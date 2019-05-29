@@ -9,7 +9,7 @@ BLOCK_STRUCTURE = '(number integer, ' \
                   'nonce integer, ' \
                   'prev text, ' \
                   'difficulty integer, ' \
-                  'time_stamp integer)'
+                  'time_stamp real)'
 BLOCKS_TABLE_NAME = 'blocks'
 BLOCK_KEY = 'block'
 TRANSACTIONS_KEY = 'transactions'

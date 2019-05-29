@@ -41,55 +41,53 @@ class Tests(unittest.TestCase):
 
         # creates the miner in the system
         wallet3 = Wallet.new_wallet(self.block_chain_db, self.logger)
-        miner = Miner(wallet3)
 
         # mine the genesis block and check the miner balance
-        miner.mine()
-        miner.wallet.update_balance()
-        first_balance = miner.wallet.balance
+        wallet3.mine()
+        wallet3.update_balance()
+        first_balance = wallet3.balance
         self.assertGreater(first_balance, 0)
 
         # transfer from the miner to wallet1
         # and mine the new block
-        self.assertTrue(miner.wallet.create_transaction(miner.wallet.balance,
-                                                        wallet1.address)[0])
-        miner.mine()
+        self.assertTrue(wallet3.create_transaction(wallet3.balance, wallet1.address)[0])
+        wallet3.mine()
 
         # check the new balances
         wallet1.update_balance()
-        miner.wallet.update_balance()
+        wallet3.update_balance()
         self.assertEqual(wallet1.balance, first_balance)
-        second_balance = miner.wallet.balance
+        second_balance = wallet3.balance
         self.assertGreater(second_balance, 0)
 
         # creates new transactions from the miner
         # and wallet1 to wallet2 and mine the new block
         wallet1.create_transaction(wallet1.balance, wallet2.address)
-        miner.wallet.create_transaction(second_balance, wallet2.address)
-        miner.mine()
+        wallet3.create_transaction(second_balance, wallet2.address)
+        wallet3.mine()
 
         # check the new balances
         wallet1.update_balance()
-        miner.wallet.update_balance()
+        wallet3.update_balance()
         wallet2.update_balance()
         self.assertEqual(wallet2.balance,
                          (first_balance+second_balance))
-        self.assertGreater(miner.wallet.balance, 0)
+        self.assertGreater(wallet3.balance, 0)
 
         # create new transaction that demands  a
         # change to return
         # and mine the new block
-        wallet2.create_transaction(first_balance+1, wallet1.address)
-        miner.mine()
+        wallet2.create_transaction(first_balance+1.5, wallet1.address)
+        wallet3.mine()
 
         # check the balances
         wallet2.update_balance()
-        miner.wallet.update_balance()
+        wallet3.update_balance()
         wallet1.update_balance()
-        self.assertEqual(wallet2.balance, second_balance - 1)
+        self.assertEqual(wallet2.balance, second_balance - 1.5)
         self.assertFalse(wallet2.create_transaction(
             second_balance, wallet1.address)[0])
-        self.assertEqual(wallet1.balance, first_balance+1)
+        self.assertEqual(wallet1.balance, first_balance+1.5)
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')
 

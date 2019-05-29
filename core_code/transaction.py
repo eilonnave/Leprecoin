@@ -12,7 +12,7 @@ TRANSACTION_STRUCTURE = '(transaction_id integer, ' \
                         'block_number integer)'
 # the transaction_number in the input and output
 # serialization refers to the transaction id (hash)
-OUTPUT_STRUCTURE = '(value integer, ' \
+OUTPUT_STRUCTURE = '(value real, ' \
                    'address text, ' \
                    'transaction_number text)'
 INPUT_STRUCTURE = '(transaction_id text, ' \

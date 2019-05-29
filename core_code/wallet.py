@@ -212,3 +212,11 @@ class Wallet(CryptoSet):
             return True
         else:
             return False
+
+    def mine(self):
+        """
+        mines new block in the
+        block chain
+        """
+        self.block_chain_db.\
+            add_new_block_to_db(self.address)
