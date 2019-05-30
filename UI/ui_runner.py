@@ -20,7 +20,7 @@ class UiRunner:
         self.loggers = [Logging('wallet').logger,
                         Logging('network').logger,
                         Logging('block_chain').logger]
-        self.block_chain_db = BlockChainDB(self.loggers[2])
+        self.block_chain_db = BlockChainDB(self.loggers[2], 'tests.db')
         self.root = None
         self.current_window = None
         self.node = Node
@@ -30,6 +30,9 @@ class UiRunner:
                          MINE_KEY: MiningWindow,
                          TRANSACTIONS_KEY: TransactionsWindow}
         self.wallet = Wallet(private_key, self.block_chain_db, self.loggers[0])
+        self.root = Tk.Tk()
+        MiningWindow(self.root, self.win_dict, self.wallet)
+        self.root.mainloop()
 
     def run(self):
         self.win_dict[NEXT_KEY] = WalletMainWindow
@@ -45,5 +48,5 @@ if __name__ == '__main__':
     p_k = RSA.generate(GENERATE_NUMBER)
     log = Logging('user').logger
     db = BlockChainDB(log)
-    UiRunner(p_k, log, db).run()
+    UiRunner(p_k).run()
 

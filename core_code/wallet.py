@@ -17,6 +17,7 @@ class Wallet(CryptoSet):
         super(Wallet, self).__init__(private_key)
         self.address = self.find_address(self.public_key)
         self.block_chain_db = block_chain_db
+        self.block_chain_db.update_chain()
         self.unspent_outputs = []
         self.update_unspent_outputs()
         self.balance = 0
@@ -27,6 +28,7 @@ class Wallet(CryptoSet):
         self.logger.info(
             "Address- "
             ""+self.address+' is in the system')
+        print self.transactions
 
     @classmethod
     def new_wallet(cls, block_chain, logger):

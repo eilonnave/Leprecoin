@@ -3,7 +3,7 @@ from global_graphic import *
 import Tkinter as Tk
 from PIL import ImageTk
 
-PIC_PATH = 'pics/leprechaun-pot-of-gold.png'
+PIC_PATH = 'C:\Leprecoin\GUI\pics\leprechaun-pot-of-gold.png'
 MAX_TRANSACTIONS = 4
 
 
@@ -95,7 +95,7 @@ class WalletMainWindow(GuiWindow):
         self.leprecoin_label.configure(highlightbackground="#d9d9d9")
         self.leprecoin_label.configure(highlightcolor="black")
         self.leprecoin_label.configure(text='''Leprecoin''')
-
+        """
         # creates the mining button
         self.mining_button = Tk.Button(self.buttons_frame)
         self.mining_button.place(relx=0.75,
@@ -114,10 +114,11 @@ class WalletMainWindow(GuiWindow):
         self.mining_button.configure(pady="0")
         self.mining_button.configure(text='''Try mining''')
         self.mining_button.configure(command=self.pressed_mining)
+        """
 
         # create the transactions button
         self.transactions_button = Tk.Button(self.buttons_frame)
-        self.transactions_button.place(relx=0.625,
+        self.transactions_button.place(relx=0.75,
                                        rely=0.0,
                                        height=30,
                                        width=100)

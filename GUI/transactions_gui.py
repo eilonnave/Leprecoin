@@ -6,7 +6,7 @@ from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'pics/leprechaun_transactions.png'
+PIC_PATH = 'C:\Leprecoin\GUI\pics\leprechaun_transactions.png'
 
 
 class TransactionsWindow(GuiWindow):
@@ -28,6 +28,8 @@ class TransactionsWindow(GuiWindow):
         self.transactions_text = None
         self.pic_label = None
         self.create_transactions_frame()
+        self.wallet.update_transactions()
+        self.show_transactions()
 
     def create_buttons_frame(self):
         """

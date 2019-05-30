@@ -5,6 +5,7 @@ from core_code.logger import Logging
 from core_code.database import BlockChainDB
 from core_code.node import Node
 import unittest
+from UI.ui_runner import UiRunner
 
 
 class Tests(unittest.TestCase):
@@ -90,6 +91,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(wallet1.balance, first_balance+1.5)
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')
+        UiRunner(wallet1.private_key).run()
 
     def test2(self):
         """

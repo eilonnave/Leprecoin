@@ -24,6 +24,9 @@ class SendWindow(GuiWindow):
         self.send_entry = None
         self.amount_entry = None
         self.send_button = None
+        self.balance_label = None
+        self.error_label = None
+        self.balance_text = None
         self.create_send_frame()
 
         self.buttons_frame = None
@@ -31,6 +34,8 @@ class SendWindow(GuiWindow):
         self.back_button = None
         self.create_buttons_frame()
         self.transaction = None
+
+        self.show_current_balance()
 
     def create_send_frame(self):
         """
@@ -117,6 +122,56 @@ class SendWindow(GuiWindow):
         self.send_button.configure(text='''Send''')
         self.send_button.configure(command=self.pressed_send)
 
+        self.balance_label = Tk.Label(self.send_frame)
+        self.balance_label.place(relx=0.063, rely=0.067, relheight=0.067, width=100)
+        self.balance_label.configure(background="dark slate grey")
+        self.balance_label.configure(disabledforeground="#a3a3a3")
+        self.balance_label.configure(
+            font="-family {Lucida Calligraphy} -size 14")
+        self.balance_label.configure(foreground="old lace")
+        self.balance_label.configure(text='''Balance:''')
+        self.balance_label.configure(anchor='w')
+
+        self.balance_text = Tk.Text(self.send_frame)
+        self.balance_text.place(relx=0.063,
+                                rely=0.133,
+                                relheight=0.067,
+                                relwidth=0.375)
+        self.balance_text.configure(background="dark slate grey")
+        self.balance_text.configure(borderwidth="-1")
+        self.balance_text.configure(
+            font="-family {Lucida Calligraphy} -size 14")
+        self.balance_text.configure(foreground="old lace")
+        self.balance_text.configure(highlightbackground="#d9d9d9")
+        self.balance_text.configure(highlightcolor="black")
+        self.balance_text.configure(insertbackground="black")
+        self.balance_text.configure(selectbackground="#c4c4c4")
+        self.balance_text.configure(selectforeground="black")
+        self.balance_text.configure(width=10)
+        self.balance_text.configure(wrap="word")
+        self.balance_text.configure(state=Tk.DISABLED)
+
+    def show_current_balance(self):
+        """
+        the function shows the current balance
+        on the window
+        """
+        self.balance_text.configure(state=Tk.NORMAL)
+        self.balance_text.delete(1.0, Tk.END)
+        self.balance_text.insert(Tk.END, str(self.wallet.balance)+' LPC')
+        self.balance_text.configure(state=Tk.DISABLED)
+
+    def show_error_label(self):
+        self.error_label = Tk.Label(self.send_frame)
+        self.error_label.place(relx=0.313, rely=0.622, height=51, width=314)
+        self.error_label.configure(background="dark slate grey")
+        self.error_label.configure(disabledforeground="#a3a3a3")
+        self.error_label.configure(
+            font="-family {Lucida Calligraphy} -size 9")
+        self.error_label.configure(foreground="red")
+        self.error_label.configure(text='''Wrong data was inserted, please enter again''')
+        self.top.update()
+
     def create_buttons_frame(self):
         """
         the function creates the buttons frame
@@ -192,6 +247,8 @@ class SendWindow(GuiWindow):
             amount = int(amount)
         if legal:
             self.wallet.create_transaction(amount, address)
+        else:
+            self.show_error_label()
 
 
 

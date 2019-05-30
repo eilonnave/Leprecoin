@@ -6,7 +6,7 @@ from core_code.miner import Miner
 from global_graphic import *
 
 
-PIC_PATH = 'pics/Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_PATH = 'C:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
 
 
 class MiningWindow(GuiWindow):
@@ -17,12 +17,12 @@ class MiningWindow(GuiWindow):
         super(MiningWindow, self).__init__(top,
                                            win_dict,
                                            wallet)
-        self.top.title("Mining Window")
+        self.top.title("Loading Window")
         self.finished = False
 
         self.buttons_frame = None
         self.leprecoin_label = None
-        self.cancel_button = None
+        self.back_button = None
         self.create_buttons_frame()
 
         self.mining_frame = None
@@ -31,7 +31,6 @@ class MiningWindow(GuiWindow):
         self.success_label = None
         self.fail_label = None
         self.create_mining_frame()
-        self.top.after(1000, self.execute_mining)
 
     def create_buttons_frame(self):
         """
@@ -66,24 +65,6 @@ class MiningWindow(GuiWindow):
         self.leprecoin_label.configure(highlightcolor="black")
         self.leprecoin_label.configure(text='''Leprecoin''')
 
-        self.cancel_button = Tk.Button(self.buttons_frame)
-        self.cancel_button.place(relx=0.813,
-                                 rely=0.0,
-                                 height=30,
-                                 width=100)
-        self.cancel_button.configure(activebackground="#ececec")
-        self.cancel_button.configure(activeforeground="#000000")
-        self.cancel_button.configure(background="Gold")
-        self.cancel_button.configure(disabledforeground="#a3a3a3")
-        self.cancel_button.configure(
-            font="-family {Calisto MT} -size 12 -slant italic")
-        self.cancel_button.configure(foreground="black")
-        self.cancel_button.configure(highlightbackground="#d9d9d9")
-        self.cancel_button.configure(highlightcolor="black")
-        self.cancel_button.configure(pady="0")
-        self.cancel_button.configure(text='''Cancel''')
-        self.cancel_button.configure(command=self.pressed_cancel)
-
     def create_mining_frame(self):
         """
         the function creates the mining frame
@@ -110,7 +91,7 @@ class MiningWindow(GuiWindow):
         self.mining_label.configure(
             font="-family {Lucida Calligraphy} -size 18")
         self.mining_label.configure(foreground="Gold")
-        self.mining_label.configure(text='''Mining is \nunder progress''')
+        self.mining_label.configure(text='''Loading...''')
 
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.leprechaun_label = Tk.Label(self.mining_frame, image=pic)
@@ -122,7 +103,6 @@ class MiningWindow(GuiWindow):
                                     rely=0.286,
                                     height=164,
                                     width=200)
-
         self.success_label = Tk.Label(self.mining_frame)
         self.success_label.configure(background="#2f4f4f")
         self.success_label.configure(disabledforeground="#a3a3a3")
@@ -130,7 +110,11 @@ class MiningWindow(GuiWindow):
             font="-family {Lucida Calligraphy} -size 18")
         self.success_label.configure(foreground="Gold")
         self.success_label.configure(
-            text='success in mining\nreward: \n'+str(REWORD)+' LPC')
+            text='Waiting for a miner')
+        self.success_label.place(relx=0.156,
+                              rely=0.286,
+                              height=164,
+                              width=300)
 
         self.fail_label = Tk.Label(self.mining_frame)
         self.fail_label.configure(background="#2f4f4f")
@@ -139,40 +123,33 @@ class MiningWindow(GuiWindow):
             font="-family {Lucida Calligraphy} -size 18")
         self.fail_label.configure(foreground="Gold")
         self.fail_label.configure(
-            text='failed mining')
-
-    def pressed_cancel(self):
-        """
-        the function handles the press
-        on the send button
-        """
-        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
-        self.top.destroy()
-
-    def execute_mining(self):
-        """
-        the function executes the mining
-        """
-        miner = Miner(self.wallet)
-        miner.mine()
-        self.finished = True
-        self.mining_label.destroy()
-        self.success_label.place(relx=0.156,
-                                 rely=0.286,
-                                 height=164,
-                                 width=250)
-        self.cancel_button.configure(text='Back')
-        self.top.update()
+            text='It seems that \nthere is no miner')
 
     def failed_mining(self):
         """
         the function handles the fact
         that a miner won the user
         """
+        self.success_label.destroy()
+        self.back_button = Tk.Button(self.buttons_frame)
+        self.back_button.place(relx=0.813,
+                               rely=0.0,
+                               height=30,
+                               width=100)
+        self.back_button.configure(activebackground="#ececec")
+        self.back_button.configure(activeforeground="#000000")
+        self.back_button.configure(background="Gold")
+        self.back_button.configure(disabledforeground="#a3a3a3")
+        self.back_button.configure(
+            font="-family {Calisto MT} -size 12 -slant italic")
+        self.back_button.configure(foreground="#000000")
+        self.back_button.configure(highlightbackground="#d9d9d9")
+        self.back_button.configure(highlightcolor="black")
+        self.back_button.configure(pady="0")
+        self.back_button.configure(text='''Back''')
         self.mining_label.destroy()
         self.fail_label.place(relx=0.156,
                               rely=0.286,
                               height=164,
                               width=250)
-        self.cancel_button.configure(text='Back')
         self.top.update()
