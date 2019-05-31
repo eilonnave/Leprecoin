@@ -49,7 +49,8 @@ class NodeClient:
         to send
         """
         try:
-            self.client_socket.connect((node_address, COMMUNICATION_PORT))
+            self.client_socket.connect((node_address,
+                                        COMMUNICATION_PORT))
             self.logger.info(
                 'Sending message- ' + message + ' to- '+node_address)
             message = \

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import getip
+import socket
 import threading
 import time
 from node_server import NodeServer
@@ -11,6 +11,8 @@ from messages import MessagesHandler, \
     GetData, \
     BlockMessage, \
     TransactionMessage
+
+
 KNOWN_NODES = ['127.0.0.1']
 
 
@@ -25,14 +27,24 @@ class Node:
         """
         self.logger = logger
         self.block_chain_db = block_chain_db
-        self.address = getip.get()
-        self.server = NodeServer(logger)
-        self.known_nodes_db = Node
-        self.known_nodes = KNOWN_NODES
-        self.client = NodeClient(logger, self.known_nodes)
-        self.msg_handler = None
+
+        # find the node local address
+        self.address = [ip for ip in
+                        socket.gethostbyname_ex
+                        (socket.gethostname())[2]
+                        if not ip.startswith("127.")][:1]
+
+        # initialize the server
+        self.server = NodeServer(self.logger)
         self.server_thread = threading.Thread(target=self.server.run)
         self.server_thread.start()
+
+        # find known nodes
+        self.known_nodes_db = None
+        self.client = NodeClient(self.logger, KNOWN_NODES)
+        self.msg_handler = None
+        self.known_nodes = KNOWN_NODES
+        self.to_close = False
 
     def update_chain(self):
         """

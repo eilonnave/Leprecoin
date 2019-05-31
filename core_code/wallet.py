@@ -5,6 +5,7 @@ from Crypto.Hash import SHA256, RIPEMD160
 from core_code.transaction import Transaction, \
     Input, Output, UnspentOutput
 
+
 COMPARE_KEYS_MESS = 'compare'
 GENERATE_NUMBER = 2048
 
@@ -28,7 +29,6 @@ class Wallet(CryptoSet):
         self.logger.info(
             "Address- "
             ""+self.address+' is in the system')
-        print self.transactions
 
     @classmethod
     def new_wallet(cls, block_chain, logger):
