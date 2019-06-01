@@ -63,7 +63,9 @@ class UiRunner:
                                                           self.win_dict,
                                                           self.wallet)
             self.root.mainloop()
-        self.node.
+
+        # handle exiting form the system
+        pass
 
 
 if __name__ == '__main__':

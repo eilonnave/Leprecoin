@@ -13,7 +13,7 @@ from messages import MessagesHandler, \
     TransactionMessage
 
 
-KNOWN_NODES = ['127.0.0.1']
+KNOWN_NODES = ['192.168.56.1']
 
 
 class Node:
@@ -36,7 +36,8 @@ class Node:
 
         # initialize the server
         self.server = NodeServer(self.logger)
-        self.server_thread = threading.Thread(target=self.server.run)
+        self.server_thread = threading.Thread(
+            target=self.server.run)
         self.server_thread.start()
 
         # find known nodes
@@ -60,6 +61,7 @@ class Node:
         self.msg_handler = MessagesHandler(version, False)
         self.msg_handler.pack()
         self.client.send_to_all(self.msg_handler.message)
+
         # wait fo responds to come
         time.sleep(2)
 

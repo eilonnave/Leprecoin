@@ -122,11 +122,13 @@ class BlockChainDB(BlockChain):
             # insert the inputs
             for transaction_input in transaction.inputs:
                 self.inputs_table.insert(
-                    transaction_input.serialize()+(transaction_number,))
+                    transaction_input.serialize()
+                    + (transaction_number,))
             # insert the outputs
             for transaction_output in transaction.outputs:
                 self.outputs_table.insert(
-                    transaction_output.serialize()+(transaction_number,))
+                    transaction_output.serialize()
+                    + (transaction_number,))
         self.logger.info('The new block was inserted to the data base')
 
     def extract_block(self, line_index):
@@ -232,16 +234,6 @@ class BlockChainDB(BlockChain):
             chain.append(self.extract_block(i))
         return chain
 
-    def add_new_block_to_db(self, miner_address):
-        """
-        the function mines the block and adds it to the block
-        chain database and to the chain
-        :param miner_address: the miner address to reward
-        """
-        self.add_new_block(miner_address)
-        new_block = self.chain[-1]
-        self.insert_block(new_block)
-
     def update_chain(self):
         """
         the function updates the chain using the data
@@ -252,11 +244,20 @@ class BlockChainDB(BlockChain):
     def add_downloaded_blocks(self, blocks):
         """
         the function adds the given blocks
-        to the chain. the blocks are valid
+        to the chain. the blocks should be valid
         and were downloaded from other
         nodes.
         :param blocks: the blocks to add
         """
         for block in blocks:
-            self.chain.append(block)
-            self.insert_block(block)
+            self.add_block(block)
+
+    def add_block(self, block):
+        """
+        the function adds the given block
+        to the chain. the block should be
+        valid.
+        :param block: the block to add
+        """
+        self.chain.append(block)
+        self.insert_block(block)

@@ -52,7 +52,9 @@ class NodeClient:
             self.client_socket.connect((node_address,
                                         COMMUNICATION_PORT))
             self.logger.info(
-                'Sending message- ' + message + ' to- '+node_address)
+                'Sending message- ' +
+                message +
+                ' to- '+node_address)
             message = \
                 str(len(message)) \
                 + LENGTH_SEPARATION_CHAR \

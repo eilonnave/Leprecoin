@@ -91,7 +91,6 @@ class Tests(unittest.TestCase):
         self.assertEqual(wallet1.balance, first_balance+1.5)
         self.block_chain_db.close_connection()
         self.logger.info('Finish successfully test 1')
-        UiRunner(wallet1.private_key).run()
 
     def test2(self):
         """
@@ -100,8 +99,7 @@ class Tests(unittest.TestCase):
         self.logger.info('Test 2 starts')
         self.node = Node(self.logger,
                          self.block_chain_db)
-        self.node.update_chain()
-        self.logger.info('Finish successfully test 2')
+        self.node.handle_messages()
         while True:
             self.node.handle_messages()
 
