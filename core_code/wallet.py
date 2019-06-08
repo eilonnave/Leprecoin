@@ -212,8 +212,7 @@ class Wallet(CryptoSet):
         e2 = self.encrypt(self.public_key, COMPARE_KEYS_MESS)
         if self.decrypt(e1) == self.decrypt(e2):
             return True
-        else:
-            return False
+        return False
 
     def mine(self):
         """

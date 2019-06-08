@@ -12,8 +12,11 @@ from messages import MessagesHandler, \
     BlockMessage, \
     TransactionMessage
 
+# ToDo: verify functions
+# ToDo: find connections
+# ToDo: handle messages function
 
-KNOWN_NODES = ['192.168.56.1']
+KNOWN_NODES = ['127.0.0.1']
 
 
 class Node:

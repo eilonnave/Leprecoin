@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+
+# ToDo: implement miner
+
+
 class Miner:
     def __init__(self):
         """

@@ -1,0 +1,5 @@
+#!C:\Python27\python.exe
+
+from pyroute2 import Console
+
+Console().interact()

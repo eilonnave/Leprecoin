@@ -12,6 +12,7 @@ DB_DIR = 'database'
 BLOCK_CHAIN_DB_FILE = 'block_chain.db'
 EXTRACT_ALL_QUERY = 'select * from '
 
+# ToDo: handle possibles errors in the database
 
 class Table(object):
     def __init__(self, connection, cursor, table_name, structure):

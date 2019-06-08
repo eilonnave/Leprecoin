@@ -6,6 +6,9 @@ import threading
 COMMUNICATION_PORT = 2500
 LENGTH_SEPARATION_CHAR = '$'
 
+# ToDo: implement check connection
+# ToDo: implement lock
+
 
 class NodeClient:
     """

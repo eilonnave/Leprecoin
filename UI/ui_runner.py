@@ -16,6 +16,9 @@ import os
 GENERATE_NUMBER = 2048
 PRIVATE_KEY_FILE = 'private_key.txt'
 
+# ToDo: add loading windows
+# ToDo: add error labels to windows
+
 
 class UiRunner:
     def __init__(self):
@@ -69,5 +72,8 @@ class UiRunner:
 
 
 if __name__ == '__main__':
+    l1 = Logging('test in another port')
+    n1 = Node(l1, BlockChainDB('test.db'))
+    n1.handle_messages()
     UiRunner().run()
 
