@@ -12,13 +12,16 @@ from messages import MessagesHandler, \
     BlockMessage, \
     TransactionMessage
 from Crypto.Hash import SHA256
+from core_code.logger import Logging
+from core_code.database import BlockChainDB
+from core_code.block import Block
 
 
 # ToDo: verify functions
 # ToDo: find connections
 # ToDo: handle messages function
 
-KNOWN_NODES = ['127.0.0.1']
+KNOWN_NODES = ['192.168.56.1']
 WAITING_TIME = 2
 
 
@@ -38,7 +41,8 @@ class Node:
         self.address = [ip for ip in
                         socket.gethostbyname_ex
                         (socket.gethostname())[2]
-                        if not ip.startswith("127.")][:1]
+                        if not ip.startswith("127.")][:1][0]
+        print self.address
 
         # initialize the server
         self.server = NodeServer(self.logger)
@@ -388,4 +392,15 @@ class Node:
 
 
 if __name__ == '__main__':
-    pass
+    logger = Logging('test').logger
+    db = BlockChainDB(logger)
+    node = Node(logger, db)
+    if node.address == KNOWN_NODES[0]:
+        b1 = Block(0, '0', [])
+        b2 = Block(1, b1.hash_code, [])
+        b3 = Block(2, b2.hash_code, [])
+        db.add_downloaded_blocks([b1, b2, b3])
+        while True:
+            node.handle_messages()
+    else:
+        node.update_chain()
