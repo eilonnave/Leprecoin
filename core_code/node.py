@@ -11,12 +11,15 @@ from messages import MessagesHandler, \
     GetData, \
     BlockMessage, \
     TransactionMessage
+from Crypto.Hash import SHA256
+
 
 # ToDo: verify functions
 # ToDo: find connections
 # ToDo: handle messages function
 
 KNOWN_NODES = ['127.0.0.1']
+WAITING_TIME = 2
 
 
 class Node:
@@ -65,15 +68,18 @@ class Node:
         self.msg_handler.pack()
         self.client.send_to_all(self.msg_handler.message)
 
-        # wait fo responds to come
-        time.sleep(2)
+        # wait for responds to come
+        time.sleep(WAITING_TIME)
 
         # finding the longest chain from
         # the other nodes
         responds = self.server.get_received_messages()
         network_best, holders = self.find_longest_chain(responds)
+        # the holders list is a way to screen out nodes that
+        # they are not synced or honest because they do not have
+        # the longest chain
         if network_best != best_height:
-            self.get_longest_chain(best_height, holders)
+            self.get_longest_chain(network_best, holders)
         self.logger.info('The chain is updated')
 
     def find_longest_chain(self, messages):
@@ -116,22 +122,37 @@ class Node:
         self.logger.info('Receiving from the network the '
                          'longest chain')
         current_length = len(self.block_chain_db.chain)
+
+        # loop until the node is holding the longest chain
         while current_length != best_height:
+
+            # request blocks from the known nodes
             get_blocks_message = GetBlocks(self.address, current_length)
             self.msg_handler.change_message(get_blocks_message, False)
             self.msg_handler.pack()
             for address in holders:
                 self.client.send(self.msg_handler.message,
                                  address)
-            time.sleep(1)
+
+            # waiting for responds
+            time.sleep(WAITING_TIME)
+
+            # find the inv messages of blocks which indicate respond
             responds = self.server.get_received_messages()
             inv_responds = []
             for respond in responds:
                 self.msg_handler.change_message(responds, True)
                 self.msg_handler.unpack_message()
-                if type(self.msg_handler.message) is Inv:
+                if type(self.msg_handler.message) is Inv and \
+                        self.msg_handler.message.data_type == 'block':
                     inv_responds.append(self.msg_handler.message)
-                    self.server.remove_message(respond)
+                    # remove the inv message so the node will not
+                    # need to handle it only if the message
+                    # contains more than one block
+                    # otherwise it can be a new block inv and the node will
+                    # need to add it later to the block chain
+                    if len(self.msg_handler.message.hash_codes) > 1:
+                        self.server.remove_message(respond)
             blocks_hashes = self.extract_blocks_hashes(inv_responds)
             downloaded_blocks = self.download_blocks(blocks_hashes)
             self.block_chain_db.\
@@ -145,18 +166,36 @@ class Node:
         hashes from the inv messages
         :param inv_messages: the inv messages that the server
         received
-        :return: the block hashes for the
-        inv messages
+        :return: the block hashes to download
         """
-        blocks_hashes = []
+        blocks_hashes_list = []
+
+        # extract all hashes to a list of hashes_list
         for inv_message in inv_messages:
-            if inv_message.data_type == 'block':
-                blocks_hashes.append(inv_messages.hash_codes)
-        """
-        find the block that the majority of the
-        network agrees on
-        """
-        return blocks_hashes[0]
+            blocks_hashes_list.append(inv_message.hash_codes)
+
+        # find the number of times every hash is
+        # returning
+        hashes_dict = {'max': 0}
+        majority_hashes = ''
+        for blocks_hashes in blocks_hashes_list:
+            hash_code = ''
+            for block_hash in blocks_hashes:
+                hash_code += block_hash
+            hash_code = SHA256.new(hash_code).hexdigest()
+            blocks_hashes.append(hash_code)
+            if hash_code in hashes_dict:
+                hashes_dict[hash_code] += 1
+            else:
+                hashes_dict[hash_code] = 1
+            if hashes_dict[hash_code] > hashes_dict['max']:
+                hashes_dict['max'] = hashes_dict[hash_code]
+                majority_hashes = blocks_hashes
+
+        # downloading the block hashes that the majority
+        # of the network agrees on is a way to download the
+        # honest chain and not every chain
+        return majority_hashes
 
     def download_blocks(self, blocks_hashes):
         """
@@ -177,7 +216,7 @@ class Node:
                                        'block',
                                        hash_code)
             self.client.send_to_all(get_data_message)
-            time.sleep(2)
+            time.sleep(WAITING_TIME)
             responds = self.server.get_received_messages()
             blocks_responds = []
             for respond in responds:
@@ -346,3 +385,7 @@ class Node:
         and false otherwise
         """
         pass
+
+
+if __name__ == '__main__':
+    pass
