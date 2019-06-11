@@ -21,7 +21,7 @@ from core_code.block import Block
 # ToDo: find connections
 # ToDo: handle messages function
 
-KNOWN_NODES = ['192.168.56.1']
+KNOWN_NODES = ['169.254.37.131']
 WAITING_TIME = 2
 
 
@@ -38,10 +38,7 @@ class Node:
         self.block_chain_db = block_chain_db
 
         # find the node local address
-        self.address = [ip for ip in
-                        socket.gethostbyname_ex
-                        (socket.gethostname())[2]
-                        if not ip.startswith("127.")][:1][0]
+        self.address = socket.gethostbyname(socket.gethostname())
         print self.address
 
         # initialize the server

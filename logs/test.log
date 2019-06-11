@@ -1,0 +1,10 @@
+INFO | 2019-06-11 15:51:14,900 | MainProcess | Connected to the db
+INFO | 2019-06-11 15:51:15,118 | MainProcess | Listening on port 2500
+INFO | 2019-06-11 15:51:15,118 | MainProcess | Searching for the updated chain
+INFO | 2019-06-11 15:51:15,118 | MainProcess | Acquiring lock
+INFO | 2019-06-11 15:51:15,118 | MainProcess | Sending message to the known nodes- Ç?{'address_from': '169.254.37.131', 'code': 1, 'best_height': 0}
+INFO | 2019-06-11 15:51:15,118 | MainProcess | Sending message- Ç?{'address_from': '169.254.37.131', 'code': 1, 'best_height': 0} to- 192.168.56.1
+INFO | 2019-06-11 15:51:15,118 | MainProcess | received new connection from 192.168.56.1:53447
+INFO | 2019-06-11 15:51:15,118 | MainProcess | Releasing lock
+INFO | 2019-06-11 15:51:17,121 | MainProcess | The best height in the network is 0
+INFO | 2019-06-11 15:51:17,121 | MainProcess | The chain is updated
