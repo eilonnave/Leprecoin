@@ -20,6 +20,8 @@ from core_code.block import Block
 # ToDo: verify functions
 # ToDo: find connections
 # ToDo: handle messages function
+# ToDo: check connections before downloading
+# ToDo: handle possible errors in receiving messages
 
 KNOWN_NODES = ['169.254.37.131']
 WAITING_TIME = 2
@@ -105,7 +107,7 @@ class Node:
                     best_height = message_height
                     holders = [unpacked_message.address_from]
                     self.server.remove_message(message)
-                if message_height == best_height:
+                elif message_height == best_height:
                     holders.append(unpacked_message.address_from)
                     self.server.remove_message(message)
         self.logger.info('The best height in the network is ' +
@@ -145,7 +147,8 @@ class Node:
                 self.msg_handler.change_message(responds, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is Inv and \
-                        self.msg_handler.message.data_type == 'block':
+                        self.msg_handler.message.data_type == 'block' and \
+                        self.msg_handler.message.address_from in holders:
                     inv_responds.append(self.msg_handler.message)
                     # remove the inv message so the node will not
                     # need to handle it only if the message
@@ -213,20 +216,29 @@ class Node:
         a different block
         """
         for hash_code in blocks_hashes:
+
+            # request the block
             get_data_message = GetData(self.address,
                                        'block',
                                        hash_code)
             self.client.send_to_all(get_data_message)
+
+            # waiting for responds
             time.sleep(WAITING_TIME)
+
             responds = self.server.get_received_messages()
             blocks_responds = []
+
+            # find the responds
             for respond in responds:
                 self.msg_handler.change_message(respond, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is BlockMessage:
                     blocks_responds.append(self.msg_handler.message)
                     self.server.remove_message(respond)
+
             for block_message in blocks_responds:
+                # ToDo: validate the block
                 if block_message.block.hash_code == hash_code:
                     downloaded_blocks.append(block_message.block)
                     break
@@ -295,12 +307,20 @@ class Node:
 
     def handle_inv(self, inv_message):
         """
-        handles inv message.
-        according to the protocol the inv message
-        to handle must contain transactions
+        handles inv message
         :param inv_message: the inv message
         """
-        pass
+        self.logger.info('Handle inv message from ' +
+                         inv_message.address_from)
+        is_found = False
+        if len(inv_message.hash_codes) != 0:
+            if inv_message.data_type == 'transaction':
+                hash_code = inv_message.hash_codes[0]
+                for transaction in self.block_chain_db.transactions_pool:
+                    if hash_code == transaction.transaction_id:
+                        is_found = True
+                if not is_found:
+                    self.block_chain_db.add_transaction()
 
     def handle_get_data(self, get_data_message):
         """
@@ -311,6 +331,8 @@ class Node:
         self.logger.info('Handle get data message from ' +
                          get_data_message.address_from)
         chain = self.block_chain_db.chain
+
+        # sending the block as a respond
         if get_data_message.type == 'block':
             block_to_send = None
             for block in chain:
@@ -321,6 +343,24 @@ class Node:
                 block_message = BlockMessage(self.address,
                                              block_to_send)
                 self.msg_handler.change_message(block_message, False)
+                self.msg_handler.pack()
+                self.client.send(self.msg_handler.message,
+                                 get_data_message.address_from)
+
+        # sending the transaction as a respond
+        elif get_data_message.type == 'transaction':
+            transaction_to_send = None
+            for block in chain:
+                if transaction_to_send is not None:
+                    break
+                for transaction in block.transactions:
+                    if transaction.transaction_id == \
+                            get_data_message.hash_code:
+                        transaction_to_send = transaction
+            if transaction_to_send is not None:
+                transaction_message = TransactionMessage(self.address,
+                                                         transaction_to_send)
+                self.msg_handler.change_message(transaction_message, False)
                 self.msg_handler.pack()
                 self.client.send(self.msg_handler.message,
                                  get_data_message.address_from)
