@@ -10,16 +10,15 @@ from messages import MessagesHandler, \
     Inv, \
     GetData, \
     BlockMessage, \
-    TransactionMessage
+    TransactionMessage, \
+    Error
 from Crypto.Hash import SHA256
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
 from core_code.block import Block
 
-
 # ToDo: verify functions
 # ToDo: find connections
-# ToDo: handle messages function
 # ToDo: check connections before downloading
 # ToDo: handle possible errors in receiving messages
 
@@ -263,6 +262,8 @@ class Node:
                 self.handle_inv(self.msg_handler.message)
             elif type(self.msg_handler.message) is GetData:
                 self.handle_get_data(self.msg_handler.message)
+            elif type(self.msg_handler.message) is Error:
+                self.logger.info('Wrong data received')
 
     def handle_version(self, version_message):
         """
@@ -315,12 +316,111 @@ class Node:
         is_found = False
         if len(inv_message.hash_codes) != 0:
             if inv_message.data_type == 'transaction':
-                hash_code = inv_message.hash_codes[0]
-                for transaction in self.block_chain_db.transactions_pool:
-                    if hash_code == transaction.transaction_id:
-                        is_found = True
-                if not is_found:
-                    self.block_chain_db.add_transaction()
+                self.handle_transaction_inv(inv_message)
+            elif inv_message.data_type == 'block':
+                self.handle_block_inv(inv_message)
+
+    def handle_block_inv(self, inv_message):
+        """
+        the function handles inv message of a block type
+        :param inv_message: the block inv message
+        """
+        is_found = False
+        hash_code = inv_message.hash_codes[0]
+
+        # check if the block is already found
+        for block in self.block_chain_db.chain:
+            if hash_code == block.hash_code:
+                is_found = True
+                break
+
+        if not is_found:
+            # request the block from the node
+            get_data_message = GetData(self.address,
+                                       'block',
+                                       hash_code)
+            self.msg_handler.change_message(
+                get_data_message, False)
+            self.msg_handler.pack()
+            self.client.send(self.msg_handler.message,
+                             inv_message.address_from)
+
+            # wait for respond
+            time.sleep(WAITING_TIME)
+
+            # handle the responds
+            responds = self.server.get_received_messages()
+            for respond in responds:
+                self.msg_handler.change_message(
+                    respond, True)
+                self.msg_handler.unpack_message()
+                if type(self.msg_handler.message) is BlockMessage:
+                    self.logger.info('Handle block message')
+                    self.server.remove_message(respond)
+                    if self.msg_handler.message.address_from == inv_message.address_from:
+                        block = self.msg_handler.message.block
+                        if block.hash_code == hash_code:
+                            # ToDo: validate the block
+                            self.block_chain_db.add_block(block)
+
+                            # send the block to known nodes
+                            self.msg_handler.change_message(Inv(self.address,
+                                                                'block',
+                                                                hash_code), False)
+                            self.msg_handler.pack()
+                            self.client.send_to_all(self.msg_handler.message)
+                            break
+
+    def handle_transaction_inv(self, inv_message):
+        """
+        handles transaction inv message
+        :param inv_message: the inv message
+        """
+        is_found = False
+        hash_code = inv_message.hash_codes[0]
+
+        # check if the transaction is already found
+        for transaction in self.block_chain_db.transactions_pool:
+            if hash_code == transaction.transaction_id:
+                is_found = True
+                break
+
+        if not is_found:
+            # request the transaction from the node
+            get_data_message = GetData(self.address,
+                                       'transaction',
+                                       hash_code)
+            self.msg_handler.change_message(
+                get_data_message, False)
+            self.msg_handler.pack()
+            self.client.send(self.msg_handler.message,
+                             inv_message.address_from)
+
+            # wait for respond
+            time.sleep(WAITING_TIME)
+            responds = self.server.get_received_messages()
+
+            # handle the responds
+            for respond in responds:
+                self.msg_handler.change_message(
+                    respond, True)
+                self.msg_handler.unpack_message()
+                if type(self.msg_handler.message) is TransactionMessage:
+                    self.logger.info('Handle transaction message')
+                    self.server.remove_message(respond)
+                    if self.msg_handler.message.address_from == inv_message.address_from:
+                        transaction = self.msg_handler.message.transaction
+                        if transaction.transaction_id == hash_code:
+                            # ToDo: validate the transaction
+                            self.block_chain_db.add_transaction(transaction)
+
+                            # send the transaction to known nodes
+                            self.msg_handler.change_message(Inv(self.address,
+                                                                'transaction',
+                                                                hash_code), False)
+                            self.msg_handler.pack()
+                            self.client.send_to_all(self.msg_handler.message)
+                            break
 
     def handle_get_data(self, get_data_message):
         """
