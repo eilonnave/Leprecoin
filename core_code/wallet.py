@@ -152,6 +152,8 @@ class Wallet(CryptoSet):
             if sending_amount >= amount:
                 change = sending_amount - amount
                 sending_amount = amount
+                break
+
         new_transaction.add_output(
             Output(sending_amount,
                    recipient_address))

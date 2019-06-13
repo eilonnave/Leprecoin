@@ -16,14 +16,20 @@ from Crypto.Hash import SHA256
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
 from core_code.block import Block
+from core_code.wallet import Wallet
+from core_code.crypto_set import CryptoSet
+from core_code.transaction import UnspentOutput
 
-# ToDo: verify functions
+
 # ToDo: find connections
 # ToDo: check connections before downloading
 # ToDo: handle possible errors in receiving messages
 
+
 KNOWN_NODES = ['169.254.37.131']
 WAITING_TIME = 2
+WALLET_ADDRESS_LENGTH = 40
+HEX_DIGEST = '0123456789abcdef'
 
 
 class Node:
@@ -357,7 +363,8 @@ class Node:
                 if type(self.msg_handler.message) is BlockMessage:
                     self.logger.info('Handle block message')
                     self.server.remove_message(respond)
-                    if self.msg_handler.message.address_from == inv_message.address_from:
+                    if self.msg_handler.message.address_from == \
+                            inv_message.address_from:
                         block = self.msg_handler.message.block
                         if block.hash_code == hash_code:
                             # ToDo: validate the block
@@ -408,7 +415,8 @@ class Node:
                 if type(self.msg_handler.message) is TransactionMessage:
                     self.logger.info('Handle transaction message')
                     self.server.remove_message(respond)
-                    if self.msg_handler.message.address_from == inv_message.address_from:
+                    if self.msg_handler.message.address_from == \
+                            inv_message.address_from:
                         transaction = self.msg_handler.message.transaction
                         if transaction.transaction_id == hash_code:
                             # ToDo: validate the transaction
@@ -477,10 +485,100 @@ class Node:
         the function verify that the transaction
         is legal
         :param transaction: the transaction to verify
-        :return: true if the transaction is legal and false
+        :returns: true if the transaction is legal and false
         otherwise
         """
-        pass
+        are_legal_inputs, proved_value = \
+            self.verify_transaction_inputs(transaction.inputs,
+                                           transaction)
+        if not are_legal_inputs:
+            return False
+
+        return self.verify_transaction_outputs(transaction.outputs,
+                                               proved_value)
+
+    def verify_transaction_inputs(self, inputs, transaction):
+        """
+        the function verifies the inputs in the
+        transaction
+        :param inputs: the list of the transaction inputs
+        :param transaction: the transaction which the inputs belong
+        to
+        :returns: true if all the inputs are legal and the money
+        that the inputs provide, false otherwise
+        """
+        used_outputs = []
+        proved_value = 0
+        for tx_input in inputs:
+            used_output = [tx_input.transaction_id,
+                           tx_input.output_index]
+
+            # check that the output exist
+            is_found = False
+            for block in self.block_chain_db.chain:
+                if not is_found:
+                    for tx in block.transactions:
+                        if tx.transaction_id == used_output[0] and \
+                                len(tx.outputs) >= used_output[1]:
+                            is_found = True
+                            # add the actual output object to the list
+                            used_output.append(
+                                tx.outputs[used_output[1]])
+                            break
+            if not is_found:
+                return False, 0
+
+            for un_spent_output in used_outputs:
+                # check that the inputs do not use the same output
+                if used_output[0] == un_spent_output.transaction_id and \
+                        used_output[1] == un_spent_output.output_index:
+                    return False, 0
+                # check that the output is unspent
+                if not self.is_unspent_output(used_output[0],
+                                              used_output[1]):
+                    return False, 0
+
+            used_output = UnspentOutput(used_output[2],
+                                        used_output[0],
+                                        used_output[1])
+
+            # verify the proof
+            if not self.verify_proof(tx_input.proof,
+                                     used_output,
+                                     transaction):
+                return False, 0
+            used_outputs.append(used_output)
+            proved_value += used_output.output.value
+        return True, proved_value
+
+    @staticmethod
+    def verify_transaction_outputs(outputs, proved_value):
+        """
+        the function verifies the outputs in the
+        transaction
+        :param outputs: the list of the transaction outputs
+        :param proved_value: the value that is calculated in the
+        inputs. The sum of all of the value in the outputs should
+        be equal to this value
+        :returns: true if all the outputs are legal,
+        false otherwise
+        """
+        transaction_value = 0
+        if len(outputs) > 2:
+            return False
+        for output in outputs:
+            # check that the address is legal
+            if len(output.address) != WALLET_ADDRESS_LENGTH:
+                return False
+            for char in output.address:
+                if char not in HEX_DIGEST:
+                    return False
+            transaction_value += output.value
+
+        # check the value
+        if transaction_value != proved_value:
+            return False
+        return True
 
     def is_unspent_output(self, transaction_to_check, output_index):
         """
@@ -504,28 +602,32 @@ class Node:
                             return False
         return True
 
-    def verify_proofs(self, transaction):
+    @staticmethod
+    def verify_proof(proof, un_spent_output, transaction):
         """
-        the function verifies the proofs in
-        the transaction
-        :param transaction: the transaction to validate
-        its proofs
-        :return: true if all the proofs are validated
+        the function verifies the proof
+        :param proof: the proof to validate
+        :param un_spent_output: the un spent output
+        that the proof proves
+        :param transaction: the transaction which the proof
+        belongs to
+        :return: true if all the proof is validated
         and false otherwise
         """
-        pass
+        # verify the proof address
+        public_key = proof[1]
+        wallet_address = Wallet.find_address(public_key)
+        if not wallet_address == un_spent_output.output.address:
+            return False
 
-    def verify_amount(self, transaction):
-        """
-        the functions verifies that the value
-        in the transaction is legal according
-        to the inputs
-        :param transaction: the transaction to verify its
-        value
-        :return: true if the value are validated
-        and false otherwise
-        """
-        pass
+        # verify the proof signature
+        signature = proof[0]
+        signed_data = un_spent_output.transaction_id
+        signed_data += transaction.outputs[0].address
+        signed_data = CryptoSet.hash(signed_data)
+        signed_data += str(transaction.outputs[0].value)
+        signed_data = CryptoSet.hash(signed_data)
+        return CryptoSet.verify(signed_data, signature, public_key)
 
 
 if __name__ == '__main__':
