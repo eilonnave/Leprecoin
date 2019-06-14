@@ -26,7 +26,7 @@ from core_code.transaction import UnspentOutput
 # ToDo: handle possible errors in receiving messages
 
 
-KNOWN_NODES = ['169.254.37.131']
+KNOWN_NODES = ['172.16.211.137']
 WAITING_TIME = 2
 WALLET_ADDRESS_LENGTH = 40
 HEX_DIGEST = '0123456789abcdef'
@@ -45,7 +45,7 @@ class Node:
         self.block_chain_db = block_chain_db
 
         # find the node local address
-        self.address = socket.gethostbyname(socket.gethostname())
+        self.address = '172.16.211.137'
         print self.address
 
         # initialize the server
@@ -256,12 +256,14 @@ class Node:
         that the node received
         """
         messages = self.server.get_received_messages()
+        self.msg_handler = MessagesHandler('123', True)
         for message in messages:
             self.msg_handler.change_message(message,
                                             True)
             self.msg_handler.unpack_message()
             if type(self.msg_handler.message) is Version:
                 self.handle_version(self.msg_handler.message)
+                self.server.remove_message(message)
             elif type(self.msg_handler.message) is GetBlocks:
                 self.handle_get_blocks(self.msg_handler.message)
             elif type(self.msg_handler.message) is Inv:
@@ -319,7 +321,6 @@ class Node:
         """
         self.logger.info('Handle inv message from ' +
                          inv_message.address_from)
-        is_found = False
         if len(inv_message.hash_codes) != 0:
             if inv_message.data_type == 'transaction':
                 self.handle_transaction_inv(inv_message)

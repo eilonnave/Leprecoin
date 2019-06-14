@@ -14,6 +14,7 @@ EXTRACT_ALL_QUERY = 'select * from '
 
 # ToDo: handle possibles errors in the database
 
+
 class Table(object):
     def __init__(self, connection, cursor, table_name, structure):
         """

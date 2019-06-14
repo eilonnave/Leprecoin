@@ -54,7 +54,7 @@ class NodeServer:
                 [self.server_socket] +
                 self.open_clients_sockets,
                 [],
-                self.open_clients_sockets, 1)
+                self.open_clients_sockets)
             self.handle_exception_sockets()
             self.handle_read_sockets()
 
