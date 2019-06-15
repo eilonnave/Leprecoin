@@ -5,6 +5,7 @@ from GUI.send_gui import SendWindow
 from GUI.wallet_main_gui import WalletMainWindow
 from GUI.waiting_gui import WaitingForMiningWindow
 from GUI.transactions_gui import TransactionsWindow
+from GUI.loading_gui import LoadingWindow
 from core_code.wallet import Wallet
 from Crypto.PublicKey import RSA
 from core_code.logger import Logging
@@ -38,7 +39,8 @@ class UiRunner:
                          MAIN_KEY: WalletMainWindow,
                          SEND_KEY: SendWindow,
                          TRANSACTIONS_KEY: TransactionsWindow,
-                         WAITING_KEY: WaitingForMiningWindow}
+                         WAITING_KEY: WaitingForMiningWindow,
+                         LOADING_KEY: LoadingWindow}
         self.wallet = None
 
     def run(self):
@@ -58,9 +60,7 @@ class UiRunner:
         self.wallet = Wallet(private_key,
                              self.block_chain_db,
                              self.loggers[0])
-        """
         self.node.update_chain()
-        """
         self.win_dict[NEXT_KEY] = WalletMainWindow
         while self.win_dict[NEXT_KEY] is not None:
             self.root = Tk.Tk()

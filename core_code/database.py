@@ -5,12 +5,13 @@ from core_code.block import BLOCK_STRUCTURE, \
     BLOCKS_TABLE_NAME, \
     Block
 from core_code.transaction import *
-from core_code.blockchain import BlockChain
+from core_code.blockchain import BlockChain, REWORD
 
 
 DB_DIR = 'database'
 BLOCK_CHAIN_DB_FILE = 'block_chain.db'
 EXTRACT_ALL_QUERY = 'select * from '
+GENESIS_ADDRESS = 'b3ce40ec7cafcbf81ad93a556910777b28811c92'
 
 # ToDo: handle possibles errors in the database
 
@@ -87,6 +88,13 @@ class BlockChainDB(BlockChain):
                                    OUTPUT_STRUCTURE)
         chain = self.extract_chain()
         super(BlockChainDB, self).__init__(chain, logger)
+        if len(chain) == 0:
+            genesis_input = Input('0', -1, (GENESIS_ADDRESS, ''))
+            genesis_output = Output(REWORD, GENESIS_ADDRESS)
+            genesis_transaction = Transaction([genesis_input], [genesis_output])
+            genesis_block = Block(0, '0'*64, [genesis_transaction])
+            genesis_block.mine_block()
+            print genesis_block.serialize()
         os.chdir(default_cwd)
 
     def create_connection(self):

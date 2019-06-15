@@ -169,10 +169,11 @@ class Node:
                         if len(self.msg_handler.message.hash_codes) == \
                                 best_height - current_length:
                             inv_responds.append(self.msg_handler.message)
+                            self.server.remove_message(respond)
                     elif len(self.msg_handler.message.hash_codes) == \
                             MAX_HASHES_IN_INV:
                         inv_responds.append(self.msg_handler.message)
-                    self.server.remove_message(respond)
+                        self.server.remove_message(respond)
             blocks_hashes = self.extract_blocks_hashes(inv_responds)
             downloaded_blocks = self.download_blocks(blocks_hashes)
             if downloaded_blocks is False:

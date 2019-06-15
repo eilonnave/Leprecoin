@@ -162,6 +162,9 @@ class SendWindow(GuiWindow):
         self.balance_text.configure(state=Tk.DISABLED)
 
     def show_error_label(self):
+        """
+        the function shows the error label
+        """
         self.error_label = Tk.Label(self.send_frame)
         self.error_label.place(relx=0.313, rely=0.622, height=51, width=314)
         self.error_label.configure(background="dark slate grey")
@@ -169,7 +172,10 @@ class SendWindow(GuiWindow):
         self.error_label.configure(
             font="-family {Lucida Calligraphy} -size 9")
         self.error_label.configure(foreground="red")
-        self.error_label.configure(text='''Wrong data was inserted, please enter again''')
+        self.error_label.configure(text=
+                                   '''Wrong data was 
+                                   inserted, please 
+                                   enter again''')
         self.top.update()
 
     def create_buttons_frame(self):
@@ -246,11 +252,12 @@ class SendWindow(GuiWindow):
         else:
             amount = int(amount)
         if legal:
-            created = self.wallet.create_transaction(amount, address)
+            created, transaction = self.wallet.create_transaction(amount, address)
             if not created:
                 self.show_error_label()
             else:
-                self.win_dict[NEXT_KEY] = W
+                self.transaction = transaction
+                self.win_dict[NEXT_KEY] = self.win_dict[WAITING_KEY]
         else:
             self.show_error_label()
 

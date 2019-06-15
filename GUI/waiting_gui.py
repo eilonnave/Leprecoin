@@ -1,12 +1,11 @@
 #  -*- coding: utf-8 -*-
 import Tkinter as Tk
 from PIL import ImageTk
-from core_code.blockchain import REWORD
-from core_code.miner import Miner
 from global_graphic import *
 
 
 PIC_PATH = 'C:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
+SECONDS_TO_WAIT = 300
 
 
 class WaitingForMiningWindow(GuiWindow):
@@ -14,6 +13,7 @@ class WaitingForMiningWindow(GuiWindow):
         """
         constructor
         """
+        self.started_length = len(wallet.transactions)
         super(WaitingForMiningWindow, self).__init__(top,
                                                      win_dict,
                                                      wallet)
@@ -30,6 +30,9 @@ class WaitingForMiningWindow(GuiWindow):
         self.leprechaun_label = None
         self.fail_label = None
         self.create_waiting_frame()
+        self.top.after(1000,
+                       self.check_for_transaction,
+                       0)
 
     def create_buttons_frame(self):
         """
@@ -147,15 +150,39 @@ class WaitingForMiningWindow(GuiWindow):
         self.back_button.configure(highlightcolor="black")
         self.back_button.configure(pady="0")
         self.back_button.configure(text='''Back''')
+        self.back_button.configure(command=self.pressed_back)
         self.fail_label.place(relx=0.156,
                               rely=0.286,
                               height=164,
                               width=250)
         self.top.update()
 
-    def check_for_the_transaction(self):
+    def pressed_back(self):
         """
-        the function checks if the transaction is
-        inserted to the block
+        the function handles the press
+        on the back button
         """
-        while self.wallet
+        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
+        self.top.destroy()
+
+    def check_for_transaction(self, times):
+        """
+        the function checks if the transaction
+        the the user waiting for
+        was inserted to the block chain
+        to the
+        :return:
+        """
+        print times
+        if times > SECONDS_TO_WAIT:
+            self.failed_mining()
+        elif len(self.wallet.transactions) > self.started_length:
+            for transaction in self.wallet.transactions[self.started_length:]:
+                if self.wallet.equals_public_keys(transaction.inputs[0].proof[1]):
+                    self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
+                    self.top.destroy()
+        else:
+            self.top.after(1000,
+                           self.check_for_transaction,
+                           times+1)
+
