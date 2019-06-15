@@ -6,6 +6,7 @@ MAIN_KEY = 'main'
 SEND_KEY = 'send'
 MINE_KEY = 'mine'
 TRANSACTIONS_KEY = 'transactions'
+WAITING_KEY = 'waiting'
 
 
 class GuiWindow(object):
