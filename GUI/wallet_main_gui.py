@@ -95,26 +95,6 @@ class WalletMainWindow(GuiWindow):
         self.leprecoin_label.configure(highlightbackground="#d9d9d9")
         self.leprecoin_label.configure(highlightcolor="black")
         self.leprecoin_label.configure(text='''Leprecoin''')
-        """
-        # creates the mining button
-        self.mining_button = Tk.Button(self.buttons_frame)
-        self.mining_button.place(relx=0.75,
-                                 rely=0.0,
-                                 height=30,
-                                 width=100)
-        self.mining_button.configure(activebackground="#ececec")
-        self.mining_button.configure(activeforeground="#000000")
-        self.mining_button.configure(background="Gold")
-        self.mining_button.configure(disabledforeground="#a3a3a3")
-        self.mining_button.configure(
-            font="-family {Calisto MT} -size 12 -slant italic")
-        self.mining_button.configure(foreground="#000000")
-        self.mining_button.configure(highlightbackground="#d9d9d9")
-        self.mining_button.configure(highlightcolor="black")
-        self.mining_button.configure(pady="0")
-        self.mining_button.configure(text='''Try mining''')
-        self.mining_button.configure(command=self.pressed_mining)
-        """
 
         # create the transactions button
         self.transactions_button = Tk.Button(self.buttons_frame)
@@ -358,3 +338,10 @@ class WalletMainWindow(GuiWindow):
         """
         self.address_text.insert(Tk.END, self.wallet.address)
         self.address_text.configure(state=Tk.DISABLED)
+
+    def update_window(self):
+        """
+        the function updates the window
+        """
+        self.show_current_balance()
+        self.show_last_transactions()

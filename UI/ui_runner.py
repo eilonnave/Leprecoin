@@ -3,7 +3,7 @@ import Tkinter as Tk
 from GUI.global_graphic import *
 from GUI.send_gui import SendWindow
 from GUI.wallet_main_gui import WalletMainWindow
-from GUI.mining_gui import MiningWindow
+from GUI.waiting_gui import WaitingForMiningWindow
 from GUI.transactions_gui import TransactionsWindow
 from core_code.wallet import Wallet
 from Crypto.PublicKey import RSA
@@ -37,8 +37,8 @@ class UiRunner:
         self.win_dict = {NEXT_KEY: None,
                          MAIN_KEY: WalletMainWindow,
                          SEND_KEY: SendWindow,
-                         MINE_KEY: MiningWindow,
-                         TRANSACTIONS_KEY: TransactionsWindow}
+                         TRANSACTIONS_KEY: TransactionsWindow,
+                         WAITING_KEY: WaitingForMiningWindow}
         self.wallet = None
 
     def run(self):
@@ -58,7 +58,9 @@ class UiRunner:
         self.wallet = Wallet(private_key,
                              self.block_chain_db,
                              self.loggers[0])
+        """
         self.node.update_chain()
+        """
         self.win_dict[NEXT_KEY] = WalletMainWindow
         while self.win_dict[NEXT_KEY] is not None:
             self.root = Tk.Tk()
@@ -68,12 +70,8 @@ class UiRunner:
             self.root.mainloop()
 
         # handle exiting form the system
-        pass
 
 
 if __name__ == '__main__':
-    l1 = Logging('test in another port')
-    n1 = Node(l1, BlockChainDB('test.db'))
-    n1.handle_messages()
     UiRunner().run()
 

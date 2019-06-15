@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import socket
+import os, re
 import threading
 import time
 from node_server import NodeServer
@@ -15,7 +15,7 @@ from messages import MessagesHandler, \
 from Crypto.Hash import SHA256
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
-from core_code.block import Block
+from core_code.block import Block, DIFFICULTY
 from core_code.wallet import Wallet
 from core_code.crypto_set import CryptoSet
 from core_code.transaction import UnspentOutput
@@ -30,6 +30,7 @@ KNOWN_NODES = ['172.16.211.137']
 WAITING_TIME = 2
 WALLET_ADDRESS_LENGTH = 40
 HEX_DIGEST = '0123456789abcdef'
+MAX_HASHES_IN_INV = 500
 
 
 class Node:
@@ -45,7 +46,15 @@ class Node:
         self.block_chain_db = block_chain_db
 
         # find the node local address
-        self.address = '172.16.211.137'
+
+        addresses = os.popen('IPCONFIG | FINDSTR /R '
+                             '"Ethernet adapter Local '
+                             'Area Connection .* Address.'
+                             '*[0-9][0-9]*/.[0-9][0-9]*/.'
+                             '[0-9][0-9]*/.[0-9][0-9]*"')
+        first_eth_address = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
+                                      addresses.read()).group()
+        self.address = first_eth_address
         print self.address
 
         # initialize the server
@@ -151,19 +160,23 @@ class Node:
             for respond in responds:
                 self.msg_handler.change_message(responds, True)
                 self.msg_handler.unpack_message()
+
+                # check that the inv is matching to the demands
                 if type(self.msg_handler.message) is Inv and \
                         self.msg_handler.message.data_type == 'block' and \
                         self.msg_handler.message.address_from in holders:
-                    inv_responds.append(self.msg_handler.message)
-                    # remove the inv message so the node will not
-                    # need to handle it only if the message
-                    # contains more than one block
-                    # otherwise it can be a new block inv and the node will
-                    # need to add it later to the block chain
-                    if len(self.msg_handler.message.hash_codes) > 1:
-                        self.server.remove_message(respond)
+                    if best_height - current_length < MAX_HASHES_IN_INV:
+                        if len(self.msg_handler.message.hash_codes) == \
+                                best_height - current_length:
+                            inv_responds.append(self.msg_handler.message)
+                    elif len(self.msg_handler.message.hash_codes) == \
+                            MAX_HASHES_IN_INV:
+                        inv_responds.append(self.msg_handler.message)
+                    self.server.remove_message(respond)
             blocks_hashes = self.extract_blocks_hashes(inv_responds)
             downloaded_blocks = self.download_blocks(blocks_hashes)
+            if downloaded_blocks is False:
+                return False
             self.block_chain_db.\
                 add_downloaded_blocks(downloaded_blocks)
             current_length = len(self.block_chain_db.chain)
@@ -181,7 +194,14 @@ class Node:
 
         # extract all hashes to a list of hashes_list
         for inv_message in inv_messages:
-            blocks_hashes_list.append(inv_message.hash_codes)
+            # check that the hashes have proof of work
+            is_proof_of_work = True
+            for hash_code in inv_message.hash_codes:
+                if hash_code[0:DIFFICULTY] != '0'*DIFFICULTY:
+                    is_proof_of_work = False
+                    break
+            if is_proof_of_work:
+                blocks_hashes_list.append(inv_message.hash_codes)
 
         # find the number of times every hash is
         # returning
@@ -213,7 +233,9 @@ class Node:
         to the blocks hashes
         :param blocks_hashes: the blocks to
         download
-        :return: the downloaded blocks
+        :returns: the downloaded blocks. the function
+        returns False if there was a problem with downloading
+        the blocks
         """
         downloaded_blocks = []
         """
@@ -221,7 +243,7 @@ class Node:
         a different block
         """
         for hash_code in blocks_hashes:
-
+            is_found = False
             # request the block
             get_data_message = GetData(self.address,
                                        'block',
@@ -243,10 +265,22 @@ class Node:
                     self.server.remove_message(respond)
 
             for block_message in blocks_responds:
-                # ToDo: validate the block
                 if block_message.block.hash_code == hash_code:
-                    downloaded_blocks.append(block_message.block)
-                    break
+                    is_found = True
+                    if self.verify_block(block_message.block):
+                        downloaded_blocks.append(block_message.block)
+                        break
+                    else:
+                        return False
+
+            if not is_found:
+                return False
+
+        last_block = self.block_chain_db.chain[-1].hash_code
+        for block in downloaded_blocks:
+            if block.prev != last_block:
+                return False
+
         self.logger.info('Finish downloading all blocks')
         return downloaded_blocks
 
@@ -261,17 +295,25 @@ class Node:
             self.msg_handler.change_message(message,
                                             True)
             self.msg_handler.unpack_message()
-            if type(self.msg_handler.message) is Version:
+            if type(self.msg_handler.message) is Error:
+                self.logger.info('Wrong data received')
+            elif type(self.msg_handler.message) is Version:
+                if self.msg_handler.message.address_from not in self.known_nodes:
+                    self.known_nodes.append(self.msg_handler.message.address_from)
                 self.handle_version(self.msg_handler.message)
                 self.server.remove_message(message)
             elif type(self.msg_handler.message) is GetBlocks:
+                if self.msg_handler.message.address_from not in self.known_nodes:
+                    self.known_nodes.append(self.msg_handler.message.address_from)
                 self.handle_get_blocks(self.msg_handler.message)
             elif type(self.msg_handler.message) is Inv:
+                if self.msg_handler.message.address_from not in self.known_nodes:
+                    self.known_nodes.append(self.msg_handler.message.address_from)
                 self.handle_inv(self.msg_handler.message)
             elif type(self.msg_handler.message) is GetData:
+                if self.msg_handler.message.address_from not in self.known_nodes:
+                    self.known_nodes.append(self.msg_handler.message.address_from)
                 self.handle_get_data(self.msg_handler.message)
-            elif type(self.msg_handler.message) is Error:
-                self.logger.info('Wrong data received')
 
     def handle_version(self, version_message):
         """
@@ -305,7 +347,7 @@ class Node:
         hashes_to_send = []
         chain = self.block_chain_db.chain
         for block in chain[chain.index(get_blocks_message.hash_code)+1:]:
-            if len(hashes_to_send) == 500:
+            if len(hashes_to_send) == MAX_HASHES_IN_INV:
                 break
             hashes_to_send.append(block.hash_code)
         inv_message = Inv(self.address, 'block', hashes_to_send)
@@ -333,15 +375,18 @@ class Node:
         :param inv_message: the block inv message
         """
         is_found = False
+        is_legal = False
         hash_code = inv_message.hash_codes[0]
+        if hash_code[0:DIFFICULTY] == '0'*DIFFICULTY:
+            is_legal = True
+        if is_legal:
+            # check if the block is already found
+            for block in self.block_chain_db.chain:
+                if hash_code == block.hash_code:
+                    is_found = True
+                    break
 
-        # check if the block is already found
-        for block in self.block_chain_db.chain:
-            if hash_code == block.hash_code:
-                is_found = True
-                break
-
-        if not is_found:
+        if not is_found and is_legal:
             # request the block from the node
             get_data_message = GetData(self.address,
                                        'block',
@@ -368,15 +413,15 @@ class Node:
                             inv_message.address_from:
                         block = self.msg_handler.message.block
                         if block.hash_code == hash_code:
-                            # ToDo: validate the block
-                            self.block_chain_db.add_block(block)
+                            if self.verify_block(block):
+                                self.block_chain_db.add_block(block)
 
-                            # send the block to known nodes
-                            self.msg_handler.change_message(Inv(self.address,
-                                                                'block',
-                                                                hash_code), False)
-                            self.msg_handler.pack()
-                            self.client.send_to_all(self.msg_handler.message)
+                                # send the block to known nodes
+                                self.msg_handler.change_message(Inv(self.address,
+                                                                    'block',
+                                                                    hash_code), False)
+                                self.msg_handler.pack()
+                                self.client.send_to_all(self.msg_handler.message)
                             break
 
     def handle_transaction_inv(self, inv_message):
@@ -420,15 +465,15 @@ class Node:
                             inv_message.address_from:
                         transaction = self.msg_handler.message.transaction
                         if transaction.transaction_id == hash_code:
-                            # ToDo: validate the transaction
-                            self.block_chain_db.add_transaction(transaction)
+                            if self.verify_transaction(transaction):
+                                self.block_chain_db.add_transaction(transaction)
 
-                            # send the transaction to known nodes
-                            self.msg_handler.change_message(Inv(self.address,
-                                                                'transaction',
-                                                                hash_code), False)
-                            self.msg_handler.pack()
-                            self.client.send_to_all(self.msg_handler.message)
+                                # send the transaction to known nodes
+                                self.msg_handler.change_message(Inv(self.address,
+                                                                    'transaction',
+                                                                    hash_code), False)
+                                self.msg_handler.pack()
+                                self.client.send_to_all(self.msg_handler.message)
                             break
 
     def handle_get_data(self, get_data_message):
@@ -497,6 +542,23 @@ class Node:
 
         return self.verify_transaction_outputs(transaction.outputs,
                                                proved_value)
+
+    def verify_block(self, block):
+        """
+        the function verify that the block
+        is legal
+        :param block: the block to verify
+        :returns: true if the block is legal and false
+        otherwise
+        """
+        # validate the block
+        if block.is_valid_proof():
+            are_valid_transactions = True
+            for transaction in block.transactions:
+                if not self.verify_transaction(transaction):
+                    are_valid_transactions = False
+            return are_valid_transactions
+        return False
 
     def verify_transaction_inputs(self, inputs, transaction):
         """

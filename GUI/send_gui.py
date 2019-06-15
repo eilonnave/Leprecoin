@@ -246,7 +246,11 @@ class SendWindow(GuiWindow):
         else:
             amount = int(amount)
         if legal:
-            self.wallet.create_transaction(amount, address)
+            created = self.wallet.create_transaction(amount, address)
+            if not created:
+                self.show_error_label()
+            else:
+                self.win_dict[NEXT_KEY] = W
         else:
             self.show_error_label()
 
