@@ -31,7 +31,6 @@ class NodeServer:
         self.to_close = False
         try:
             # binding and listening
-            self.is_closed = False
             self.server_socket.bind((SERVER_IP, COMMUNICATION_PORT))
             logger.info('Listening on port ' + str(COMMUNICATION_PORT))
             self.server_socket.listen(LISTEN_SIZE)
@@ -41,7 +40,7 @@ class NodeServer:
             self.readable = []
             self.exceptional = []
         except socket.error as err:
-            self.logger.error('Could not open node- ' + str(err))
+            self.logger.info('Could not open node- ' + str(err))
             self.server_socket.close()
             self.is_closed = True
 

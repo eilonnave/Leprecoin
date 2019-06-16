@@ -17,9 +17,6 @@ import os
 GENERATE_NUMBER = 2048
 PRIVATE_KEY_FILE = 'private_key.txt'
 
-# ToDo: add loading windows
-# ToDo: add error labels to windows
-
 
 class UiRunner:
     def __init__(self):
@@ -60,6 +57,7 @@ class UiRunner:
         self.wallet = Wallet(private_key,
                              self.block_chain_db,
                              self.loggers[0])
+        self.node.find_connections()
         self.node.update_chain()
         self.win_dict[NEXT_KEY] = WalletMainWindow
         while self.win_dict[NEXT_KEY] is not None:

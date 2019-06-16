@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
-import os, re
+import os
+import re
 import threading
 import time
-from node_server import NodeServer
-from node_client import NodeClient
-from messages import MessagesHandler, \
+from core_code.node_server import NodeServer
+from core_code.node_client import NodeClient
+from core_code.messages import MessagesHandler, \
     Version, \
     GetBlocks, \
     Inv, \
     GetData, \
     BlockMessage, \
     TransactionMessage, \
-    Error
+    Error, \
+    GetAddresses, \
+    AddressesMessage
 from Crypto.Hash import SHA256
 from core_code.logger import Logging
 from core_code.database import BlockChainDB
@@ -19,9 +22,10 @@ from core_code.block import Block, DIFFICULTY
 from core_code.wallet import Wallet
 from core_code.crypto_set import CryptoSet
 from core_code.transaction import UnspentOutput
+from core_code.database import HostNodes, KnownNodes
+from core_code.blockchain import REWORD
 
-
-# ToDo: find connections
+# ToDo: validate that there are no double transactions and so
 # ToDo: check connections before downloading
 # ToDo: handle possible errors in receiving messages
 
@@ -33,7 +37,7 @@ HEX_DIGEST = '0123456789abcdef'
 MAX_HASHES_IN_INV = 500
 
 
-class Node:
+class Node(object):
     """
     p2p node which acts both as a client
     and a server
@@ -46,7 +50,6 @@ class Node:
         self.block_chain_db = block_chain_db
 
         # find the node local address
-
         addresses = os.popen('IPCONFIG | FINDSTR /R '
                              '"Ethernet adapter Local '
                              'Area Connection .* Address.'
@@ -55,7 +58,6 @@ class Node:
         first_eth_address = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
                                       addresses.read()).group()
         self.address = first_eth_address
-        print self.address
 
         # initialize the server
         self.server = NodeServer(self.logger)
@@ -64,10 +66,13 @@ class Node:
         self.server_thread.start()
 
         # find known nodes
-        self.known_nodes_db = None
-        self.client = NodeClient(self.logger, KNOWN_NODES)
+        self.known_nodes_db = KnownNodes(self.logger)
+        self.known_nodes = self.known_nodes_db.extract_known_nodes()
+        if len(self.known_nodes) == 0:
+            hosts_db = HostNodes(self.logger)
+            self.known_nodes = hosts_db.extract_hosts()
+        self.client = NodeClient(self.logger, self.known_nodes)
         self.msg_handler = None
-        self.known_nodes = KNOWN_NODES
         self.to_close = False
 
     def update_chain(self):
@@ -81,7 +86,10 @@ class Node:
         # updates the nodes of your current chain
         best_height = len(self.block_chain_db.chain)
         version = Version(best_height, self.address)
-        self.msg_handler = MessagesHandler(version, False)
+        if self.msg_handler is None:
+            self.msg_handler = MessagesHandler(version, False)
+        else:
+            self.msg_handler.change_message(version, False)
         self.msg_handler.pack()
         self.client.send_to_all(self.msg_handler.message)
 
@@ -291,8 +299,8 @@ class Node:
         that the node received
         """
         messages = self.server.get_received_messages()
-        self.msg_handler = MessagesHandler('123', True)
         for message in messages:
+            self.server.remove_message(message)
             self.msg_handler.change_message(message,
                                             True)
             self.msg_handler.unpack_message()
@@ -315,6 +323,10 @@ class Node:
                 if self.msg_handler.message.address_from not in self.known_nodes:
                     self.known_nodes.append(self.msg_handler.message.address_from)
                 self.handle_get_data(self.msg_handler.message)
+            elif type(self.msg_handler.message) is GetAddresses:
+                if self.msg_handler.message.address_from not in self.known_nodes:
+                    self.known_nodes.append(self.msg_handler.message.address_from)
+                self.handle_get_addresses(self.msg_handler.message)
 
     def handle_version(self, version_message):
         """
@@ -416,7 +428,9 @@ class Node:
                         if block.hash_code == hash_code:
                             if self.verify_block(block):
                                 self.block_chain_db.add_block(block)
-
+                                for transaction in block.transactions:
+                                    if transaction in self.block_chain_db.transactions_pool:
+                                        self.block_chain_db.transactions_pool.remove(transaction)
                                 # send the block to known nodes
                                 self.msg_handler.change_message(Inv(self.address,
                                                                     'block',
@@ -520,12 +534,46 @@ class Node:
                 self.client.send(self.msg_handler.message,
                                  get_data_message.address_from)
 
+    def handle_get_addresses(self, get_addresses_message):
+        """
+        handles get addresses message
+        :param get_addresses_message: the get addresses
+        message
+        """
+        addresses_message = AddressesMessage(self.address,
+                                             self.known_nodes)
+        self.msg_handler.change_message(addresses_message, False)
+        self.msg_handler.pack()
+        self.client.send(self.msg_handler.message,
+                         get_addresses_message.address_from)
+
     def find_connections(self):
         """
         The functions find connected nodes
         which the node can send messages to
         """
-        pass
+        get_addresses = GetAddresses(self.address)
+        if self.msg_handler is None:
+            self.msg_handler = MessagesHandler(get_addresses, False)
+        else:
+            self.msg_handler.change_message(get_addresses, False)
+        self.msg_handler.pack()
+        self.client.send_to_all(self.msg_handler.message)
+
+        time.sleep(WAITING_TIME)
+
+        responds = self.server.get_received_messages()
+        for respond in responds:
+            self.msg_handler.change_message(
+                respond, True)
+            self.msg_handler.unpack_message()
+            if type(self.msg_handler.message) is AddressesMessage:
+                addresses = self.msg_handler.message.addresses
+                self.server.remove_message(respond)
+                for address in addresses:
+                    if address not in self.known_nodes:
+                        self.known_nodes.append(address)
+                        self.known_nodes_db.insert_address(address)
 
     def verify_transaction(self, transaction):
         """
@@ -554,11 +602,10 @@ class Node:
         """
         # validate the block
         if block.is_valid_proof():
-            are_valid_transactions = True
             for transaction in block.transactions:
                 if not self.verify_transaction(transaction):
-                    are_valid_transactions = False
-            return are_valid_transactions
+                    return False
+            return True
         return False
 
     def verify_transaction_inputs(self, inputs, transaction):
@@ -577,42 +624,51 @@ class Node:
             used_output = [tx_input.transaction_id,
                            tx_input.output_index]
 
-            # check that the output exist
-            is_found = False
-            for block in self.block_chain_db.chain:
+            if used_output[1] == -1:
+                # coin base transaction
+                if len(inputs) > 1:
+                    return False, 0
+                if len(transaction.outputs) > 1:
+                    return False, 0
+                proved_value = REWORD
+
+            else:
+                # check that the output exist
+                is_found = False
+                for block in self.block_chain_db.chain:
+                    if not is_found:
+                        for tx in block.transactions:
+                            if tx.transaction_id == used_output[0] and \
+                                    len(tx.outputs) > used_output[1]:
+                                is_found = True
+                                # add the actual output object to the list
+                                used_output.append(
+                                    tx.outputs[used_output[1]])
+                                break
                 if not is_found:
-                    for tx in block.transactions:
-                        if tx.transaction_id == used_output[0] and \
-                                len(tx.outputs) >= used_output[1]:
-                            is_found = True
-                            # add the actual output object to the list
-                            used_output.append(
-                                tx.outputs[used_output[1]])
-                            break
-            if not is_found:
-                return False, 0
-
-            for un_spent_output in used_outputs:
-                # check that the inputs do not use the same output
-                if used_output[0] == un_spent_output.transaction_id and \
-                        used_output[1] == un_spent_output.output_index:
-                    return False, 0
-                # check that the output is unspent
-                if not self.is_unspent_output(used_output[0],
-                                              used_output[1]):
                     return False, 0
 
-            used_output = UnspentOutput(used_output[2],
-                                        used_output[0],
-                                        used_output[1])
+                for un_spent_output in used_outputs:
+                    # check that the inputs do not use the same output
+                    if used_output[0] == un_spent_output.transaction_id and \
+                            used_output[1] == un_spent_output.output_index:
+                        return False, 0
+                    # check that the output is unspent
+                    if not self.is_unspent_output(used_output[0],
+                                                  used_output[1]):
+                        return False, 0
 
-            # verify the proof
-            if not self.verify_proof(tx_input.proof,
-                                     used_output,
-                                     transaction):
-                return False, 0
-            used_outputs.append(used_output)
-            proved_value += used_output.output.value
+                used_output = UnspentOutput(used_output[2],
+                                            used_output[0],
+                                            used_output[1])
+
+                # verify the proof
+                if not self.verify_proof(tx_input.proof,
+                                         used_output,
+                                         transaction):
+                    return False, 0
+                used_outputs.append(used_output)
+                proved_value += used_output.output.value
         return True, proved_value
 
     @staticmethod

@@ -10,8 +10,15 @@ from core_code.blockchain import BlockChain, REWORD
 
 DB_DIR = 'database'
 BLOCK_CHAIN_DB_FILE = 'block_chain.db'
+KNOWN_NODES_DB_FILE = 'known_nodes.db'
+HOSTS_DB_FILE = 'hosts.db'
+NODE_STRUCTURE = '(id int, address text)'
+NODES_TABLE_NAME = 'known_nodes'
 EXTRACT_ALL_QUERY = 'select * from '
 GENESIS_ADDRESS = 'b3ce40ec7cafcbf81ad93a556910777b28811c92'
+GENESIS_NONCE = 1996
+GENESIS_DIFFICULTY = 4
+GENESIS_TIME_STAMP = 1560672296.571
 
 # ToDo: handle possibles errors in the database
 
@@ -88,13 +95,20 @@ class BlockChainDB(BlockChain):
                                    OUTPUT_STRUCTURE)
         chain = self.extract_chain()
         super(BlockChainDB, self).__init__(chain, logger)
+
         if len(chain) == 0:
-            genesis_input = Input('0', -1, (GENESIS_ADDRESS, ''))
+            # Add the hardcoded genesis block
+            genesis_input = Input('0', -1, [GENESIS_ADDRESS, ''])
             genesis_output = Output(REWORD, GENESIS_ADDRESS)
             genesis_transaction = Transaction([genesis_input], [genesis_output])
-            genesis_block = Block(0, '0'*64, [genesis_transaction])
-            genesis_block.mine_block()
-            print genesis_block.serialize()
+            genesis_block = Block(0,
+                                  '0'*64,
+                                  [genesis_transaction],
+                                  GENESIS_NONCE,
+                                  GENESIS_DIFFICULTY,
+                                  GENESIS_TIME_STAMP)
+            self.add_block(genesis_block)
+
         os.chdir(default_cwd)
 
     def create_connection(self):
@@ -105,7 +119,7 @@ class BlockChainDB(BlockChain):
         self.connection = sqlite3.connect(self.path)
         self.connection.text_factory = bytes
         self.cursor = self.connection.cursor()
-        self.logger.info('Connected to the db')
+        self.logger.info('Connected to the block chain db')
 
     def close_connection(self):
         """
@@ -113,7 +127,8 @@ class BlockChainDB(BlockChain):
         """
         self.cursor.close()
         self.connection.close()
-        self.logger.info('Connection is closed with the db')
+        self.logger.info('Connection is closed with '
+                         'the block chain db')
 
     def insert_block(self, block):
         """
@@ -271,3 +286,204 @@ class BlockChainDB(BlockChain):
         """
         self.chain.append(block)
         self.insert_block(block)
+
+
+class KnownNodes(object):
+    """
+    data base of all known nodes
+    """
+    def __init__(self, logger):
+        self.logger = logger
+        self.connection = None
+        self.cursor = None
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path + '/' + DB_DIR):
+            os.mkdir(parent_path + '/' + DB_DIR)
+        os.chdir(parent_path + '/' + DB_DIR)
+        db_name = KNOWN_NODES_DB_FILE
+        self.path = parent_path + '/' + DB_DIR + '/' + db_name
+        self.create_connection()
+        self.nodes_table = Table(self.connection,
+                                 self.cursor,
+                                 NODES_TABLE_NAME,
+                                 NODE_STRUCTURE)
+        os.chdir(default_cwd)
+
+    def create_connection(self):
+        """
+        creates new connection to the data
+        base
+        """
+        self.connection = sqlite3.connect(self.path)
+        self.connection.text_factory = bytes
+        self.cursor = self.connection.cursor()
+        self.logger.info('Connected to the known nodes db')
+
+    def close_connection(self):
+        """
+        closes the connection and the cursor
+        """
+        self.cursor.close()
+        self.connection.close()
+        self.logger.info('Connection is '
+                         'closed with the known nodes db')
+
+    def insert_address(self, address):
+        """
+        the function inserts address to the database
+        :param address: the address to insert
+        """
+        # find the next index
+        query = 'select count(*) from ' + \
+                self.nodes_table.table_name
+        self.cursor.execute(query)
+        index = self.cursor.fetchone()[0]
+        # insert the block
+        self.nodes_table.insert((index, address))
+
+        self.logger.info('Address '+address +
+                         'was inserted to the data base')
+
+    def extract_known_nodes(self):
+        """
+        the function extracts all the known nodes
+        :returns: the extracted nodes
+        """
+        # get the nodes table length
+        query = 'select count(*) from ' + self.nodes_table.table_name
+        self.cursor.execute(query)
+        count = self.cursor.fetchone()[0]
+        known_nodes = []
+        for i in range(count):
+            known_nodes.append(self.extract_node(i))
+        return known_nodes
+
+    def extract_node(self, index):
+        """
+        the function extract the node address matching
+        to the index
+        :returns: the extracted node address
+        """
+        query = \
+            EXTRACT_ALL_QUERY \
+            + self.nodes_table.table_name \
+            + ' where id=?'
+        self.cursor.execute(query, (index,))
+        node_address = self.cursor.fetchone()[1]
+        return node_address
+
+
+class HostNodes(object):
+    """
+    data base of known hosts nodes
+    """
+
+    def __init__(self, logger):
+        """
+        constructor
+        """
+        self.logger = logger
+        self.connection = None
+        self.cursor = None
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path + '/' + DB_DIR):
+            os.mkdir(parent_path + '/' + DB_DIR)
+        os.chdir(parent_path + '/' + DB_DIR)
+        db_name = HOSTS_DB_FILE
+        self.path = parent_path + '/' + DB_DIR + '/' + db_name
+        self.create_connection()
+        self.nodes_table = Table(self.connection,
+                                 self.cursor,
+                                 NODES_TABLE_NAME,
+                                 NODE_STRUCTURE)
+        os.chdir(default_cwd)
+
+    def create_connection(self):
+        """
+        creates new connection to the data
+        base
+        """
+        self.connection = sqlite3.connect(self.path)
+        self.connection.text_factory = bytes
+        self.cursor = self.connection.cursor()
+        self.logger.info('Connected to the hosts db')
+
+    def close_connection(self):
+        """
+        closes the connection and the cursor
+        """
+        self.cursor.close()
+        self.connection.close()
+        self.logger.info('Connection is '
+                         'closed with the hosts db')
+
+    def insert_address(self, address):
+        """
+        the function inserts address to the database
+        :param address: the address to insert
+        """
+        # find the next index
+        query = 'select count(*) from ' + \
+                self.nodes_table.table_name
+        self.cursor.execute(query)
+        index = self.cursor.fetchone()[0]
+        # insert the block
+        self.nodes_table.insert((index, address))
+
+        self.logger.info('Address ' + address +
+                         'was inserted to the data base')
+
+    def extract_hosts(self):
+        """
+        the function extracts all the hosts nodes'
+        addresses
+        :returns: the extracted hosts addresses
+        """
+        # get the nodes table length
+        query = 'select count(*) from ' + self.nodes_table.table_name
+        self.cursor.execute(query)
+        count = self.cursor.fetchone()[0]
+        hosts = []
+        for i in range(count):
+            hosts.append(self.extract_node(i))
+        return hosts
+
+    def extract_node(self, index):
+        """
+        the function extract the node address matching
+        to the index
+        :returns: the extracted node address
+        """
+        query = \
+            EXTRACT_ALL_QUERY \
+            + self.nodes_table.table_name \
+            + ' where id=?'
+        self.cursor.execute(query, (index,))
+        node_address = self.cursor.fetchone()[1]
+        return node_address
+
+    def delete_node(self, index):
+        """
+        the function removes the node from
+        the data base
+        :param index: the index of the node to
+        remove
+        """
+        # get the nodes table length
+        query = 'select count(*) from ' + self.nodes_table.table_name
+        self.cursor.execute(query)
+        count = self.cursor.fetchone()[0]
+
+        query = 'delete from '\
+                + self.nodes_table.table_name\
+                + ' where id=?'
+        self.cursor.execute(query, (index, ))
+
+        for i in xrange(count):
+            if i >= index+1:
+                query = 'update '\
+                        + self.nodes_table.table_name\
+                        + ' set id=? where id=?'
+                self.cursor.execute(query, (i-1, i))

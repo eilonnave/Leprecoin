@@ -34,13 +34,11 @@ class NodeClient:
         :param message: the message to send
         """
         self.logger.info('Acquiring lock')
-        self.lock.acquire()
         self.logger.info(
             'Sending message to the known nodes- ' + message)
         for node_address in self.known_nodes:
             self.send(message, node_address)
         self.logger.info('Releasing lock')
-        self.lock.release()
 
     def send(self, message, node_address):
         """
@@ -51,6 +49,7 @@ class NodeClient:
         :param node_address: the address of the node
         to send
         """
+        self.lock.acquire()
         try:
             self.client_socket.connect((node_address,
                                         COMMUNICATION_PORT))
@@ -74,6 +73,7 @@ class NodeClient:
             self.client_socket.close()
             self.client_socket = \
                 socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.lock.release()
 
     def check_connections(self):
         """
@@ -83,4 +83,22 @@ class NodeClient:
         list
         """
         self.lock.acquire()
-        pass
+        addresses = []
+        for address in self.known_nodes:
+            addresses.append(address)
+        for address in addresses:
+            try:
+                self.client_socket.connect((address,
+                                            COMMUNICATION_PORT))
+                self.logger.info(
+                    'Check connection to- ' +
+                    address)
+            except socket.error:
+                self.logger.info(
+                    'Node address- ' + address +
+                    ' disconnected')
+                self.known_nodes.remove(address)
+            finally:
+                self.client_socket.close()
+                self.client_socket = \
+                    socket.socket(socket.AF_INET, socket.SOCK_STREAM)
