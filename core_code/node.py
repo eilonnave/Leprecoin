@@ -25,12 +25,9 @@ from core_code.transaction import UnspentOutput
 from core_code.database import HostNodes, KnownNodes
 from core_code.blockchain import REWORD
 
-# ToDo: validate that there are no double transactions and so
 # ToDo: check connections before downloading
 # ToDo: handle possible errors in receiving messages
 
-
-KNOWN_NODES = ['172.16.211.137']
 WAITING_TIME = 2
 WALLET_ADDRESS_LENGTH = 40
 HEX_DIGEST = '0123456789abcdef'
@@ -57,7 +54,8 @@ class Node(object):
                              '[0-9][0-9]*/.[0-9][0-9]*"')
         first_eth_address = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
                                       addresses.read()).group()
-        self.address = first_eth_address
+        # self.address = first_eth_address
+        self.address = '172.16.211.137'
 
         # initialize the server
         self.server = NodeServer(self.logger)
@@ -68,9 +66,13 @@ class Node(object):
         # find known nodes
         self.known_nodes_db = KnownNodes(self.logger)
         self.known_nodes = self.known_nodes_db.extract_known_nodes()
+        if self.address in self.known_nodes:
+                self.known_nodes.remove(addresses)
         if len(self.known_nodes) == 0:
             hosts_db = HostNodes(self.logger)
             self.known_nodes = hosts_db.extract_hosts()
+            if self.address in self.known_nodes:
+                self.known_nodes.remove(addresses)
         self.client = NodeClient(self.logger, self.known_nodes)
         self.msg_handler = None
         self.to_close = False
@@ -298,35 +300,36 @@ class Node(object):
         the function handles the messages
         that the node received
         """
-        messages = self.server.get_received_messages()
-        for message in messages:
-            self.server.remove_message(message)
-            self.msg_handler.change_message(message,
-                                            True)
-            self.msg_handler.unpack_message()
-            if type(self.msg_handler.message) is Error:
-                self.logger.info('Wrong data received')
-            elif type(self.msg_handler.message) is Version:
-                if self.msg_handler.message.address_from not in self.known_nodes:
-                    self.known_nodes.append(self.msg_handler.message.address_from)
-                self.handle_version(self.msg_handler.message)
+        while not self.server.to_close:
+            messages = self.server.get_received_messages()
+            for message in messages:
                 self.server.remove_message(message)
-            elif type(self.msg_handler.message) is GetBlocks:
-                if self.msg_handler.message.address_from not in self.known_nodes:
-                    self.known_nodes.append(self.msg_handler.message.address_from)
-                self.handle_get_blocks(self.msg_handler.message)
-            elif type(self.msg_handler.message) is Inv:
-                if self.msg_handler.message.address_from not in self.known_nodes:
-                    self.known_nodes.append(self.msg_handler.message.address_from)
-                self.handle_inv(self.msg_handler.message)
-            elif type(self.msg_handler.message) is GetData:
-                if self.msg_handler.message.address_from not in self.known_nodes:
-                    self.known_nodes.append(self.msg_handler.message.address_from)
-                self.handle_get_data(self.msg_handler.message)
-            elif type(self.msg_handler.message) is GetAddresses:
-                if self.msg_handler.message.address_from not in self.known_nodes:
-                    self.known_nodes.append(self.msg_handler.message.address_from)
-                self.handle_get_addresses(self.msg_handler.message)
+                self.msg_handler.change_message(message,
+                                                True)
+                self.msg_handler.unpack_message()
+                if type(self.msg_handler.message) is Error:
+                    self.logger.info('Wrong data received')
+                elif type(self.msg_handler.message) is Version:
+                    if self.msg_handler.message.address_from not in self.known_nodes:
+                        self.known_nodes.append(self.msg_handler.message.address_from)
+                    self.handle_version(self.msg_handler.message)
+                    self.server.remove_message(message)
+                elif type(self.msg_handler.message) is GetBlocks:
+                    if self.msg_handler.message.address_from not in self.known_nodes:
+                        self.known_nodes.append(self.msg_handler.message.address_from)
+                    self.handle_get_blocks(self.msg_handler.message)
+                elif type(self.msg_handler.message) is Inv:
+                    if self.msg_handler.message.address_from not in self.known_nodes:
+                        self.known_nodes.append(self.msg_handler.message.address_from)
+                    self.handle_inv(self.msg_handler.message)
+                elif type(self.msg_handler.message) is GetData:
+                    if self.msg_handler.message.address_from not in self.known_nodes:
+                        self.known_nodes.append(self.msg_handler.message.address_from)
+                    self.handle_get_data(self.msg_handler.message)
+                elif type(self.msg_handler.message) is GetAddresses:
+                    if self.msg_handler.message.address_from not in self.known_nodes:
+                        self.known_nodes.append(self.msg_handler.message.address_from)
+                    self.handle_get_addresses(self.msg_handler.message)
 
     def handle_version(self, version_message):
         """
@@ -427,6 +430,7 @@ class Node(object):
                         block = self.msg_handler.message.block
                         if block.hash_code == hash_code:
                             if self.verify_block(block):
+                                self.logger.info('Received legal block')
                                 self.block_chain_db.add_block(block)
                                 for transaction in block.transactions:
                                     if transaction in self.block_chain_db.transactions_pool:
@@ -437,6 +441,8 @@ class Node(object):
                                                                     hash_code), False)
                                 self.msg_handler.pack()
                                 self.client.send_to_all(self.msg_handler.message)
+                            else:
+                                self.logger.info('Received illegal block')
                             break
 
     def handle_transaction_inv(self, inv_message):
@@ -481,6 +487,7 @@ class Node(object):
                         transaction = self.msg_handler.message.transaction
                         if transaction.transaction_id == hash_code:
                             if self.verify_transaction(transaction):
+                                self.logger.info('Received legal transaction')
                                 self.block_chain_db.add_transaction(transaction)
 
                                 # send the transaction to known nodes
@@ -489,6 +496,8 @@ class Node(object):
                                                                     hash_code), False)
                                 self.msg_handler.pack()
                                 self.client.send_to_all(self.msg_handler.message)
+                            else:
+                                self.logger.info('Received illegal transaction')
                             break
 
     def handle_get_data(self, get_data_message):
@@ -600,6 +609,26 @@ class Node(object):
         :returns: true if the block is legal and false
         otherwise
         """
+        # check that there are no
+        # different transactions using the same input
+        # and that there is only one coin base
+        # transaction
+        all_inputs = []
+        found_coin_base = False
+
+        for transaction in block.transactions:
+            # check if coin base
+            if transaction.inputs[0].output_index == -1:
+                if found_coin_base:
+                    return False
+                found_coin_base = True
+            else:
+                for tx_input in transaction.inputs:
+                    for out_input in all_inputs:
+                        if out_input.transaction_id == tx_input.transaction_id\
+                                and out_input.output_index == tx_input.output_index:
+                            return False
+
         # validate the block
         if block.is_valid_proof():
             for transaction in block.transactions:
@@ -754,12 +783,11 @@ if __name__ == '__main__':
     logger = Logging('test').logger
     db = BlockChainDB(logger)
     node = Node(logger, db)
-    if node.address == KNOWN_NODES[0]:
-        b1 = Block(0, '0', [])
-        b2 = Block(1, b1.hash_code, [])
-        b3 = Block(2, b2.hash_code, [])
-        db.add_downloaded_blocks([b1, b2, b3])
-        while True:
-            node.handle_messages()
-    else:
-        node.update_chain()
+    node.find_connections()
+    node.update_chain()
+    b1 = Block(0, '0', [])
+    b2 = Block(1, b1.hash_code, [])
+    b3 = Block(2, b2.hash_code, [])
+    db.add_downloaded_blocks([b1, b2, b3])
+    thread = threading.Thread(target=node.handle_messages)
+    thread.start()
