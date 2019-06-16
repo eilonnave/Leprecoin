@@ -15,7 +15,7 @@ HOSTS_DB_FILE = 'hosts.db'
 NODE_STRUCTURE = '(id int, address text)'
 NODES_TABLE_NAME = 'known_nodes'
 EXTRACT_ALL_QUERY = 'select * from '
-GENESIS_ADDRESS = 'b3ce40ec7cafcbf81ad93a556910777b28811c92'
+GENESIS_ADDRESS = 'c1e7121e36c580efa24c0a482a1c994ffdb3c084'
 GENESIS_NONCE = 1996
 GENESIS_DIFFICULTY = 4
 GENESIS_TIME_STAMP = 1560672296.571
@@ -171,9 +171,11 @@ class BlockChainDB(BlockChain):
             + ' where number=?'
         self.cursor.execute(query, (line_index,))
         serialized_block = self.cursor.fetchone()
-        transactions = self.extract_transactions(line_index)
-        self.logger.info('Block number '+str(line_index)+' extracted for the db')
-        return Block.deserialize(serialized_block, transactions)
+        if serialized_block is not None:
+            transactions = self.extract_transactions(line_index)
+            self.logger.info('Block number '+str(line_index)+' extracted for the db')
+            return Block.deserialize(serialized_block, transactions)
+        return None
 
     def extract_inputs(self, transaction_number):
         """
@@ -256,7 +258,9 @@ class BlockChainDB(BlockChain):
 
         chain = []
         for i in range(count):
-            chain.append(self.extract_block(i))
+            extract_block = self.extract_block(i)
+            if extract_block is not None:
+                chain.append(extract_block)
         return chain
 
     def update_chain(self):

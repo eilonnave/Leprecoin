@@ -366,6 +366,7 @@ class Node(object):
         hashes = []
         for block in chain:
             hashes.append(block.hash_code)
+        print get_blocks_message
         for hash_code in hashes[hashes.index(get_blocks_message.hash_code)+1:]:
             if len(hashes_to_send) == MAX_HASHES_IN_INV:
                 break
@@ -790,6 +791,7 @@ class Node(object):
         the function distributes the transaction
         to known nodes
         """
+        print 'send'
         inv = Inv(self.address, 'transaction',
                   transaction.transaction_id)
         self.msg_handler.change_message(inv, False)

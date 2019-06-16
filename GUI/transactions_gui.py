@@ -6,7 +6,7 @@ from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'C:\Leprecoin\GUI\pics\leprechaun_transactions.png'
+PIC_PATH = 'D:\Leprecoin\GUI\pics\leprechaun_transactions.png'
 
 
 class TransactionsWindow(GuiWindow):

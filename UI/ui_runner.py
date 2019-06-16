@@ -57,15 +57,20 @@ class UiRunner:
         self.wallet = Wallet(private_key,
                              self.block_chain_db,
                              self.loggers[0])
-        self.root = Tk.Tk()
+        """
         self.current_window = LoadingWindow(self.root,
                                             self.win_dict,
                                             self.wallet)
         loading_thread = threading.Thread(target=self.root.mainloop)
         loading_thread.start()
+        """
         self.node.find_connections()
         self.node.update_chain()
+        print 'start'
+        """
         self.current_window.stopped_loading()
+        """
+        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
         while self.win_dict[NEXT_KEY] is not None:
             self.root = Tk.Tk()
             self.current_window = self.win_dict[NEXT_KEY](self.root,

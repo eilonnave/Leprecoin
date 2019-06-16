@@ -36,8 +36,7 @@ class Miner(Node):
         self.loggers = [Logging('wallet').logger,
                         Logging('network').logger,
                         Logging('block_chain').logger]
-        self.block_chain_db = BlockChainDB(self.loggers[2],
-                                           'tests.db')
+        self.block_chain_db = BlockChainDB(self.loggers[2])
 
         super(Miner, self).__init__(self.loggers[1], self.block_chain_db)
 
