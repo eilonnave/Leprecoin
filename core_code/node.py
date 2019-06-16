@@ -224,7 +224,6 @@ class Node(object):
             for block_hash in blocks_hashes:
                 hash_code += block_hash
             hash_code = SHA256.new(hash_code).hexdigest()
-            blocks_hashes.append(hash_code)
             if hash_code in hashes_dict:
                 hashes_dict[hash_code] += 1
             else:
