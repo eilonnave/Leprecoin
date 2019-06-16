@@ -258,6 +258,7 @@ class SendWindow(GuiWindow):
             else:
                 self.transaction = transaction
                 self.win_dict[NEXT_KEY] = self.win_dict[WAITING_KEY]
+                self.top.destroy()
         else:
             self.show_error_label()
 

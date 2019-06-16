@@ -4,7 +4,7 @@ from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'C:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_PATH = 'D:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
 SECONDS_TO_WAIT = 300
 
 
