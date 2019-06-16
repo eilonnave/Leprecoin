@@ -67,12 +67,12 @@ class Node(object):
         self.known_nodes_db = KnownNodes(self.logger)
         self.known_nodes = self.known_nodes_db.extract_known_nodes()
         if self.address in self.known_nodes:
-                self.known_nodes.remove(addresses)
+                self.known_nodes.remove(self.address)
         if len(self.known_nodes) == 0:
             hosts_db = HostNodes(self.logger)
             self.known_nodes = hosts_db.extract_hosts()
             if self.address in self.known_nodes:
-                self.known_nodes.remove(addresses)
+                self.known_nodes.remove(self.address)
         self.client = NodeClient(self.logger, self.known_nodes)
         self.msg_handler = None
         self.to_close = False
@@ -154,7 +154,8 @@ class Node(object):
         while current_length != best_height:
 
             # request blocks from the known nodes
-            get_blocks_message = GetBlocks(self.address, current_length)
+            get_blocks_message = GetBlocks(self.address,
+                                           self.block_chain_db.chain[current_length-1].hash_code)
             self.msg_handler.change_message(get_blocks_message, False)
             self.msg_handler.pack()
             for address in holders:
@@ -313,7 +314,6 @@ class Node(object):
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
                     self.handle_version(self.msg_handler.message)
-                    self.server.remove_message(message)
                 elif type(self.msg_handler.message) is GetBlocks:
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
@@ -549,6 +549,8 @@ class Node(object):
         :param get_addresses_message: the get addresses
         message
         """
+        self.logger.info('Handle get addresses message from ' +
+                         get_addresses_message.address_from)
         addresses_message = AddressesMessage(self.address,
                                              self.known_nodes)
         self.msg_handler.change_message(addresses_message, False)
@@ -580,7 +582,8 @@ class Node(object):
                 addresses = self.msg_handler.message.addresses
                 self.server.remove_message(respond)
                 for address in addresses:
-                    if address not in self.known_nodes:
+                    if address not in self.known_nodes and \
+                                    address != self.address:
                         self.known_nodes.append(address)
                         self.known_nodes_db.insert_address(address)
 
@@ -785,9 +788,8 @@ if __name__ == '__main__':
     node = Node(logger, db)
     node.find_connections()
     node.update_chain()
-    b1 = Block(0, '0', [])
-    b2 = Block(1, b1.hash_code, [])
-    b3 = Block(2, b2.hash_code, [])
-    db.add_downloaded_blocks([b1, b2, b3])
+    b1 = Block(1, db.chain[-1].hash_code, [])
+    b2 = Block(2, db.chain[-1].hash_code, [])
+    db.add_downloaded_blocks([b1, b2])
     thread = threading.Thread(target=node.handle_messages)
     thread.start()

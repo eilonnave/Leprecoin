@@ -6,9 +6,6 @@ import threading
 COMMUNICATION_PORT = 2500
 LENGTH_SEPARATION_CHAR = '$'
 
-# ToDo: implement check connection
-# ToDo: implement lock
-
 
 class NodeClient:
     """
@@ -102,3 +99,4 @@ class NodeClient:
                 self.client_socket.close()
                 self.client_socket = \
                     socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.lock.release()
