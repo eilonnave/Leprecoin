@@ -3,7 +3,7 @@ from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'C:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_PATH = 'D:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
 
 
 class LoadingWindow(GuiWindow):
@@ -100,4 +100,5 @@ class LoadingWindow(GuiWindow):
         """
         the function closes the window
         """
+        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
         self.top.destroy()

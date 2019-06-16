@@ -785,6 +785,17 @@ class Node(object):
         signed_data = CryptoSet.hash(signed_data)
         return CryptoSet.verify(signed_data, signature, public_key)
 
+    def distribute_transaction(self, transaction):
+        """
+        the function distributes the transaction
+        to known nodes
+        """
+        inv = Inv(self.address, 'transaction',
+                  transaction.transaction_id)
+        self.msg_handler.change_message(inv, False)
+        self.msg_handler.pack()
+        self.client.send_to_all(self.msg_handler.message)
+
 
 if __name__ == '__main__':
     logger = Logging('test').logger

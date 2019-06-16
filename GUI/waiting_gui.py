@@ -83,17 +83,6 @@ class WaitingForMiningWindow(GuiWindow):
         self.waiting_frame.configure(background="dark slate gray")
         self.waiting_frame.configure(width=125)
 
-        """
-        self.waiting_label = Tk.Label(self.mining_frame)
-        self.waiting_label.place(relx=0.156, rely=0.286, height=164, width=200)
-        self.waiting_label.configure(background="#2f4f4f")
-        self.waiting_label.configure(disabledforeground="#a3a3a3")
-        self.waiting_label.configure(
-            font="-family {Lucida Calligraphy} -size 18")
-        self.waiting_label.configure(foreground="Gold")
-        self.waiting_label.configure(text='''Loading...''')
-        """
-
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.leprechaun_label = Tk.Label(self.waiting_frame, image=pic)
         self.leprecoin_label.image = pic

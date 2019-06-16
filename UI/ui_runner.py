@@ -13,6 +13,7 @@ from core_code.database import BlockChainDB
 from core_code.node import Node
 import pickle
 import os
+import threading
 
 GENERATE_NUMBER = 2048
 PRIVATE_KEY_FILE = 'private_key.txt'
@@ -26,8 +27,7 @@ class UiRunner:
         self.loggers = [Logging('wallet').logger,
                         Logging('network').logger,
                         Logging('block_chain').logger]
-        self.block_chain_db = BlockChainDB(self.loggers[2],
-                                           'tests.db')
+        self.block_chain_db = BlockChainDB(self.loggers[2])
         self.root = None
         self.current_window = None
         self.node = Node(self.loggers[1],
@@ -57,15 +57,26 @@ class UiRunner:
         self.wallet = Wallet(private_key,
                              self.block_chain_db,
                              self.loggers[0])
+        self.root = Tk.Tk()
+        self.current_window = LoadingWindow(self.root,
+                                            self.win_dict,
+                                            self.wallet)
+        loading_thread = threading.Thread(target=self.root.mainloop)
+        loading_thread.start()
         self.node.find_connections()
         self.node.update_chain()
-        self.win_dict[NEXT_KEY] = WalletMainWindow
+        self.current_window.stopped_loading()
         while self.win_dict[NEXT_KEY] is not None:
             self.root = Tk.Tk()
             self.current_window = self.win_dict[NEXT_KEY](self.root,
                                                           self.win_dict,
                                                           self.wallet)
             self.root.mainloop()
+            if type(self.current_window) is SendWindow:
+                transaction = self.current_window.transaction
+                if transaction is not None:
+                    self.block_chain_db.add_transaction(transaction)
+                    self.node.distribute_transaction(transaction)
 
         # handle exiting form the system
 
