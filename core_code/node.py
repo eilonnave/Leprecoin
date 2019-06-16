@@ -169,7 +169,7 @@ class Node(object):
             responds = self.server.get_received_messages()
             inv_responds = []
             for respond in responds:
-                self.msg_handler.change_message(responds, True)
+                self.msg_handler.change_message(respond, True)
                 self.msg_handler.unpack_message()
 
                 # check that the inv is matching to the demands
@@ -259,7 +259,9 @@ class Node(object):
             get_data_message = GetData(self.address,
                                        'block',
                                        hash_code)
-            self.client.send_to_all(get_data_message)
+            self.msg_handler.change_message(get_data_message, False)
+            self.msg_handler.pack()
+            self.client.send_to_all(self.msg_handler.message)
 
             # waiting for responds
             time.sleep(WAITING_TIME)
@@ -361,10 +363,13 @@ class Node(object):
                          get_blocks_message.address_from)
         hashes_to_send = []
         chain = self.block_chain_db.chain
-        for block in chain[chain.index(get_blocks_message.hash_code)+1:]:
+        hashes = []
+        for block in chain:
+            hashes.append(block.hash_code)
+        for hash_code in hashes[hashes.index(get_blocks_message.hash_code)+1:]:
             if len(hashes_to_send) == MAX_HASHES_IN_INV:
                 break
-            hashes_to_send.append(block.hash_code)
+            hashes_to_send.append(hash_code)
         inv_message = Inv(self.address, 'block', hashes_to_send)
         self.msg_handler.change_message(inv_message, False)
         self.msg_handler.pack()
@@ -510,7 +515,7 @@ class Node(object):
         chain = self.block_chain_db.chain
 
         # sending the block as a respond
-        if get_data_message.type == 'block':
+        if get_data_message.data_type == 'block':
             block_to_send = None
             for block in chain:
                 if block.hash_code == get_data_message.hash_code:
@@ -525,7 +530,7 @@ class Node(object):
                                  get_data_message.address_from)
 
         # sending the transaction as a respond
-        elif get_data_message.type == 'transaction':
+        elif get_data_message.data_type == 'transaction':
             transaction_to_send = None
             for block in chain:
                 if transaction_to_send is not None:
@@ -788,7 +793,9 @@ if __name__ == '__main__':
     node.find_connections()
     node.update_chain()
     b1 = Block(1, db.chain[-1].hash_code, [])
+    b1.mine_block()
     b2 = Block(2, db.chain[-1].hash_code, [])
+    b2.mine_block()
     db.add_downloaded_blocks([b1, b2])
     thread = threading.Thread(target=node.handle_messages)
     thread.start()
