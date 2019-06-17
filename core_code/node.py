@@ -312,26 +312,21 @@ class Node(object):
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is Error:
                     self.logger.info('Wrong data received')
-                elif type(self.msg_handler.message) is Version:
+                else:
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
-                    self.handle_version(self.msg_handler.message)
-                elif type(self.msg_handler.message) is GetBlocks:
-                    if self.msg_handler.message.address_from not in self.known_nodes:
-                        self.known_nodes.append(self.msg_handler.message.address_from)
-                    self.handle_get_blocks(self.msg_handler.message)
-                elif type(self.msg_handler.message) is Inv:
-                    if self.msg_handler.message.address_from not in self.known_nodes:
-                        self.known_nodes.append(self.msg_handler.message.address_from)
-                    self.handle_inv(self.msg_handler.message)
-                elif type(self.msg_handler.message) is GetData:
-                    if self.msg_handler.message.address_from not in self.known_nodes:
-                        self.known_nodes.append(self.msg_handler.message.address_from)
-                    self.handle_get_data(self.msg_handler.message)
-                elif type(self.msg_handler.message) is GetAddresses:
-                    if self.msg_handler.message.address_from not in self.known_nodes:
-                        self.known_nodes.append(self.msg_handler.message.address_from)
-                    self.handle_get_addresses(self.msg_handler.message)
+                        self.known_nodes_db.insert_address(
+                            self.msg_handler.message.address_from)
+                    if type(self.msg_handler.message) is Version:
+                        self.handle_version(self.msg_handler.message)
+                    elif type(self.msg_handler.message) is GetBlocks:
+                        self.handle_get_blocks(self.msg_handler.message)
+                    elif type(self.msg_handler.message) is Inv:
+                        self.handle_inv(self.msg_handler.message)
+                    elif type(self.msg_handler.message) is GetData:
+                        self.handle_get_data(self.msg_handler.message)
+                    elif type(self.msg_handler.message) is GetAddresses:
+                        self.handle_get_addresses(self.msg_handler.message)
 
     def handle_version(self, version_message):
         """
