@@ -559,6 +559,9 @@ class Node(object):
                                                          transaction_to_send)
                 self.msg_handler.change_message(transaction_message, False)
                 self.msg_handler.pack()
+                self.msg_handler.unpack_message()
+                self.msg_handler.pack()
+                print self.msg_handler.message
                 self.client.send(self.msg_handler.message,
                                  get_data_message.address_from)
 
@@ -575,7 +578,7 @@ class Node(object):
             if address != get_addresses_message.address_from:
                 addresses_to_send.append(address)
         addresses_message = AddressesMessage(self.address,
-                                             self.known_nodes)
+                                             addresses_to_send)
         self.msg_handler.change_message(addresses_message, False)
         self.msg_handler.pack()
         self.client.send(self.msg_handler.message,

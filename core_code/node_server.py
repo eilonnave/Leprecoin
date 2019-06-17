@@ -155,7 +155,6 @@ class NodeServer:
         received_messages = []
         for message in self.received_messages:
             received_messages.append(message)
-            print message
         return received_messages
 
     def remove_message(self, message):
@@ -164,4 +163,11 @@ class NodeServer:
         message from the received list
         :param message: the message to remove
         """
-        self.received_messages.remove(message)
+        index = -1
+        i = 0
+        for message_tup in self.received_messages:
+            if message[0] is message_tup[0] and message[1] == message_tup[1]:
+                index = i
+                break
+            i += 1
+        self.received_messages.pop(index)

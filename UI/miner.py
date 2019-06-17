@@ -93,9 +93,13 @@ class Miner(Node):
                 pass
             self.block_chain_db.add_transaction(new_transaction)
 
+            transactions_to_mine = []
+            for transaction in self.block_chain_db.transactions_pool:
+                transactions_to_mine.append(transaction)
+
             # create the block
             block = Block(number, chain[-1].hash_code,
-                          self.block_chain_db.transactions_pool)
+                          transactions_to_mine)
             self.logger.info('Mining new block')
             block.nonce = STARTER_NONCE
             while (not block.is_valid_proof()) and (not self.fail):
@@ -115,8 +119,7 @@ class Miner(Node):
                 self.msg_handler.pack()
                 self.client.send_to_all(self.msg_handler.message)
                 for transaction in block.transactions:
-                    if transaction in self.block_chain_db.transactions_pool:
-                        self.block_chain_db.transactions_pool.remove(transaction)
+                    self.block_chain_db.transactions_pool.remove(transaction)
                 self.block_chain_db.transactions_pool.remove(new_transaction)
                 self.logger.info('Succeed in mining block')
 
@@ -128,15 +131,18 @@ class Miner(Node):
         """
         self.known_nodes_db = KnownNodes(self.logger)
         while True:
-            messages = self.server.get_received_messages()
-            for message in messages:
-                self.server.remove_message(message)
+            messages_list = self.server.get_received_messages()
+            for message_tup in messages_list:
+                self.server.remove_message(message_tup)
+                message = message_tup[0]
+                address = message_tup[1]
                 self.msg_handler.change_message(message,
                                                 True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is Error:
                     self.logger.info('Wrong data received')
                 else:
+                    self.msg_handler.message.address_from = address
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
                         self.known_nodes_db.insert_address(
