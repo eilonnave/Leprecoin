@@ -29,6 +29,7 @@ class NodeServer:
         # the node will handle them in another class
         self.received_messages = []
         self.to_close = False
+        self.clients_addresses = []
         try:
             # binding and listening
             self.server_socket.bind((SERVER_IP, COMMUNICATION_PORT))
@@ -81,12 +82,13 @@ class NodeServer:
                                  str(client_address[0]) +
                                  ':' +
                                  str(client_address[1]))
-                self.open_clients_sockets.append((client_socket, client_address[0]))
+                self.open_clients_sockets.append(client_socket)
+                self.clients_addresses.append((client_socket, client_address))
             else:
                 try:
                     client_address = ''
                     length = self.extract_pack_length(current_socket)
-                    for client_tup in self.open_clients_sockets:
+                    for client_tup in self.clients_addresses:
                         if client_tup[0] is current_socket:
                             client_address = client_tup[1]
                             break
