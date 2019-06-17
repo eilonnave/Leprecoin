@@ -582,7 +582,6 @@ class Node(object):
             self.msg_handler.change_message(get_addresses, False)
         self.msg_handler.pack()
         self.client.send_to_all(self.msg_handler.message)
-
         time.sleep(WAITING_TIME)
 
         responds = self.server.get_received_messages()
@@ -811,7 +810,6 @@ class Node(object):
         """
         self.server.to_close = True
         self.block_chain_db.close_connection()
-        self.known_nodes_db.close_connection()
 
 
 if __name__ == '__main__':

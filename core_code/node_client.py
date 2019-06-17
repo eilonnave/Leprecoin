@@ -22,6 +22,7 @@ class NodeClient:
         self.logger = logger
         self.known_nodes = known_nodes
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.setblocking(0)
         self.lock = threading.Lock()
 
     def send_to_all(self, message):
@@ -63,7 +64,7 @@ class NodeClient:
             self.logger.info(
                 'Node address- ' +
                 node_address +
-                ' disconnected')
+                ' is not connected')
             if node_address in self.known_nodes:
                 self.known_nodes.remove(node_address)
         finally:
