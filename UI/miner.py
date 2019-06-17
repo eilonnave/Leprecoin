@@ -119,8 +119,12 @@ class Miner(Node):
                 self.msg_handler.pack()
                 self.client.send_to_all(self.msg_handler.message)
                 for transaction in block.transactions:
-                    self.block_chain_db.transactions_pool.remove(transaction)
-                self.block_chain_db.transactions_pool.remove(new_transaction)
+                    i = 0
+                    for transaction_in_pool in self.block_chain_db.transactions_pool:
+                        if transaction_in_pool.transaction_id == transaction.transaction_id:
+                            self.block_chain_db.transactions_pool.pop(i)
+                            break
+                        i += 1
                 self.logger.info('Succeed in mining block')
 
     def handle_messages(self):
