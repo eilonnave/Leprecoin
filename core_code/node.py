@@ -55,7 +55,7 @@ class Node(object):
         first_eth_address = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
                                       addresses.read()).group()
         # self.address = first_eth_address
-        self.address = ''
+        self.address = '127.0.0.1'
 
         # initialize the server
         self.server = NodeServer(self.logger)

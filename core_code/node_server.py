@@ -83,7 +83,7 @@ class NodeServer:
                                  ':' +
                                  str(client_address[1]))
                 self.open_clients_sockets.append(client_socket)
-                self.clients_addresses.append((client_socket, client_address))
+                self.clients_addresses.append((client_socket, client_address[0]))
             else:
                 try:
                     client_address = ''
@@ -154,6 +154,7 @@ class NodeServer:
         """
         received_messages = []
         for message in self.received_messages:
+            print message
             received_messages.append(message)
         return received_messages
 
