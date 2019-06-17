@@ -535,15 +535,19 @@ class Node(object):
 
         # sending the transaction as a respond
         elif get_data_message.data_type == 'transaction':
+            print 'transaction'
             transaction_to_send = None
-            for block in chain:
+            for block in self.block_chain_db.transactions_pool:
                 if transaction_to_send is not None:
                     break
-                for transaction in block.transactions:
+                for transaction in self.block_chain_db.transactions_pool:
+                    print transaction.transaction_id
+                    print get_data_message.hash_code
                     if transaction.transaction_id == \
                             get_data_message.hash_code:
                         transaction_to_send = transaction
             if transaction_to_send is not None:
+                print transaction_to_send
                 transaction_message = TransactionMessage(self.address,
                                                          transaction_to_send)
                 self.msg_handler.change_message(transaction_message, False)
@@ -783,7 +787,7 @@ class Node(object):
         signature = proof[0]
         signed_data = un_spent_output.transaction_id
         signed_data += transaction.outputs[0].address
-        signed_data = CryptoSet.hash(signed_data)
+        signed_data = CryptoSet.hash(signed_data).hexdigest()
         signed_data += str(transaction.outputs[0].value)
         signed_data = CryptoSet.hash(signed_data)
         return CryptoSet.verify(signed_data, signature, public_key)
@@ -794,8 +798,9 @@ class Node(object):
         to known nodes
         """
         print 'send'
+        print self.known_nodes
         inv = Inv(self.address, 'transaction',
-                  transaction.transaction_id)
+                  [transaction.transaction_id])
         self.msg_handler.change_message(inv, False)
         self.msg_handler.pack()
         self.client.send_to_all(self.msg_handler.message)

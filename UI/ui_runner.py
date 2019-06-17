@@ -76,7 +76,6 @@ class UiRunner:
                 if type(self.current_window) is SendWindow:
                     transaction = self.current_window.transaction
                     if transaction is not None:
-
                         self.block_chain_db.add_transaction(transaction)
                         self.node.distribute_transaction(transaction)
         else:

@@ -169,7 +169,6 @@ class WaitingForMiningWindow(GuiWindow):
         to the
         :return:
         """
-        print times
         if times > SECONDS_TO_WAIT:
             self.failed_mining()
         elif len(self.wallet.transactions) > self.started_length:
