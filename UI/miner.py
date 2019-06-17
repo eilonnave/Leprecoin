@@ -39,7 +39,7 @@ class Miner(Node):
                         Logging('network').logger,
                         Logging('block_chain').logger]
         self.block_chain_db = BlockChainDB(self.loggers[2])
-
+        self.global_transaction_pool = self.block_chain_db.transactions_pool
         super(Miner, self).__init__(self.loggers[1], self.block_chain_db)
 
         self.fail = False
@@ -75,6 +75,7 @@ class Miner(Node):
         block chain
         """
         self.block_chain_db = BlockChainDB(self.loggers[2])
+        self.block_chain_db.transactions_pool = self.global_transaction_pool
         while True:
             self.fail = False
             chain = self.block_chain_db.chain
@@ -133,6 +134,8 @@ class Miner(Node):
         from the server if those are necessary
         to the miner
         """
+        self.block_chain_db = BlockChainDB(self.loggers[2])
+        self.block_chain_db.transactions_pool = self.global_transaction_pool
         self.known_nodes_db = KnownNodes(self.logger)
         while True:
             messages_list = self.server.get_received_messages()

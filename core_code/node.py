@@ -315,6 +315,7 @@ class Node(object):
         that the node received
         """
         self.known_nodes_db = KnownNodes(self.logger)
+        self.block_chain_db = BlockChainDB(self.logger)
         while not self.server.to_close:
             message_list = self.server.get_received_messages()
             for message_tuple in message_list:
@@ -377,7 +378,6 @@ class Node(object):
         hashes = []
         for block in chain:
             hashes.append(block.hash_code)
-        print get_blocks_message
         for hash_code in hashes[hashes.index(get_blocks_message.hash_code)+1:]:
             if len(hashes_to_send) == MAX_HASHES_IN_INV:
                 break
