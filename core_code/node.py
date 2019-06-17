@@ -590,8 +590,7 @@ class Node(object):
                 addresses = self.msg_handler.message.addresses
                 self.server.remove_message(respond)
                 for address in addresses:
-                    if address not in self.known_nodes and \
-                                    address != self.address:
+                    if address not in self.known_nodes and address != self.address:
                         self.known_nodes.append(address)
                         self.known_nodes_db.insert_address(address)
 
