@@ -406,6 +406,8 @@ class Node(object):
                 if hash_code == block.hash_code:
                     is_found = True
                     break
+        else:
+            self.logger.info('block hash is not legal')
 
         if not is_found and is_legal:
             # request the block from the node

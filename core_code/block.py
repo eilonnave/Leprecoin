@@ -62,9 +62,9 @@ class Block(object):
         """
         if len(self.transactions) == 0:
             return ''
-        transactions_hash = self.transactions[0].hash_transaction()
+        transactions_hash = self.transactions[0].transaction_id
         for transaction in self.transactions[1:]:
-            transaction_hash = transaction.hash_transaction()
+            transaction_hash = transaction.transaction_id
             transactions_hash = hashlib.sha256(
                 (transactions_hash+transaction_hash))\
                 .hexdigest()

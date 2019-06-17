@@ -43,11 +43,11 @@ class Miner(Node):
         self.fail = False
         # open private key file for the address
         if os.path.isfile(PRIVATE_KEY_FILE):
-            with open(PRIVATE_KEY_FILE, 'rb') as private_key_file:
+            with open(PRIVATE_KEY_FILE, 'r') as private_key_file:
                 private_key = pickle.load(private_key_file)
                 private_key = RSA.import_key(private_key)
         else:
-            with open(PRIVATE_KEY_FILE, 'wb') as private_key_file:
+            with open(PRIVATE_KEY_FILE, 'w') as private_key_file:
                 private_key = RSA.generate(GENERATE_NUMBER)
                 pickle.dump(private_key.export_key(),
                             private_key_file)
@@ -72,6 +72,7 @@ class Miner(Node):
         mines new block in the
         block chain
         """
+        self.block_chain_db = BlockChainDB(self.loggers[2])
         while True:
             self.fail = False
             chain = self.block_chain_db.chain
@@ -86,9 +87,10 @@ class Miner(Node):
                                           [transaction_output])
 
             # wait until there are enough transactions in the pool
+            """
             while len(self.block_chain_db.transactions_pool) < MIN_TRANSACTIONS:
                 pass
-
+            """
             self.block_chain_db.add_transaction(new_transaction)
 
             # create the block
@@ -174,6 +176,8 @@ class Miner(Node):
                 if hash_code == block.hash_code:
                     is_found = True
                     break
+        else:
+            self.logger.info('block hash is not legal')
 
         if not is_found and is_legal:
             # request the block from the node

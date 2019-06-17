@@ -46,11 +46,11 @@ class UiRunner:
         """
         # open private key file for the address
         if os.path.isfile(PRIVATE_KEY_FILE):
-            with open(PRIVATE_KEY_FILE, 'rb') as private_key_file:
+            with open(PRIVATE_KEY_FILE, 'r') as private_key_file:
                 private_key = pickle.load(private_key_file)
                 private_key = RSA.import_key(private_key)
         else:
-            with open(PRIVATE_KEY_FILE, 'wb') as private_key_file:
+            with open(PRIVATE_KEY_FILE, 'w') as private_key_file:
                 private_key = RSA.generate(GENERATE_NUMBER)
                 pickle.dump(private_key.export_key(),
                             private_key_file)

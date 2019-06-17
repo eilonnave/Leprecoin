@@ -174,7 +174,7 @@ class SendWindow(GuiWindow):
         self.error_label.configure(foreground="red")
         self.error_label.configure(text=
                                    '''Wrong data was 
-                                   inserted, please 
+                                   inserted\n, please 
                                    enter again''')
         self.top.update()
 

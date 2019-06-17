@@ -4,7 +4,7 @@ from core_code.transaction import Transaction, Input, Output
 
 
 BLOCK_HASH_SIZE = 256
-REWORD = 50
+REWORD = 50.0
 
 
 class BlockChain(object):
