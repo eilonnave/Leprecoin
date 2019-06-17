@@ -1,10 +1,11 @@
 import Tkinter as Tk
+import os
 from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'C:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
-
+PIC_PATH = 'Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_DIR = 'GUI/pics'
 
 class LoadingWindow(GuiWindow):
     def __init__(self, top, win_dict, wallet):
@@ -86,6 +87,11 @@ class LoadingWindow(GuiWindow):
         self.loading_label.configure(foreground="Gold")
         self.loading_label.configure(text='''Loading...''')
 
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path+'/'+PIC_DIR):
+            os.mkdir(parent_path+'/'+PIC_DIR)
+        os.chdir(parent_path+'/'+PIC_DIR)
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.leprechaun_label = Tk.Label(self.loading_frame, image=pic)
         self.leprecoin_label.image = pic
@@ -96,6 +102,7 @@ class LoadingWindow(GuiWindow):
                                     rely=0.286,
                                     height=164,
                                     width=200)
+        os.chdir(default_cwd)
 
     def stopped_loading(self):
         """

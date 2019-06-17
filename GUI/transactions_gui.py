@@ -4,9 +4,10 @@ import Tkinter as Tk
 import ScrolledText
 from PIL import ImageTk
 from global_graphic import *
+import os
 
-
-PIC_PATH = 'D:\Leprecoin\GUI\pics\leprechaun_transactions.png'
+PIC_PATH = 'leprechaun_transactions.png'
+PIC_DIR = 'GUI/pics'
 
 
 class TransactionsWindow(GuiWindow):
@@ -111,6 +112,11 @@ class TransactionsWindow(GuiWindow):
         self.transactions_text.configure(wrap="none")
         self.show_transactions()
 
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path+'/'+PIC_DIR):
+            os.mkdir(parent_path+'/'+PIC_DIR)
+        os.chdir(parent_path+'/'+PIC_DIR)
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.pic_label = Tk.Label(self.transactions_frame,
                                   image=pic)
@@ -122,6 +128,7 @@ class TransactionsWindow(GuiWindow):
         self.pic_label.configure(background="#d9d9d9")
         self.pic_label.configure(disabledforeground="#a3a3a3")
         self.pic_label.configure(foreground="#000000")
+        os.chdir(default_cwd)
 
     def pressed_back(self):
         """

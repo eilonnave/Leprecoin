@@ -44,39 +44,44 @@ class UiRunner:
         """
         Runs the user interface
         """
-        # open private key file for the address
-        if os.path.isfile(PRIVATE_KEY_FILE):
-            with open(PRIVATE_KEY_FILE, 'r') as private_key_file:
-                private_key = pickle.load(private_key_file)
-                private_key = RSA.import_key(private_key)
-        else:
-            with open(PRIVATE_KEY_FILE, 'w') as private_key_file:
-                private_key = RSA.generate(GENERATE_NUMBER)
-                pickle.dump(private_key.export_key(),
-                            private_key_file)
-        self.wallet = Wallet(private_key,
-                             self.block_chain_db,
-                             self.loggers[0])
-        self.root = Tk.Tk()
-        self.current_window = LoadingWindow(self.root,
-                                            self.win_dict,
-                                            self.wallet)
-        loading_thread = threading.Thread(target=self.sync)
-        loading_thread.start()
-        self.root.mainloop()
-        while self.win_dict[NEXT_KEY] is not None:
+        if not self.node.server.is_closed:
+            # open private key file for the address
+            if os.path.isfile(PRIVATE_KEY_FILE):
+                with open(PRIVATE_KEY_FILE, 'r') as private_key_file:
+                    private_key = pickle.load(private_key_file)
+                    private_key = RSA.import_key(private_key)
+            else:
+                with open(PRIVATE_KEY_FILE, 'w') as private_key_file:
+                    private_key = RSA.generate(GENERATE_NUMBER)
+                    pickle.dump(private_key.export_key(),
+                                private_key_file)
+            self.wallet = Wallet(private_key,
+                                 self.block_chain_db,
+                                 self.loggers[0])
             self.root = Tk.Tk()
-            self.current_window = self.win_dict[NEXT_KEY](self.root,
-                                                          self.win_dict,
-                                                          self.wallet)
+            self.current_window = LoadingWindow(self.root,
+                                                self.win_dict,
+                                                self.wallet)
+            loading_thread = threading.Thread(target=self.sync)
+            loading_thread.start()
             self.root.mainloop()
-            if type(self.current_window) is SendWindow:
-                transaction = self.current_window.transaction
-                if transaction is not None:
-                    self.block_chain_db.add_transaction(transaction)
-                    self.node.distribute_transaction(transaction)
+            while self.win_dict[NEXT_KEY] is not None:
+                self.root = Tk.Tk()
+                self.current_window = self.win_dict[NEXT_KEY](self.root,
+                                                              self.win_dict,
+                                                              self.wallet)
+                self.root.mainloop()
+                if type(self.current_window) is SendWindow:
+                    transaction = self.current_window.transaction
+                    if transaction is not None:
+
+                        self.block_chain_db.add_transaction(transaction)
+                        self.node.distribute_transaction(transaction)
+        else:
+            self.loggers[1].info('Error opening server')
 
         # handle exiting form the system
+        self.node.close_node()
 
     def sync(self):
         """

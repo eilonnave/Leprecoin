@@ -39,6 +39,7 @@ class NodeServer:
             self.open_clients_sockets = []
             self.readable = []
             self.exceptional = []
+            self.is_closed = False
         except socket.error as err:
             self.logger.info('Could not open node- ' + str(err))
             self.server_socket.close()
@@ -48,12 +49,12 @@ class NodeServer:
         """
         the function runs the server
         """
-        while not self.to_close:
-            self.readable, [], self.exceptional = select.select(
+        while not self.to_close and not self.is_closed:
+            self.readable, self.exceptional = select.select(
                 [self.server_socket] +
                 self.open_clients_sockets,
                 [],
-                self.open_clients_sockets)
+                self.open_clients_sockets, 1)[::2]
             self.handle_exception_sockets()
             self.handle_read_sockets()
 

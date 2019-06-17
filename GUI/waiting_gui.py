@@ -2,9 +2,10 @@
 import Tkinter as Tk
 from PIL import ImageTk
 from global_graphic import *
+import os
 
-
-PIC_PATH = 'D:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_DIR = 'GUI/pics'
+PIC_PATH = 'Leprechaun_with_Beer_PNG_Clipart.png'
 SECONDS_TO_WAIT = 300
 
 
@@ -83,6 +84,11 @@ class WaitingForMiningWindow(GuiWindow):
         self.waiting_frame.configure(background="dark slate gray")
         self.waiting_frame.configure(width=125)
 
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path+'/'+PIC_DIR):
+            os.mkdir(parent_path+'/'+PIC_DIR)
+        os.chdir(parent_path+'/'+PIC_DIR)
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.leprechaun_label = Tk.Label(self.waiting_frame, image=pic)
         self.leprecoin_label.image = pic
@@ -93,6 +99,7 @@ class WaitingForMiningWindow(GuiWindow):
                                     rely=0.286,
                                     height=164,
                                     width=200)
+        os.chdir(default_cwd)
 
         self.waiting_label = Tk.Label(self.waiting_frame)
         self.waiting_label.configure(background="#2f4f4f")

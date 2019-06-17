@@ -73,6 +73,7 @@ class Node(object):
             self.known_nodes = hosts_db.extract_hosts()
             if self.address in self.known_nodes:
                 self.known_nodes.remove(self.address)
+            hosts_db.close_connection()
         self.client = NodeClient(self.logger, self.known_nodes)
         self.msg_handler = None
         self.to_close = False
@@ -799,6 +800,14 @@ class Node(object):
         self.msg_handler.change_message(inv, False)
         self.msg_handler.pack()
         self.client.send_to_all(self.msg_handler.message)
+
+    def close_node(self):
+        """
+        the function closes connection of the node
+        """
+        self.server.to_close = True
+        self.block_chain_db.close_connection()
+        self.known_nodes_db.close_connection()
 
 
 if __name__ == '__main__':

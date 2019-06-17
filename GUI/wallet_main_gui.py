@@ -2,8 +2,10 @@
 from global_graphic import *
 import Tkinter as Tk
 from PIL import ImageTk
+import os
 
-PIC_PATH = 'C:\Leprecoin\GUI\pics\leprechaun-pot-of-gold.png'
+PIC_DIR = 'GUI/pics'
+PIC_PATH = 'leprechaun-pot-of-gold.png'
 MAX_TRANSACTIONS = 4
 
 
@@ -218,6 +220,11 @@ class WalletMainWindow(GuiWindow):
         self.balance_text.configure(wrap="word")
         self.balance_text.configure(state=Tk.DISABLED)
 
+        default_cwd = os.getcwd()
+        parent_path = os.path.dirname(default_cwd)
+        if not os.path.isdir(parent_path+'/'+PIC_DIR):
+            os.mkdir(parent_path+'/'+PIC_DIR)
+        os.chdir(parent_path+'/'+PIC_DIR)
         pic = ImageTk.PhotoImage(file=PIC_PATH)
         self.pot_label = Tk.Label(self.balance_frame, image=pic)
         self.pot_label.image = pic
@@ -225,6 +232,8 @@ class WalletMainWindow(GuiWindow):
                              rely=0.524,
                              height=80,
                              width=80)
+        os.chdir(default_cwd)
+
 
     def create_address_frame(self):
         """
