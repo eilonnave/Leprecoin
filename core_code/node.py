@@ -137,10 +137,10 @@ class Node(object):
                 if message_height > best_height:
                     best_height = message_height
                     holders = [unpacked_message.address_from]
-                    self.server.remove_message(message)
+                    self.server.remove_message(message_tup)
                 elif message_height == best_height:
                     holders.append(unpacked_message.address_from)
-                    self.server.remove_message(message)
+                    self.server.remove_message(message_tup)
         self.logger.info('The best height in the network is ' +
                          str(best_height))
         return best_height, holders
