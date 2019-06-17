@@ -1,0 +1,153 @@
+INFO | 2019-06-17 20:43:20,779 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 20:43:20,779 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-06-17 20:43:20,779 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-06-17 20:43:20,779 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-06-17 20:43:20,795 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 20:43:20,796 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:43:20,796 | MainProcess | Connected to the hosts db
+INFO | 2019-06-17 20:43:20,796 | MainProcess | Connection is closed with the hosts db
+INFO | 2019-06-17 20:43:20,796 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 20:43:20,796 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:43:20,798 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 20:43:20,798 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:43:22,799 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 20:43:22,799 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:43:22,799 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 3}
+INFO | 2019-06-17 20:43:22,799 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:43:23,914 | MainProcess | received new connection from 172.16.79.237:52335
+INFO | 2019-06-17 20:43:24,799 | MainProcess | The best height in the network is 3
+INFO | 2019-06-17 20:43:24,799 | MainProcess | The chain is updated
+INFO | 2019-06-17 20:43:25,454 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:43:25,496 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:43:25,497 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:43:25,532 | MainProcess | Address (was inserted to the data base
+INFO | 2019-06-17 20:43:25,532 | MainProcess | Handle get addresses message from (
+INFO | 2019-06-17 20:43:25,536 | MainProcess | Node address- ( is not connected
+INFO | 2019-06-17 20:43:25,915 | MainProcess | received new connection from 172.16.79.237:52336
+INFO | 2019-06-17 20:43:25,950 | MainProcess | Address :was inserted to the data base
+INFO | 2019-06-17 20:43:25,950 | MainProcess | Handle version message from :
+INFO | 2019-06-17 20:43:25,950 | MainProcess | Node address- : is not connected
+INFO | 2019-06-17 20:46:26,894 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 20:46:27,249 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:46:27,276 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 20:46:27,276 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:46:27,332 | MainProcess | Connected to the hosts db
+INFO | 2019-06-17 20:46:27,334 | MainProcess | Connection is closed with the hosts db
+INFO | 2019-06-17 20:46:27,335 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 20:46:27,336 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:46:27,336 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 20:46:27,336 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:46:29,338 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 20:46:29,338 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:46:29,338 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 1}
+INFO | 2019-06-17 20:46:29,338 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:46:31,338 | MainProcess | The best height in the network is 1
+INFO | 2019-06-17 20:46:31,338 | MainProcess | The chain is updated
+INFO | 2019-06-17 20:46:31,403 | MainProcess | received new connection from 172.16.79.237:52345
+INFO | 2019-06-17 20:46:32,250 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:46:32,286 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:46:32,289 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:46:32,321 | MainProcess | Address (was inserted to the data base
+INFO | 2019-06-17 20:46:32,321 | MainProcess | Handle get addresses message from (
+INFO | 2019-06-17 20:46:32,325 | MainProcess | Node address- ( is not connected
+INFO | 2019-06-17 20:46:33,404 | MainProcess | received new connection from 172.16.79.237:52346
+INFO | 2019-06-17 20:46:33,430 | MainProcess | Address :was inserted to the data base
+INFO | 2019-06-17 20:46:33,430 | MainProcess | Handle version message from :
+INFO | 2019-06-17 20:46:33,430 | MainProcess | Node address- : is not connected
+INFO | 2019-06-17 20:47:12,444 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 20:47:12,444 | MainProcess | Block number 0 extracted for the db
+INFO | 2019-06-17 20:47:12,446 | MainProcess | Block number 1 extracted for the db
+INFO | 2019-06-17 20:47:12,446 | MainProcess | Block number 2 extracted for the db
+INFO | 2019-06-17 20:47:12,461 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 20:47:12,461 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:47:12,463 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 20:47:12,463 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:47:12,463 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 20:47:12,464 | MainProcess | Node address- ( is not connected
+INFO | 2019-06-17 20:47:12,464 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:47:14,466 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 20:47:14,466 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:47:14,466 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 3}
+INFO | 2019-06-17 20:47:14,467 | MainProcess | Node address- : is not connected
+INFO | 2019-06-17 20:47:14,467 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:47:16,467 | MainProcess | The best height in the network is 3
+INFO | 2019-06-17 20:47:16,467 | MainProcess | The chain is updated
+INFO | 2019-06-17 20:47:17,102 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:47:17,144 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:47:17,144 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:48:03,148 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 20:48:03,505 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:48:03,532 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 20:48:03,532 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:48:03,579 | MainProcess | Connected to the hosts db
+INFO | 2019-06-17 20:48:03,581 | MainProcess | Connection is closed with the hosts db
+INFO | 2019-06-17 20:48:03,582 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 20:48:03,582 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:48:03,582 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 20:48:03,582 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:48:05,582 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 20:48:05,582 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:48:05,582 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 1}
+INFO | 2019-06-17 20:48:05,582 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:48:07,582 | MainProcess | The best height in the network is 1
+INFO | 2019-06-17 20:48:07,582 | MainProcess | The chain is updated
+INFO | 2019-06-17 20:48:08,494 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:48:08,555 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:48:08,555 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:51:21,464 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 20:51:21,828 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:51:21,858 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 20:51:21,858 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 20:51:21,904 | MainProcess | Connected to the hosts db
+INFO | 2019-06-17 20:51:21,973 | MainProcess | Connection is closed with the hosts db
+INFO | 2019-06-17 20:51:21,974 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 20:51:21,974 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:51:21,974 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 20:51:21,976 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:51:23,976 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 20:51:23,976 | MainProcess | Acquiring lock
+INFO | 2019-06-17 20:51:23,976 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 1}
+INFO | 2019-06-17 20:51:23,976 | MainProcess | Releasing lock
+INFO | 2019-06-17 20:51:25,977 | MainProcess | The best height in the network is 1
+INFO | 2019-06-17 20:51:25,977 | MainProcess | The chain is updated
+INFO | 2019-06-17 20:51:26,888 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:51:26,948 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 20:51:26,950 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 21:18:40,710 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 21:18:41,112 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 21:18:41,142 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 21:18:41,144 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 21:18:41,188 | MainProcess | Connected to the hosts db
+INFO | 2019-06-17 21:18:41,190 | MainProcess | Connection is closed with the hosts db
+INFO | 2019-06-17 21:18:41,190 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 21:18:41,190 | MainProcess | Acquiring lock
+INFO | 2019-06-17 21:18:41,190 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 21:18:41,190 | MainProcess | Releasing lock
+INFO | 2019-06-17 21:18:43,191 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 21:18:43,191 | MainProcess | Acquiring lock
+INFO | 2019-06-17 21:18:43,191 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 1}
+INFO | 2019-06-17 21:18:43,191 | MainProcess | Releasing lock
+INFO | 2019-06-17 21:18:45,191 | MainProcess | The best height in the network is 1
+INFO | 2019-06-17 21:18:45,191 | MainProcess | The chain is updated
+INFO | 2019-06-17 21:18:46,079 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 21:18:46,124 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 21:18:46,125 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 21:22:27,969 | MainProcess | Connected to the block chain db
+INFO | 2019-06-17 21:22:28,346 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 21:22:28,368 | MainProcess | Listening on port 2500
+INFO | 2019-06-17 21:22:28,368 | MainProcess | Connected to the known nodes db
+INFO | 2019-06-17 21:22:28,424 | MainProcess | Connected to the hosts db
+INFO | 2019-06-17 21:22:28,424 | MainProcess | Connection is closed with the hosts db
+INFO | 2019-06-17 21:22:28,427 | MainProcess | Connection is closed with the known nodes db
+INFO | 2019-06-17 21:22:28,427 | MainProcess | Acquiring lock
+INFO | 2019-06-17 21:22:28,427 | MainProcess | Sending message to the known nodes- Ç({'address_from': '127.0.0.1', 'code': 7}
+INFO | 2019-06-17 21:22:28,427 | MainProcess | Releasing lock
+INFO | 2019-06-17 21:22:30,427 | MainProcess | Searching for the updated chain
+INFO | 2019-06-17 21:22:30,427 | MainProcess | Acquiring lock
+INFO | 2019-06-17 21:22:30,427 | MainProcess | Sending message to the known nodes- Ç:{'address_from': '127.0.0.1', 'code': 1, 'best_height': 1}
+INFO | 2019-06-17 21:22:30,428 | MainProcess | Releasing lock
+INFO | 2019-06-17 21:22:32,428 | MainProcess | The best height in the network is 1
+INFO | 2019-06-17 21:22:32,428 | MainProcess | The chain is updated
+INFO | 2019-06-17 21:22:33,331 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 21:22:33,374 | MainProcess | The new block was inserted to the data base
+INFO | 2019-06-17 21:22:33,375 | MainProcess | Connected to the known nodes db

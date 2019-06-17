@@ -316,20 +316,18 @@ class Node(object):
         """
         self.known_nodes_db = KnownNodes(self.logger)
         while not self.server.to_close:
-            messages = self.server.get_received_messages()
-            for message in messages:
-                self.server.remove_message(message)
-                message = message[0]
-                address = message[1]
+            message_list = self.server.get_received_messages()
+            for message_tuple in message_list:
+                self.server.remove_message(message_tuple)
+                message = message_tuple[0]
+                address = message_tuple[1]
                 self.msg_handler.change_message(message,
                                                 True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is Error:
                     self.logger.info('Wrong data received')
                 else:
-                    print address
                     self.msg_handler.message.address_from = address
-                    print self.msg_handler.message.address_from
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
                         self.known_nodes_db.insert_address(

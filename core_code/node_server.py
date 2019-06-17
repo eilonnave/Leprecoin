@@ -155,6 +155,7 @@ class NodeServer:
         received_messages = []
         for message in self.received_messages:
             received_messages.append(message)
+            print message
         return received_messages
 
     def remove_message(self, message):
