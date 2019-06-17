@@ -22,7 +22,6 @@ class NodeClient:
         self.logger = logger
         self.known_nodes = known_nodes
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.setblocking(0)
         self.lock = threading.Lock()
 
     def send_to_all(self, message):
