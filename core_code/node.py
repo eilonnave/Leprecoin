@@ -448,7 +448,9 @@ class Node(object):
                                                                     'block',
                                                                     hash_code), False)
                                 self.msg_handler.pack()
-                                self.client.send_to_all(self.msg_handler.message)
+                                for address in self.known_nodes:
+                                    if address != inv_message.address_from:
+                                        self.client.send(self.msg_handler.message, address)
                             else:
                                 self.logger.info('Received illegal block')
                             break
@@ -503,7 +505,9 @@ class Node(object):
                                                                     'transaction',
                                                                     hash_code), False)
                                 self.msg_handler.pack()
-                                self.client.send_to_all(self.msg_handler.message)
+                                for address in self.known_nodes:
+                                    if address != inv_message.address_from:
+                                        self.client.send(self.msg_handler.message, address)
                             else:
                                 self.logger.info('Received illegal transaction')
                             break
@@ -537,15 +541,12 @@ class Node(object):
         elif get_data_message.data_type == 'transaction':
             print 'transaction'
             transaction_to_send = None
-            for block in self.block_chain_db.transactions_pool:
-                if transaction_to_send is not None:
-                    break
-                for transaction in self.block_chain_db.transactions_pool:
-                    print transaction.transaction_id
-                    print get_data_message.hash_code
-                    if transaction.transaction_id == \
-                            get_data_message.hash_code:
-                        transaction_to_send = transaction
+            for transaction in self.block_chain_db.transactions_pool:
+                print transaction.transaction_id
+                print get_data_message.hash_code
+                if transaction.transaction_id == \
+                        get_data_message.hash_code:
+                    transaction_to_send = transaction
             if transaction_to_send is not None:
                 print transaction_to_send
                 transaction_message = TransactionMessage(self.address,
