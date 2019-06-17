@@ -439,6 +439,7 @@ class Node(object):
             for message_tup in messages_list:
                 message = message_tup[0]
                 address = message_tup[1]
+                print message
                 self.msg_handler.change_message(
                     message, True)
                 self.msg_handler.unpack_message()
@@ -505,7 +506,7 @@ class Node(object):
                 if type(self.msg_handler.message) is TransactionMessage:
                     self.msg_handler.message.address_from = address
                     self.logger.info('Handle transaction message')
-                    self.server.remove_message(respond)
+                    self.server.remove_message(message_tup)
                     if self.msg_handler.message.address_from == \
                             inv_message.address_from:
                         transaction = self.msg_handler.message.transaction
@@ -562,7 +563,7 @@ class Node(object):
                 transaction_message = TransactionMessage(self.address,
                                                          transaction_to_send)
                 self.msg_handler.change_message(transaction_message, False)
-                self.msg_handler.unpack_message()
+                self.msg_handler.pack()
                 self.client.send(self.msg_handler.message,
                                  get_data_message.address_from)
 

@@ -2,6 +2,7 @@
 import select
 import socket
 from core_code.logger import Logging
+import time
 
 SERVER_IP = '0.0.0.0'
 COMMUNICATION_PORT = 2500
@@ -115,6 +116,7 @@ class NodeServer:
             return 0
         while length[-1] != LENGTH_SEPARATION_CHAR:
             length += client_socket.recv(1)
+        print "extract_pack_length = {0}".format(int(length[:-1]))
         return int(length[:-1])
 
     @staticmethod
@@ -128,7 +130,14 @@ class NodeServer:
         the message coming from
         :return: the packed message
         """
-        return client_socket.recv(length)
+        data = client_socket.recv(length)
+        bytes_read = len(data)
+        while bytes_read < length:
+            time.sleep(0.01)
+            data += client_socket.recv(length-bytes_read)
+            bytes_read = len(data)
+
+        return data
 
     def disconnect_connection(self, client_socket):
         """
