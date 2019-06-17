@@ -154,7 +154,6 @@ class NodeServer:
         """
         received_messages = []
         for message in self.received_messages:
-            print message
             received_messages.append(message)
         return received_messages
 

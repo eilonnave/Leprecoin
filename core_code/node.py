@@ -327,7 +327,9 @@ class Node(object):
                 if type(self.msg_handler.message) is Error:
                     self.logger.info('Wrong data received')
                 else:
+                    print address
                     self.msg_handler.message.address_from = address
+                    print self.msg_handler.message.address_from
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
                         self.known_nodes_db.insert_address(
