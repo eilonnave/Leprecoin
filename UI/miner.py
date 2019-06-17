@@ -207,14 +207,17 @@ class Miner(Node):
             time.sleep(WAITING_TIME)
 
             # handle the responds
-            responds = self.server.get_received_messages()
-            for respond in responds:
+            messages_list = self.server.get_received_messages()
+            for message_tup in messages_list:
+                message = message_tup[0]
+                address = message[1]
                 self.msg_handler.change_message(
-                    respond, True)
+                    message, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is BlockMessage:
+                    self.msg_handler.message.address_from = address
                     self.logger.info('Handle block message')
-                    self.server.remove_message(respond)
+                    self.server.remove_message(message_tup)
                     if self.msg_handler.message.address_from == \
                             inv_message.address_from:
                         block = self.msg_handler.message.block
@@ -222,8 +225,12 @@ class Miner(Node):
                             if self.verify_block(block):
                                 self.block_chain_db.add_block(block)
                                 for transaction in block.transactions:
-                                    if transaction in self.block_chain_db.transactions_pool:
-                                        self.block_chain_db.transactions_pool.remove(transaction)
+                                    i = 0
+                                    for transaction_in_pool in self.block_chain_db.transactions_pool:
+                                        if transaction_in_pool.transaction_id == transaction.transaction_id:
+                                            self.block_chain_db.transactions_pool.pop(i)
+                                            break
+                                        i += 1
                                 self.fail = True
                             break
 
@@ -254,16 +261,18 @@ class Miner(Node):
 
             # wait for respond
             time.sleep(WAITING_TIME)
-            responds = self.server.get_received_messages()
+            messages_list = self.server.get_received_messages()
 
             # handle the responds
-            for respond in responds:
-                self.msg_handler.change_message(
-                    respond, True)
+            for message_tup in messages_list:
+                message = message_tup[0]
+                address = message_tup[1]
+                self.msg_handler.change_message(message, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is TransactionMessage:
+                    self.msg_handler.message.address_from = address
                     self.logger.info('Handle transaction message')
-                    self.server.remove_message(respond)
+                    self.server.remove_message(message_tup)
                     if self.msg_handler.message.address_from == \
                             inv_message.address_from:
                         transaction = self.msg_handler.message.transaction
