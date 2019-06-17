@@ -3,7 +3,7 @@ from PIL import ImageTk
 from global_graphic import *
 
 
-PIC_PATH = 'D:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
+PIC_PATH = 'C:\Leprecoin\GUI\pics/Leprechaun_with_Beer_PNG_Clipart.png'
 
 
 class LoadingWindow(GuiWindow):
@@ -26,6 +26,7 @@ class LoadingWindow(GuiWindow):
         self.loading_label = None
         self.leprechaun_label = None
         self.create_loading_frame()
+        self.top.after(500, self.stopped_loading)
 
     def create_buttons_frame(self):
         """
@@ -98,7 +99,10 @@ class LoadingWindow(GuiWindow):
 
     def stopped_loading(self):
         """
-        the function closes the window
+        the function check if the loading finished
         """
-        self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
-        self.top.destroy()
+        if self.win_dict[NEXT_KEY] is not None:
+            self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
+            self.top.destroy()
+        else:
+            self.top.after(500, self.stopped_loading)

@@ -3,7 +3,7 @@ from global_graphic import *
 import Tkinter as Tk
 from PIL import ImageTk
 
-PIC_PATH = 'D:\Leprecoin\GUI\pics\leprechaun-pot-of-gold.png'
+PIC_PATH = 'C:\Leprecoin\GUI\pics\leprechaun-pot-of-gold.png'
 MAX_TRANSACTIONS = 4
 
 

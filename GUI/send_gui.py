@@ -166,7 +166,6 @@ class SendWindow(GuiWindow):
         the function shows the error label
         """
         self.error_label = Tk.Label(self.send_frame)
-        self.error_label.place(relx=0.313, rely=0.622, height=51, width=314)
         self.error_label.configure(background="dark slate grey")
         self.error_label.configure(disabledforeground="#a3a3a3")
         self.error_label.configure(
@@ -174,8 +173,10 @@ class SendWindow(GuiWindow):
         self.error_label.configure(foreground="red")
         self.error_label.configure(text=
                                    '''Wrong data was 
-                                   inserted\n, please 
+                                   inserted, please 
                                    enter again''')
+        self.error_label.place(relx=0.313, rely=0.622, height=51, width=314)
+
         self.top.update()
 
     def create_buttons_frame(self):
