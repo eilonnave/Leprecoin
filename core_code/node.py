@@ -73,7 +73,10 @@ class Node(object):
             self.known_nodes = hosts_db.extract_hosts()
             if self.address in self.known_nodes:
                 self.known_nodes.remove(self.address)
+            for address in self.known_nodes:
+                self.known_nodes_db.insert_address(address)
             hosts_db.close_connection()
+        self.known_nodes_db.close_connection()
         self.client = NodeClient(self.logger, self.known_nodes)
         self.msg_handler = None
         self.to_close = False
@@ -303,6 +306,7 @@ class Node(object):
         the function handles the messages
         that the node received
         """
+        self.known_nodes_db = KnownNodes(self.logger)
         while not self.server.to_close:
             messages = self.server.get_received_messages()
             for message in messages:

@@ -19,6 +19,8 @@ import time
 from core_code.transaction import Transaction, \
     Input, \
     Output
+from core_code.database import KnownNodes
+
 
 PRIVATE_KEY_FILE = 'private_key.txt'
 GENERATE_NUMBER = 2048
@@ -121,6 +123,7 @@ class Miner(Node):
         from the server if those are necessary
         to the miner
         """
+        self.known_nodes_db = KnownNodes(self.logger)
         while True:
             messages = self.server.get_received_messages()
             for message in messages:
