@@ -137,12 +137,13 @@ class NodeServer:
         :param client_socket: the socket of the client
         """
         client_socket.close()
-        index = 0
-        for i in xrange(len(self.open_clients_sockets)):
-            if self.open_clients_sockets[i][0]:
-                index = i
+        index = -1
+        for tup in self.clients_addresses:
+            if tup[0] is client_socket:
+                index = self.clients_addresses.index(tup)
                 break
-        self.open_clients_sockets.pop(index)
+        self.clients_addresses.pop(index)
+        self.open_clients_sockets.remove(client_socket)
 
     def get_received_messages(self):
         """
