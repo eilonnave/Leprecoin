@@ -55,7 +55,7 @@ class Node(object):
         first_eth_address = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
                                       addresses.read()).group()
         # self.address = first_eth_address
-        self.address = '172.16.211.137'
+        self.address = ''
 
         # initialize the server
         self.server = NodeServer(self.logger)
@@ -122,7 +122,9 @@ class Node(object):
         """
         best_height = len(self.block_chain_db.chain)
         holders = []
-        for message in messages:
+        for message_tup in messages:
+            address = message_tup[1]
+            message = message_tup[0]
             self.msg_handler.change_message(message, True)
             self.msg_handler.unpack_message()
             unpacked_message = self.msg_handler.message
@@ -130,6 +132,7 @@ class Node(object):
             # until it downloads the longest
             # block chain from the network
             if type(unpacked_message) is Version:
+                self.msg_handler.message.address_from = address
                 message_height = unpacked_message.best_height
                 if message_height > best_height:
                     best_height = message_height
@@ -156,7 +159,6 @@ class Node(object):
 
         # loop until the node is holding the longest chain
         while current_length != best_height:
-
             # request blocks from the known nodes
             get_blocks_message = GetBlocks(self.address,
                                            self.block_chain_db.chain[current_length-1].hash_code)
@@ -173,10 +175,13 @@ class Node(object):
             responds = self.server.get_received_messages()
             inv_responds = []
             for respond in responds:
-                self.msg_handler.change_message(respond, True)
+                message = respond[0]
+                address = respond[1]
+                self.msg_handler.change_message(message, True)
                 self.msg_handler.unpack_message()
-
                 # check that the inv is matching to the demands
+                if type(self.msg_handler.message) is not Error:
+                    self.msg_handler.message.address_from = address
                 if type(self.msg_handler.message) is Inv and \
                         self.msg_handler.message.data_type == 'block' and \
                         self.msg_handler.message.address_from in holders:
@@ -275,9 +280,12 @@ class Node(object):
 
             # find the responds
             for respond in responds:
-                self.msg_handler.change_message(respond, True)
+                message = respond[0]
+                address = respond[1]
+                self.msg_handler.change_message(message, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is BlockMessage:
+                    self.msg_handler.message.address_from = address
                     blocks_responds.append(self.msg_handler.message)
                     self.server.remove_message(respond)
 
@@ -293,9 +301,9 @@ class Node(object):
             if not is_found:
                 return False
 
-        last_block = self.block_chain_db.chain[-1].hash_code
+        last_block = self.block_chain_db.chain[-1]
         for block in downloaded_blocks:
-            if block.prev != last_block:
+            if block.prev != last_block.hash_code:
                 return False
 
         self.logger.info('Finish downloading all blocks')
@@ -311,12 +319,15 @@ class Node(object):
             messages = self.server.get_received_messages()
             for message in messages:
                 self.server.remove_message(message)
+                message = message[0]
+                address = message[1]
                 self.msg_handler.change_message(message,
                                                 True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is Error:
                     self.logger.info('Wrong data received')
                 else:
+                    self.msg_handler.message.address_from = address
                     if self.msg_handler.message.address_from not in self.known_nodes:
                         self.known_nodes.append(self.msg_handler.message.address_from)
                         self.known_nodes_db.insert_address(
@@ -538,16 +549,12 @@ class Node(object):
 
         # sending the transaction as a respond
         elif get_data_message.data_type == 'transaction':
-            print 'transaction'
             transaction_to_send = None
             for transaction in self.block_chain_db.transactions_pool:
-                print transaction.transaction_id
-                print get_data_message.hash_code
                 if transaction.transaction_id == \
                         get_data_message.hash_code:
                     transaction_to_send = transaction
             if transaction_to_send is not None:
-                print transaction_to_send
                 transaction_message = TransactionMessage(self.address,
                                                          transaction_to_send)
                 self.msg_handler.change_message(transaction_message, False)
@@ -586,10 +593,13 @@ class Node(object):
 
         responds = self.server.get_received_messages()
         for respond in responds:
+            message = respond[0]
+            address_from = respond[1]
             self.msg_handler.change_message(
-                respond, True)
+                message, True)
             self.msg_handler.unpack_message()
             if type(self.msg_handler.message) is AddressesMessage:
+                self.msg_handler.message.address_from = address_from
                 addresses = self.msg_handler.message.addresses
                 self.server.remove_message(respond)
                 for address in addresses:
@@ -796,8 +806,6 @@ class Node(object):
         the function distributes the transaction
         to known nodes
         """
-        print 'send'
-        print self.known_nodes
         inv = Inv(self.address, 'transaction',
                   [transaction.transaction_id])
         self.msg_handler.change_message(inv, False)

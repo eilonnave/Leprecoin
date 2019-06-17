@@ -110,13 +110,14 @@ class Miner(Node):
                 block.time_stamp = time.time()
                 # set the block chain
                 self.block_chain_db.add_block(block)
-                inv = Inv(self.address, 'block', block.hash_code)
+                inv = Inv(self.address, 'block', [block.hash_code])
                 self.msg_handler.change_message(inv, False)
                 self.msg_handler.pack()
                 self.client.send_to_all(self.msg_handler.message)
                 for transaction in block.transactions:
                     if transaction in self.block_chain_db.transactions_pool:
                         self.block_chain_db.transactions_pool.remove(transaction)
+                self.block_chain_db.transactions_pool.remove(new_transaction)
                 self.logger.info('Succeed in mining block')
 
     def handle_messages(self):

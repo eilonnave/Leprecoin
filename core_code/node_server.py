@@ -81,13 +81,18 @@ class NodeServer:
                                  str(client_address[0]) +
                                  ':' +
                                  str(client_address[1]))
-                self.open_clients_sockets.append(client_socket)
+                self.open_clients_sockets.append((client_socket, client_address[0]))
             else:
                 try:
+                    client_address = ''
                     length = self.extract_pack_length(current_socket)
+                    for client_tup in self.open_clients_sockets:
+                        if client_tup[0] is current_socket:
+                            client_address = client_tup[1]
+                            break
                     if length != 0:
-                        self.received_messages.append(
-                            self.receive_message(length, current_socket))
+                        self.received_messages.append((
+                            self.receive_message(length, current_socket), client_address))
                     self.disconnect_connection(current_socket)
 
                 except socket.error as err:
@@ -130,7 +135,12 @@ class NodeServer:
         :param client_socket: the socket of the client
         """
         client_socket.close()
-        self.open_clients_sockets.remove(client_socket)
+        index = 0
+        for i in xrange(len(self.open_clients_sockets)):
+            if self.open_clients_sockets[i][0]:
+                index = i
+                break
+        self.open_clients_sockets.pop(index)
 
     def get_received_messages(self):
         """

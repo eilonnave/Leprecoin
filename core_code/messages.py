@@ -538,7 +538,7 @@ if __name__ == '__main__':
     assert msg_handler.message.address_from \
         == t.address_from
 
-    b = BlockMessage('1', Block.new_block(0, '0', [t.transaction, t.transaction]))
+    b = BlockMessage('1', Block(0, '0', [t.transaction, t.transaction]))
     msg_handler = MessagesHandler(b, False)
     msg_handler.pack()
     assert type(msg_handler.message) is str
