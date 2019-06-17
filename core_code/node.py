@@ -435,14 +435,17 @@ class Node(object):
             time.sleep(WAITING_TIME)
 
             # handle the responds
-            responds = self.server.get_received_messages()
-            for respond in responds:
+            messages_list = self.server.get_received_messages()
+            for message_tup in messages_list:
+                message = message_tup[0]
+                address = message_tup[1]
                 self.msg_handler.change_message(
-                    respond, True)
+                    message, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is BlockMessage:
+                    self.msg_handler.message.address_from = address
                     self.logger.info('Handle block message')
-                    self.server.remove_message(respond)
+                    self.server.remove_message(message_tup)
                     if self.msg_handler.message.address_from == \
                             inv_message.address_from:
                         block = self.msg_handler.message.block
@@ -492,14 +495,15 @@ class Node(object):
 
             # wait for respond
             time.sleep(WAITING_TIME)
-            responds = self.server.get_received_messages()
-
-            # handle the responds
-            for respond in responds:
+            messages_list = self.server.get_received_messages()
+            for message_tup in messages_list:
+                message = message_tup[0]
+                address = message_tup[1]
                 self.msg_handler.change_message(
-                    respond, True)
+                    message, True)
                 self.msg_handler.unpack_message()
                 if type(self.msg_handler.message) is TransactionMessage:
+                    self.msg_handler.message.address_from = address
                     self.logger.info('Handle transaction message')
                     self.server.remove_message(respond)
                     if self.msg_handler.message.address_from == \
@@ -558,10 +562,7 @@ class Node(object):
                 transaction_message = TransactionMessage(self.address,
                                                          transaction_to_send)
                 self.msg_handler.change_message(transaction_message, False)
-                self.msg_handler.pack()
                 self.msg_handler.unpack_message()
-                self.msg_handler.pack()
-                print self.msg_handler.message
                 self.client.send(self.msg_handler.message,
                                  get_data_message.address_from)
 
