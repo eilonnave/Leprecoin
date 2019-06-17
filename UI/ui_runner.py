@@ -65,6 +65,8 @@ class UiRunner:
             loading_thread = threading.Thread(target=self.sync)
             loading_thread.start()
             self.root.mainloop()
+            handling_thread = threading.Thread(target=self.node.handle_messages)
+            handling_thread.start()
             while self.win_dict[NEXT_KEY] is not None:
                 self.root = Tk.Tk()
                 self.current_window = self.win_dict[NEXT_KEY](self.root,
