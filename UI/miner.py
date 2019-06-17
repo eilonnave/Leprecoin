@@ -87,10 +87,6 @@ class Miner(Node):
                                           [transaction_output])
 
             # wait until there are enough transactions in the pool
-            """
-            while len(self.block_chain_db.transactions_pool) < MIN_TRANSACTIONS:
-                pass
-            """
             self.block_chain_db.add_transaction(new_transaction)
 
             # create the block
