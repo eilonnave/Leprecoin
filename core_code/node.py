@@ -570,6 +570,10 @@ class Node(object):
         """
         self.logger.info('Handle get addresses message from ' +
                          get_addresses_message.address_from)
+        addresses_to_send = []
+        for address in self.known_nodes:
+            if address != get_addresses_message.address_from:
+                addresses_to_send.append(address)
         addresses_message = AddressesMessage(self.address,
                                              self.known_nodes)
         self.msg_handler.change_message(addresses_message, False)
@@ -824,6 +828,7 @@ if __name__ == '__main__':
     logger = Logging('test').logger
     db = BlockChainDB(logger)
     node = Node(logger, db)
+    node.known_nodes_db.create_connection()
     node.find_connections()
     node.update_chain()
     b1 = Block(1, db.chain[-1].hash_code, [])
