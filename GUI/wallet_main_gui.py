@@ -41,8 +41,13 @@ class WalletMainWindow(GuiWindow):
         self.address_label = None
         self.address_text = None
         self.create_address_frame()
+        self.wallet.update_transactions()
+        self.wallet.update_balance()
         self.show_current_balance()
         self.show_last_transactions()
+        self.current_length = len(self.wallet.block_chain_db.chain)
+        print
+        self.top.after(500, self.update_window)
 
     def create_buttons_frame(self):
         """
@@ -234,7 +239,6 @@ class WalletMainWindow(GuiWindow):
                              width=80)
         os.chdir(default_cwd)
 
-
     def create_address_frame(self):
         """
         the function creates the address
@@ -352,5 +356,11 @@ class WalletMainWindow(GuiWindow):
         """
         the function updates the window
         """
-        self.show_current_balance()
-        self.show_last_transactions()
+        if len(self.wallet.block_chain_db.chain) > self.current_length:
+            print True
+            self.current_length = len(self.wallet.block_chain_db.chain)
+            self.wallet.update_transactions()
+            self.wallet.update_balance()
+            self.show_current_balance()
+            self.show_last_transactions()
+        self.top.after(500, self.update_window)

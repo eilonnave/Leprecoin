@@ -30,6 +30,8 @@ class TransactionsWindow(GuiWindow):
         self.pic_label = None
         self.create_transactions_frame()
         self.wallet.update_transactions()
+        self.current_length = len(self.wallet.block_chain_db.chain)
+        self.top.after(500, self.update_window)
         self.show_transactions()
 
     def create_buttons_frame(self):
@@ -151,6 +153,16 @@ class TransactionsWindow(GuiWindow):
         self.transactions_text.delete(1.0, Tk.END)
         self.transactions_text.insert(Tk.END, s)
         self.transactions_text.configure(state=Tk.DISABLED)
+
+    def update_window(self):
+        """
+        the functions update the window
+        """
+        if len(self.wallet.block_chain_db.chain) > self.current_length:
+            self.wallet.update_transactions()
+            self.show_transactions()
+            self.current_length = len(self.wallet.block_chain_db.chain)
+        self.top.after(500, self.update_window)
 
 
 

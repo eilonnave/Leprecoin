@@ -34,7 +34,9 @@ class SendWindow(GuiWindow):
         self.back_button = None
         self.create_buttons_frame()
         self.transaction = None
-
+        self.current_length = len(self.wallet.block_chain_db.chain)
+        self.wallet.update_balance()
+        self.top.after(500, self.update_window)
         self.show_current_balance()
 
     def create_send_frame(self):
@@ -262,6 +264,16 @@ class SendWindow(GuiWindow):
                 self.top.destroy()
         else:
             self.show_error_label()
+
+    def update_window(self):
+        """
+        the function updates the window
+        """
+        if len(self.wallet.block_chain_db.chain) > self.current_length:
+            self.current_length = len(self.wallet.block_chain_db.chain)
+            self.wallet.update_balance()
+            self.show_current_balance()
+        self.top.after(500, self.update_window)
 
 
 
