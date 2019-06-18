@@ -136,8 +136,9 @@ class Miner(Node):
         from the server if those are necessary
         to the miner
         """
-        handle_db = BlockChainDB(self.loggers[2])
-        handle_db.transactions_pool = self.global_transaction_pool
+        self.block_chain_db = BlockChainDB(self.loggers[2])
+        self.block_chain_db.transactions_pool = self.global_transaction_pool
+        self.block_chain_db.chain = self.global_chain
         self.known_nodes_db = KnownNodes(self.logger)
         while True:
             messages_list = self.server.get_received_messages()
