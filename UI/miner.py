@@ -40,6 +40,7 @@ class Miner(Node):
                         Logging('block_chain').logger]
         self.block_chain_db = BlockChainDB(self.loggers[2])
         self.global_transaction_pool = self.block_chain_db.transactions_pool
+        self.global_chain = self.block_chain_db.chain
         super(Miner, self).__init__(self.loggers[1], self.block_chain_db)
 
         self.fail = False
@@ -74,11 +75,12 @@ class Miner(Node):
         mines new block in the
         block chain
         """
-        self.block_chain_db = BlockChainDB(self.loggers[2])
-        self.block_chain_db.transactions_pool = self.global_transaction_pool
+        mine_db = BlockChainDB(self.loggers[2])
+        mine_db.transactions_pool = self.global_transaction_pool
+        mine_db.chain = self.global_chain
         while True:
             self.fail = False
-            chain = self.block_chain_db.chain
+            chain = mine_db.chain
             number = len(chain)
             # transaction that rewards the miner
             # the input proof is arbitrary
@@ -90,12 +92,12 @@ class Miner(Node):
                                           [transaction_output])
 
             # wait until there are enough transactions in the pool
-            while len(self.block_chain_db.transactions_pool) < MIN_TRANSACTIONS:
+            while len(mine_db.transactions_pool) < MIN_TRANSACTIONS:
                 pass
-            self.block_chain_db.add_transaction(new_transaction)
+            mine_db.add_transaction(new_transaction)
 
             transactions_to_mine = []
-            for transaction in self.block_chain_db.transactions_pool:
+            for transaction in mine_db.transactions_pool:
                 transactions_to_mine.append(transaction)
 
             # create the block
@@ -108,22 +110,22 @@ class Miner(Node):
                 block.hash_block()
 
             if self.fail:
-                self.block_chain_db.transactions_pool.remove(new_transaction)
+                mine_db.transactions_pool.remove(new_transaction)
                 self.logger.info('Failed in mining the block')
 
             else:
                 block.time_stamp = time.time()
                 # set the block chain
-                self.block_chain_db.add_block(block)
+                mine_db.add_block(block)
                 inv = Inv(self.address, 'block', [block.hash_code])
                 self.msg_handler.change_message(inv, False)
                 self.msg_handler.pack()
                 self.client.send_to_all(self.msg_handler.message)
                 for transaction in block.transactions:
                     i = 0
-                    for transaction_in_pool in self.block_chain_db.transactions_pool:
+                    for transaction_in_pool in mine_db.transactions_pool:
                         if transaction_in_pool.transaction_id == transaction.transaction_id:
-                            self.block_chain_db.transactions_pool.pop(i)
+                            mine_db.transactions_pool.pop(i)
                             break
                         i += 1
                 self.logger.info('Succeed in mining block')
@@ -134,8 +136,8 @@ class Miner(Node):
         from the server if those are necessary
         to the miner
         """
-        self.block_chain_db = BlockChainDB(self.loggers[2])
-        self.block_chain_db.transactions_pool = self.global_transaction_pool
+        handle_db = BlockChainDB(self.loggers[2])
+        handle_db.transactions_pool = self.global_transaction_pool
         self.known_nodes_db = KnownNodes(self.logger)
         while True:
             messages_list = self.server.get_received_messages()

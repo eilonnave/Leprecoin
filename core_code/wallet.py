@@ -25,6 +25,7 @@ class Wallet(CryptoSet):
         self.update_balance()
         self.transactions = []
         self.update_transactions()
+        print self.transactions
         self.logger = logger
         self.logger.info(
             "Address- "
