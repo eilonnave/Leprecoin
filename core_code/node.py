@@ -67,7 +67,7 @@ class Node(object):
         self.known_nodes_db = KnownNodes(self.logger)
         self.known_nodes = self.known_nodes_db.extract_known_nodes()
         if self.address in self.known_nodes:
-                self.known_nodes.remove(self.address)
+            self.known_nodes.remove(self.address)
         if len(self.known_nodes) == 0:
             hosts_db = HostNodes(self.logger)
             self.known_nodes = hosts_db.extract_hosts()

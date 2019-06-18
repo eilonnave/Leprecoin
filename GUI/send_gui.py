@@ -253,7 +253,7 @@ class SendWindow(GuiWindow):
         if not amount.isdigit():
             legal = False
         else:
-            amount = int(amount)
+            amount = float(amount)
         if legal:
             created, transaction = self.wallet.create_transaction(amount, address)
             if not created:

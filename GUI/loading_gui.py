@@ -7,6 +7,7 @@ from global_graphic import *
 PIC_PATH = 'Leprechaun_with_Beer_PNG_Clipart.png'
 PIC_DIR = 'GUI/pics'
 
+
 class LoadingWindow(GuiWindow):
     def __init__(self, top, win_dict, wallet):
         """

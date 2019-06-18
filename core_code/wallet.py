@@ -30,18 +30,6 @@ class Wallet(CryptoSet):
             "Address- "
             ""+self.address+' is in the system')
 
-    @classmethod
-    def new_wallet(cls, block_chain, logger):
-        """
-        factory method
-        """
-        logger.info("Creating new wallet")
-        private_key = RSA.generate(GENERATE_NUMBER)
-        """
-        load the private key to the file using pickle
-        """
-        return cls(private_key, block_chain, logger)
-
     def can_unlock_output(self, transaction_output):
         """
         the function checks if the wallet
@@ -133,8 +121,8 @@ class Wallet(CryptoSet):
 
         # creates the new transaction
         new_transaction = Transaction([], [])
-        sending_amount = 0
-        change = 0
+        sending_amount = 0.0
+        change = 0.0
         for unspent_output in self.unspent_outputs:
             # creating the proof
             data_to_sign = unspent_output.transaction_id
