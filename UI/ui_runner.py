@@ -39,7 +39,6 @@ class UiRunner:
                          WAITING_KEY: WaitingForMiningWindow,
                          LOADING_KEY: LoadingWindow}
         self.wallet = None
-        self.global_transaction_pool = self.block_chain_db.transactions_pool
 
     def run(self):
         """
@@ -73,7 +72,6 @@ class UiRunner:
                 self.current_window = self.win_dict[NEXT_KEY](self.root,
                                                               self.win_dict,
                                                               self.wallet)
-                self.node.block_chain_db.transactions_pool = self.global_transaction_pool
                 self.root.mainloop()
                 if type(self.current_window) is SendWindow:
                     transaction = self.current_window.transaction

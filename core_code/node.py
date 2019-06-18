@@ -315,7 +315,6 @@ class Node(object):
         that the node received
         """
         self.known_nodes_db = KnownNodes(self.logger)
-        self.block_chain_db = BlockChainDB(self.logger)
         while not self.server.to_close:
             message_list = self.server.get_received_messages()
             for message_tuple in message_list:

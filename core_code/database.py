@@ -116,7 +116,7 @@ class BlockChainDB(BlockChain):
         creates new connection to the data
         base
         """
-        self.connection = sqlite3.connect(self.path)
+        self.connection = sqlite3.connect(self.path, check_same_thread=False)
         self.connection.text_factory = bytes
         self.cursor = self.connection.cursor()
         self.logger.info('Connected to the block chain db')
@@ -319,7 +319,7 @@ class KnownNodes(object):
         creates new connection to the data
         base
         """
-        self.connection = sqlite3.connect(self.path)
+        self.connection = sqlite3.connect(self.path, check_same_thread=False)
         self.connection.text_factory = bytes
         self.cursor = self.connection.cursor()
         self.logger.info('Connected to the known nodes db')
@@ -409,7 +409,7 @@ class HostNodes(object):
         creates new connection to the data
         base
         """
-        self.connection = sqlite3.connect(self.path)
+        self.connection = sqlite3.connect(self.path, check_same_thread=False)
         self.connection.text_factory = bytes
         self.cursor = self.connection.cursor()
         self.logger.info('Connected to the hosts db')

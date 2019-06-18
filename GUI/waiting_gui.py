@@ -170,11 +170,14 @@ class WaitingForMiningWindow(GuiWindow):
         :return:
         """
         self.wallet.update_transactions()
+        print 'transactions '+str(self.wallet.transactions)
+        print 'chain '+str(self.wallet.block_chain_db.chain)
         if times > SECONDS_TO_WAIT:
             self.failed_mining()
         elif len(self.wallet.transactions) > self.started_length:
             for transaction in self.wallet.transactions[self.started_length:]:
-                if self.wallet.equals_public_keys(transaction.inputs[0].proof[1]):
+                if transaction.inputs[0].output_index != -1 and \
+                        self.wallet.equals_public_keys(transaction.inputs[0].proof[1]):
                     self.win_dict[NEXT_KEY] = self.win_dict[MAIN_KEY]
                     self.top.destroy()
         else:
