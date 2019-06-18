@@ -114,7 +114,7 @@ class Output(object):
         """
         constructor
         """
-        self.value = value
+        self.value = float(value)
         # address which belongs to the wallet that can use the output
         self.address = address
 
@@ -139,7 +139,7 @@ class Output(object):
         the function serializes the output
         :returns: the serialized output
         """
-        return self.value, \
+        return float(self.value), \
             self.address
 
     @classmethod
@@ -150,7 +150,7 @@ class Output(object):
         :param serialized_output: the serialized output
         :returns: the deserialized output
         """
-        value = serialized_output[0]
+        value = float(serialized_output[0])
         address = serialized_output[1]
         return cls(value, address)
 
