@@ -591,6 +591,7 @@ class Node(object):
         The functions find connected nodes
         which the node can send messages to
         """
+        self.known_nodes_db = KnownNodes(self.logger)
         get_addresses = GetAddresses(self.address)
         if self.msg_handler is None:
             self.msg_handler = MessagesHandler(get_addresses, False)
