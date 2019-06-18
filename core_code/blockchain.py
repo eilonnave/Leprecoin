@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from core_code.block import Block
-from core_code.transaction import Transaction, Input, Output
-
-
 BLOCK_HASH_SIZE = 256
 REWORD = 50.0
 

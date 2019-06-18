@@ -20,8 +20,6 @@ GENESIS_NONCE = 135510
 GENESIS_DIFFICULTY = 4
 GENESIS_TIME_STAMP = 1560672296.571
 
-# ToDo: handle possibles errors in the database
-
 
 class Table(object):
     def __init__(self, connection, cursor, table_name, structure):

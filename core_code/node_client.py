@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import socket
-from core_code.logger import Logging
 import threading
 
 COMMUNICATION_PORT = 2500

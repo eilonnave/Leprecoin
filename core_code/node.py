@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-import re
 import threading
 import time
 from core_code.node_server import NodeServer
@@ -25,8 +23,6 @@ from core_code.transaction import UnspentOutput
 from core_code.database import HostNodes, KnownNodes
 from core_code.blockchain import REWORD
 
-# ToDo: check connections before downloading
-# ToDo: handle possible errors in receiving messages
 
 WAITING_TIME = 2
 WALLET_ADDRESS_LENGTH = 40
@@ -46,15 +42,6 @@ class Node(object):
         self.logger = logger
         self.block_chain_db = block_chain_db
 
-        # find the node local address
-        addresses = os.popen('IPCONFIG | FINDSTR /R '
-                             '"Ethernet adapter Local '
-                             'Area Connection .* Address.'
-                             '*[0-9][0-9]*/.[0-9][0-9]*/.'
-                             '[0-9][0-9]*/.[0-9][0-9]*"')
-        first_eth_address = re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b',
-                                      addresses.read()).group()
-        # self.address = first_eth_address
         self.address = '127.0.0.1'
 
         # initialize the server

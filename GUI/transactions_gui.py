@@ -1,5 +1,4 @@
 #  -*- coding: utf-8 -*-
-
 import Tkinter as Tk
 import ScrolledText
 from PIL import ImageTk

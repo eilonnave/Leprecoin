@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from core_code.crypto_set import CryptoSet
-from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256, RIPEMD160
 from core_code.transaction import Transaction, \
     Input, Output, UnspentOutput

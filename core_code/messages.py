@@ -4,7 +4,6 @@ import ast
 from core_code.transaction import Transaction, \
     Input, \
     Output, \
-    TRANSACTION_ID_KEY, \
     INPUTS_KEY, \
     OUTPUTS_KEY
 from core_code.block import Block, BLOCK_KEY, TRANSACTIONS_KEY

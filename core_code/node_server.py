@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import select
 import socket
-from core_code.logger import Logging
 import time
 
 SERVER_IP = '0.0.0.0'
