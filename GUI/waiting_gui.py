@@ -170,8 +170,6 @@ class WaitingForMiningWindow(GuiWindow):
         :return:
         """
         self.wallet.update_transactions()
-        print 'transactions '+str(self.wallet.transactions)
-        print 'chain '+str(self.wallet.block_chain_db.chain)
         if times > SECONDS_TO_WAIT:
             self.failed_mining()
         elif len(self.wallet.transactions) > self.started_length:

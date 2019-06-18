@@ -449,7 +449,6 @@ class Node(object):
                     if self.msg_handler.message.address_from == \
                             inv_message.address_from:
                         block = self.msg_handler.message.block
-                        print block.hash_code
                         if block.hash_code == hash_code:
                             if self.verify_block(block):
                                 self.logger.info('Received legal block')

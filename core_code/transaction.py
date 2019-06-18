@@ -150,7 +150,7 @@ class Output(object):
         :param serialized_output: the serialized output
         :returns: the deserialized output
         """
-        value = float(serialized_output[0])
+        value = serialized_output[0]
         address = serialized_output[1]
         return cls(value, address)
 
